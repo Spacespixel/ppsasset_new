@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="PPS Asset">
+    <title>@ViewData["Title"] - PPS Asset</title>
+    
+    <link href="~/fonts/font-awesome.css" rel="stylesheet" type="text/css">
+    <link href="~/fonts/elegant-fonts.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700|Kanit:300,400,500,600,700&display=swap' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="~/bootstrap/css/bootstrap.css" type="text/css">
+    <link rel="stylesheet" href="~/css/owl.carousel.css" type="text/css">
+    <link rel="stylesheet" href="~/css/magnific-popup.css" type="text/css">
+    <link rel="stylesheet" href="~/css/style.css" type="text/css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="@(ViewBag.ProjectTheme ?? "theme-default") has-loading-screen links-hover-effect" data-spy="scroll" data-target=".navigation">
+
+<div class="page-wrapper" id="page-top">
+    @RenderBody()
+    
+    <footer id="page-footer" class="block background-is-dark" style="background-color: #61676d !important; background-image: none !important;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <a href="#" class="brand"><img src="~/images/pps-logo.png" alt="PPS Asset"></a>
+                    <p><strong>บริษัท พูลผลทรัพย์ จำกัด</strong></p>
+                    <p>113 ซอยเจริญสุข ถนนสุขุมวิท 63 แขวงคลองตันเหนือ</p>
+                    <p>เขตวัฒนา กรุงเทพฯ 10110 โทร. 02-381-3500</p>
+                </div>
+                
+                <div class="col-md-3 col-sm-6">
+                    <h3>โครงการบ้านเดี่ยว</h3>
+                    <ul class="footer-links">
+                        <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-prime-hathairat" })">เดอะริคโค้ เรสซิเดนซ์ ไพร์ม วงแหวนฯ-หทัยราษฎร์</a></li>
+                        <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-prime-chatuchot" })">เดอะริคโค้ เรสซิเดนซ์ ไพร์ม วงแหวนฯ-จตุโชติ</a></li>
+                        <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-chatuchot" })">เดอะริคโค้ เรสซิเดนซ์ รามอินทรา-จตุโชติ</a></li>
+                        <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-hathairat" })">เดอะริคโค้ เรสซิเดนซ์ รามอินทรา-หทัยราษฎร์</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-3 col-sm-6">
+                    <h3>โครงการทาวน์โฮม</h3>
+                    <ul class="footer-links">
+                        <li><a href="@Url.Action("Project", "Home", new { id = "ricco-wongwaen-lamlukka" })">The Ricco Town วงแหวนฯ - ลำลูกกา</a></li>
+                        <li><a href="@Url.Action("Project", "Home", new { id = "ricco-town-phahonyothin" })">The Ricco Town พหลโยธิน-สายไหม 53</a></li>
+                    </ul>
+                      <h3>โครงการบ้านแฝด</h3>
+                    <ul class="footer-links">
+                        <li><a href="@Url.Action("Project", "Home", new { id = "ricco-wongwaen-lamlukka" })">The Ricco Town วงแหวนฯ - ลำลูกกา</a></li>
+                    </ul>
+                </div>
+                 
+                
+                <div class="col-md-3 col-sm-6">
+                    <h3>บริษัท</h3>
+                    <ul class="footer-links">
+                        <li><a href="@Url.Action("About", "Home")">เกี่ยวกับเรา</a></li>
+                        <li><a href="@Url.Action("Contact", "Home")">ติดต่อเรา</a></li>
+                    </ul>
+
+                    <h3 style="margin-top: 30px;">Social</h3>
+                    <div class="social">
+                        <a href="https://line.me/R/ti/p/@@ppsasset" target="_blank" style="color: white; text-decoration: none; display: block; margin-bottom: 10px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" style="margin-right: 10px; vertical-align: middle;">
+                                <path fill="white" d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12.017.572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+                            </svg>
+                            LINE
+                        </a>
+                        <a href="https://facebook.com/ppsasset" target="_blank" style="color: white; text-decoration: none; display: block; margin-bottom: 10px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" style="margin-right: 10px; vertical-align: middle;">
+                                <path fill="white" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                            Facebook
+                        </a>
+                    </div>
+
+                    <div class="to-top">
+                        <a href="#page-top" class="arrow-up framed scroll">
+                            <i class="arrow_up"></i>
+                        </a>
+                    </div>
+                </div>
+               
+            </div>
+
+           
+            <hr>
+
+            <div class="footer-bottom row">
+                <div class="col-md-12">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="note">
+                            Copyright ©2025 PPS Asset Development. All rights reserved.
+                        </div>
+                        <div class="footer-legal-links">
+                            <a href="@Url.Action("Privacy", "Home")" style="color: #ccc; text-decoration: none; margin-right: 15px;">นโยบายความเป็นส่วนตัว</a>
+                            <a href="@Url.Action("Terms", "Home")" style="color: #ccc; text-decoration: none;">ข้อกำหนดและเงื่อนไข</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+          
+        </div>
+        <div class="background-wrapper" style="position: relative;">
+            <div class="background-color" style="background-color: #61676d !important; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
+        </div>
+    </footer>
+</div>
+    <script type="text/javascript" src="~/js/jquery-2.2.1.min.js"></script>
+    <script type="text/javascript" src="~/js/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="~/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/js/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="~/js/owl.carousel.min.js"></script>
+    <script type="text/javascript" src="~/js/jquery.magnific-popup.min.js"></script>
+    <script type="text/javascript" src="~/js/scrollReveal.min.js"></script>
+    <script type="text/javascript" src="~/js/readmore.min.js"></script>
+    <script type="text/javascript" src="~/js/pace.min.js"></script>
+    <script type="text/javascript" src="~/js/custom.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

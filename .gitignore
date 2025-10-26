@@ -1,0 +1,25 @@
+# .NET build artifacts
+bin/
+obj/
+*.log
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+*.cache
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# NuGet packages
+packages/
+*.nupkg
+
+# Temporary files
+temp_patch.diff
+
+# Application specific
+*.sql

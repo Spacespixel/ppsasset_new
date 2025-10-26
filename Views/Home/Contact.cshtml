@@ -1,0 +1,489 @@
+@{
+    ViewData["Title"] = "ติดต่อเรา | Contact Us - พูลผลทรัพย์";
+}
+
+<style>
+/* Hamburger Menu*/
+.navigation .right .navigation-links li a,
+.navigation.nav-btn-only .right .navigation-links li a,
+.navigation.background-is-dark .right .navigation-links li a {
+    color: #fff !important;
+    opacity: 1 !important;
+}
+
+.navigation .right .navigation-links {
+    text-align: right !important;
+}
+
+/* Dropdown functionality */
+.navigation .dropdown {
+    position: relative;
+}
+
+.navigation .dropdown-toggle {
+    cursor: pointer;
+}
+
+.navigation .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: auto;
+    background-color: #28a745;
+    min-width: 900px;
+    padding: 20px;
+    z-index: 1000;
+    border-radius: 4px;
+    display: none;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 30px;
+}
+
+.navigation .dropdown:hover .dropdown-menu {
+    display: grid;
+}
+
+.navigation .dropdown-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.navigation .dropdown-column .dropdown-header {
+    color: #fff;
+    font-weight: bold;
+    padding: 0 0 10px 0;
+    font-size: 16px;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 10px;
+}
+
+.navigation .dropdown-column a {
+    color: #fff !important;
+    padding: 6px 0;
+    display: block;
+    text-decoration: none;
+    text-align: left !important;
+    font-size: 13px;
+    line-height: 1.3;
+}
+
+.navigation .dropdown-column a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding-left: 5px;
+    transition: all 0.2s ease;
+}
+
+/* Hamburger button already exists in framework - just ensure it's visible */
+
+@@media (max-width: 768px) {
+    .navigation.nav-btn-only .right .navigation-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.95);
+        transition: right 0.3s ease;
+        flex-direction: column;
+        padding: 80px 20px 20px;
+        z-index: 1000;
+        text-align: right !important;
+        overflow-y: auto;
+    }
+    
+    .navigation.nav-btn-only.show-navigation .right .navigation-links,
+    .page-wrapper.show-navigation .navigation.nav-btn-only .right .navigation-links {
+        right: 0;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    
+    /* Mobile dropdown - same as desktop */
+    .navigation .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: #28a745;
+        min-width: 90vw;
+        padding: 20px;
+        border-radius: 4px;
+        display: none;
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .navigation .dropdown:hover .dropdown-menu {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .navigation .dropdown-column {
+        margin-bottom: 15px;
+    }
+    
+    .navigation .dropdown-column:last-child {
+        margin-bottom: 0;
+    }
+    
+    .navigation .dropdown-column .dropdown-header {
+        font-size: 18px;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .navigation .dropdown-column a {
+        font-size: 14px;
+        padding: 8px 0;
+    }
+    
+    .navigation .dropdown-column a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding-left: 10px;
+        transition: all 0.2s ease;
+    }
+}
+/* Hamburger Menu*/
+
+ .btn-submit-form {
+        background: #365523;
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: block;
+        margin: 0 auto;
+        max-width: 400px;
+        width: 100%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-submit-form:hover {
+        background: #1e7e34;
+    }
+
+/* Social Media Brand Green Color */
+.social-links .social-link {
+    color: #28a745 !important;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 20px;
+    padding-right: 20px;
+    font-weight: 500;
+    font-size: 16px;
+    border-right: 1px solid #28a745;
+}
+
+.social-links .social-link:last-child {
+    border-right: none;
+    margin-right: 0;
+    padding-right: 0;
+}
+
+.social-links .social-link:hover {
+    color: #1e7e34 !important;
+    border-right-color: #1e7e34;
+}
+
+.social-links .social-link i {
+    color: #28a745 !important;
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.social-links .social-link:hover i {
+    color: #1e7e34 !important;
+}
+
+/* Ensure logo is visible on mobile */
+@@media (max-width: 768px) {
+    .navigation .left .brand {
+        display: block !important;
+        z-index: 1002;
+        position: relative;
+    }
+    
+    .navigation .left .brand img {
+        height: 35px !important;
+    }
+}
+</style>
+ 
+
+<header id="page-header">
+    <nav class="navigation nav-btn-only background-is-dark">
+        <div class="container">
+            <div class="wrapper">
+                <div class="left">
+                    <a href="@Url.Action("Index", "Home")" class="brand"><img src="~/images/pps-logo.png" alt="PPS Asset" style="height: 40px;"></a>
+                </div>
+                <div class="right">
+                    <ul class="nav navigation-links animate">
+                       <li><a href="#page-top" class="scroll">หน้าหลัก</a></li>
+                        <li class="dropdown">
+                            <a   class="scroll dropdown-toggle">โครงการ <span class="caret">▼</span></a>
+                            <div class="dropdown-menu">
+                                <div class="dropdown-column">
+                                    <div class="dropdown-header">บ้านเดี่ยว</div>
+                                    <a href="@Url.Action("Project", "Home", new { id = "ricco-prime-wongwaen-hathairat" })">เดอะริคโค้ เรสซิเดนซ์ ไพร์ม วงแหวนฯ-หทัยราษฎร์</a>
+                                    <a href="@Url.Action("Project", "Home", new { id = "ricco-prime-wongwaen-chatuchot" })">เดอะริคโค้ เรสซิเดนซ์ ไพร์ม วงแหวนฯ-จตุโชติ</a>
+                                    <a href="@Url.Action("Project", "Home", new { id = "ricco-residence-chatuchot" })">เดอะริคโค้ เรสซิเดนซ์ รามอินทรา-จตุโชติ</a>
+                                    <a href="@Url.Action("Project", "Home", new { id = "ricco-residence-hathairat" })">เดอะริคโค้ เรสซิเดนซ์ รามอินทรา-หทัยราษฎร์</a>
+                                    <a href="@Url.Action("Project", "Home", new { id = "ericadai-wongwaen-hathairat" })">เดอะริคโค้ เรสซ์เดนซ์ วงแหวนฯ-หทัยราษฎร์ (SOLD OUT)</a>
+                                    <a href="@Url.Action("Project", "Home", new { id = "ricco-wongwaen-chatuchot-old" })">เดอะริคโค้ เรสซิเดนซ์ วงแหวนฯ-จตุโชติ (SOLD OUT)</a>
+                                </div>
+                                <div class="dropdown-column">
+                                    <div class="dropdown-header">ทาวน์โฮม</div>
+                                    <a href="@Url.Action("Project", "Home", new { id = "ricco-town-phahonyothin-saimai-53" })">เดอะริคโค้ ทาวน์ พหลโยธิน-สายไหม 53</a>
+                                    <a href="@Url.Action("Project", "Home", new { id = "ricco-town-wongwaen-lamlukka" })">เดอะริคโค้ ทาวน์ วงแหวนฯ-ลำลูกกา</a>
+                                    <a href="@Url.Action("Project", "Home", new { id = "ricco-town-phahonyothin-watcharaphon" })">เดอะริคโค้ ทาวน์ พหลโยธิน-วัชรพล (SOLD OUT)</a>
+                                    <a href="@Url.Action("Project", "Home", new { id = "ricco-town-wongwaen-hathairat" })">เดอะริคโค้ ทาวน์ วงแหวนฯ-หทัยราษฎร์ (SOLD OUT)</a>
+                                    <a href="@Url.Action("Project", "Home", new { id = "ricco-town-ramintra-watcharaphon" })">เดอะริคโค้ ทาวน์ รามอินทรา-วัชรพล (SOLD OUT)</a>
+                                    <a href="@Url.Action("Project", "Home", new { id = "ricco-town-watcharaphon" })">เดอะริคโค้ ทาวน์ วัชรพล (SOLD OUT)</a>
+                                    <a href="@Url.Action("Project", "Home", new { id = "ricco-town-phahonyothin-saimai" })">เดอะริคโค้ ทาวน์ พหลโยธิน-สายไหม (SOLD OUT)</a>
+                                </div>
+                                <div class="dropdown-column">
+                                    <div class="dropdown-header">บ้านแฝด</div>
+                                    <a href="@Url.Action("Project", "Home", new { id = "ricco-twin-wongwaen-lamlukka" })">เดอะริคโค้ ทาวน์ วงแหวนฯ-ลำลูกกา</a>
+                                </div>
+                            </div> 
+                        </li>
+                        <li><a href="@Url.Action("About","Home") class="scroll">เกี่ยวกับเรา</a></li>
+      
+                        <li><a href="@Url.Action("Contact") class="scroll">ติดต่อเรา</a></li>
+                      </ul>
+                    <div class="nav-btn">
+                        <figure></figure>
+                        <figure></figure>
+                        <figure></figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="hero-section background-is-dark">
+        <div class="wrapper">
+            <div class="hero-title">
+                <div class="container">
+                    <h1 class="animate center">เกี่ยวกับ พูลผลทรัพย์</h1>
+                    <h2 class="animate center">ผู้เชี่ยวชาญ The Ricco Residence & Town</h2>
+                </div>
+            </div>
+        </div>
+        <div class="hero-slide">
+            <div class="bg-transfer"><img src="~/img/about-hero.jpg" alt="PPS Asset About Us"></div>
+        </div>
+    </div>
+</header>
+
+<div id="page-content">
+
+  
+
+    <div class="block" id="contact">
+        <div class="container">
+            <h2>ติดต่อเรา</h2>
+            <div class="row">
+                <div class="col-md-6 col-sm-6">
+                    <div class="contact-info" data-scroll-reveal="enter left and move 20px">
+                        <h3>สำนักงานใหญ่</h3>
+                        <div class="office-info">
+                            <p><strong>บริษัท พูลผลทรัพย์ จำกัด</strong></p>
+                            <p>
+                                <i class="icon_pin_alt"></i>
+                                ที่อยู่ชั่วคราว : 2922/277 ชั้น 24 ห้อง A1 อาคารชาญอิสระ ทาวเวอร์2<br>
+                                ถนนเพชรบุรีตัดใหม่ แขวงบางกะปิ เขตห้วยขวาง<br>
+                                กรุงเทพฯ 10310<br>
+
+                                <i class="icon_phone"></i>
+                                โทรศัพท์: 081-847-8461 
+                            </p>
+                            <p>
+                                <i class="icon_pin_alt"></i>
+                                สำนักงานใหญ่ : 113 ซอยเจริญสุข ถนนสุขุมวิท 63 แขวงคลองตันเหนือ<br>
+                                เขตวัฒนา กรุงเทพฯ 10110 <br>
+                                 <i class="icon_phone"></i>
+                                โทรศัพท์: 02-381-3500
+                            </p>
+                           
+                            <p>
+                                <i class="icon_mail_alt"></i>
+                                อีเมล: info@ppsasset.com
+                            </p>
+                            <p>
+                                <i class="icon_clock_alt"></i>
+                                เปิดทำการ: จันทร์-อาทิตย์ 9:00-18:00 น.
+                            </p>
+                        </div>
+                        
+                        <div class="social-links">
+                            <h4>ติดตามเราได้ที่</h4>
+                            <a href="#" class="social-link"><i class="social_facebook_circle"></i> Facebook</a>
+                            <a href="#" class="social-link"><i class="social_instagram_circle"></i> Instagram</a>
+                            <a href="#" class="social-link"><i class="social_youtube_circle"></i> YouTube</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-6">
+                    <div class="contact-form" data-scroll-reveal="enter right and move 20px">
+                        <h3>ส่งข้อความถึงเรา</h3>
+                        <form id="contact-form" method="post" class="clearfix">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="name" placeholder="ชื่อ-นามสกุล" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <input type="email" class="form-control" name="email" placeholder="อีเมล" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="subject" placeholder="หัวข้อ">
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-control" name="message" rows="6" placeholder="ข้อความ" required></textarea>
+                            </div>
+                            <div class="form-group clearfix">
+                                <button type="submit" class="btn-submit-form">ส่งข้อความ</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mobile navigation toggle
+    const navBtn = document.querySelector('.nav-btn');
+    const navigation = document.querySelector('.navigation');
+    const pageWrapper = document.body; // or document.querySelector('.page-wrapper') if exists
+    
+    if (navBtn && navigation) {
+        navBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            navigation.classList.toggle('show-navigation');
+            pageWrapper.classList.toggle('show-navigation');
+        });
+        
+        // Close mobile menu when clicking on overlay
+        navigation.addEventListener('click', function(e) {
+            if (e.target === navigation && navigation.classList.contains('show-navigation')) {
+                navigation.classList.remove('show-navigation');
+                pageWrapper.classList.remove('show-navigation');
+            }
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!navigation.contains(e.target) && navigation.classList.contains('show-navigation')) {
+                navigation.classList.remove('show-navigation');
+                pageWrapper.classList.remove('show-navigation');
+            }
+        });
+    }
+    
+    // Mobile dropdown functionality
+    const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+    
+    dropdownToggles.forEach(function(toggle) {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Only handle mobile dropdown behavior
+            if (window.innerWidth <= 768) {
+                const dropdown = this.closest('.dropdown');
+                
+                // Close other dropdowns
+                dropdownToggles.forEach(function(otherToggle) {
+                    if (otherToggle !== toggle) {
+                        otherToggle.closest('.dropdown').classList.remove('active');
+                    }
+                });
+                
+                // Toggle current dropdown
+                dropdown.classList.toggle('active');
+            }
+        });
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            // Reset mobile states on desktop
+            navigation.classList.remove('show-navigation');
+            pageWrapper.classList.remove('show-navigation');
+            document.querySelectorAll('.dropdown').forEach(function(dropdown) {
+                dropdown.classList.remove('active');
+            });
+        }
+    });
+    
+    // Handle dropdown menu items clicks in mobile
+    const dropdownMenuLinks = document.querySelectorAll('.dropdown-menu a');
+    dropdownMenuLinks.forEach(function(link) {
+        link.addEventListener('click', function() {
+            // Close mobile menu when clicking a project link
+            if (window.innerWidth <= 768) {
+                setTimeout(function() {
+                    navigation.classList.remove('show-navigation');
+                    pageWrapper.classList.remove('show-navigation');
+                }, 100);
+            }
+        });
+    });
+    
+    // Prevent dropdown menu from closing when clicking inside dropdown (desktop)
+    const dropdownMenus = document.querySelectorAll('.dropdown-menu');
+    dropdownMenus.forEach(function(menu) {
+        menu.addEventListener('click', function(e) {
+            if (window.innerWidth > 768) {
+                e.stopPropagation();
+            }
+        });
+    });
+    
+    // Improve keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        // Close mobile menu with Escape key
+        if (e.key === 'Escape' && navigation.classList.contains('show-navigation')) {
+            navigation.classList.remove('show-navigation');
+            pageWrapper.classList.remove('show-navigation');
+            navBtn.focus();
+        }
+        
+        // Handle Enter and Space key for dropdown toggles
+        if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('dropdown-toggle')) {
+            e.preventDefault();
+            e.target.click();
+        }
+    });
+    
+    // Close dropdowns when clicking elsewhere (desktop)
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth > 768) {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown').forEach(function(dropdown) {
+                    dropdown.classList.remove('active');
+                });
+            }
+        }
+    });
+});
+</script>
+
+ 

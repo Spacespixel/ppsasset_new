@@ -1,0 +1,784 @@
+@model List<PPSAsset.Models.ProjectViewModel>
+@{
+    ViewData["Title"] = "พูลผลทรัพย์ - บ้านเดี่ยว ทาวน์เฮ้าส์ คุณภาพ | The Ricco Residence & Town";
+}
+
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="~/css/style-custom.css" rel="stylesheet">
+<header id="page-header">
+  
+  <nav class="navigation nav-btn-only background-is-dark">
+        <div class="container">
+            <div class="wrapper">
+                <div class="left">
+                    <a href="@Url.Action("Index", "Home")" class="brand"><img src="~/images/pps-logo.png" alt="PPS Asset" style="height: 40px;"></a>
+                </div>
+                <div class="right">
+                    <ul class="nav navigation-links animate">
+                        <li><a href="#page-top" class="scroll">Home</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle">โครงการ <span class="caret">▼</span></a>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-header">บ้านเดี่ยว</li>
+                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-prime-hathairat" })">เดอะริคโค้ เรสซิเดนซ์ ไพร์ม วงแหวนฯ-หทัยราษฎร์</a></li>
+                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-prime-chatuchot" })">เดอะริคโค้ เรสซิเดนซ์ ไพร์ม วงแหวนฯ-จตุโชติ</a></li>
+                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-chatuchot" })">เดอะริคโค้ เรสซิเดนซ์ รามอินทรา-จตุโชติ</a></li>
+                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-hathairat" })">เดอะริคโค้ เรสซิเดนซ์ รามอินทรา-หทัยราษฎร์</a></li>
+                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-wongwaen-hathairat" })">เดอะริคโค้ เรสซิเดนซ์ วงแหวนฯ-หทัยราษฎร์ (SOLD OUT)</a></li>
+                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-wongwaen-chatuchot" })">เดอะริคโค้ เรสซิเดนซ์ วงแหวนฯ-จตุโชติ (SOLD OUT)</a></li>
+                                
+                                <li class="divider"></li>
+                                <li class="dropdown-header">ทาวน์โฮม</li>
+                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-town-phahonyothin-saimai53" })">เดอะริคโค้ ทาวน์ พหลโยธิน-สายไหม 53</a></li>
+                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-town-wongwaen-lamlukka" })">เดอะริคโค้ ทาวน์ วงแหวนฯ-ลำลูกกา</a></li>
+                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-town-phahonyothin-watcharaphol" })">เดอะริคโค้ ทาวน์ พหลโยธิน-วัชรพล (SOLD OUT)</a></li>
+                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-town-wongwaen-hathairat" })">เดอะริคโค้ ทาวน์ วงแหวนฯ-หทัยราษฎร์ (SOLD OUT)</a></li>
+                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-town-ramintra-watcharaphon" })">เดอะริคโค้ ทาวน์ รามอินทรา-วัชรพล (SOLD OUT)</a></li>
+                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-town-watcharaphon" })">เดอะริคโค้ ทาวน์ วัชรพล (SOLD OUT)</a></li>
+                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-town-phahonyothin-saimai" })">เดอะริคโค้ ทาวน์ พหลโยธิน-สายไหม (SOLD OUT)</a></li>
+                                
+                                <li class="divider"></li>
+                                <li class="dropdown-header">บ้านแฝด</li>
+                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-twin-wongwaen-lamlukka" })">เดอะริคโค้ ทาวน์ วงแหวนฯ-ลำลูกกา</a></li>
+                            </ul> 
+                        </li>
+                        <li><a href="@Url.Action("About","Home") class="scroll">เกี่ยวกับเรา</a></li> 
+                        <li><a href="@Url.Action("Contact") class="scroll">ติดต่อเรา</a></li>
+                      </ul>
+                    <div class="nav-btn">
+                        <figure></figure>
+                        <figure></figure>
+                        <figure></figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>  
+    
+    <div class="hero-section background-is-dark">
+        <div class="wrapper">
+            <div class="hero-title">
+                <div class="container">
+                    <h1 class="animate hero-text-item" id="hero-main-title"></h1>
+                     <div class="row">
+                        <div class="col-md-8 col-sm-10">
+                            <div class="animate">
+                                <p class="hero-subtitle hero-text-item" id="hero-description">
+                                  
+                                </p>
+
+                                <div class="hero-cta hero-text-item">
+                                    <a href="#projects" class="btn-primary-cta">ดูเพิ่มเติม</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="owl-carousel" data-owl-dots="1" data-owl-nav="1" data-owl-autoplay="1" data-owl-loop="1" data-owl-fadeout="1">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var project in Model.Take(5))
+                {
+                     <div class="hero-slide"
+                         data-title="@project.NameTh"
+                         data-subtitle="@project.Subtitle"
+                         data-description="@project.Description">
+                        <div class="bg-transfer">
+                            <img src="@Url.Content($"~/images/projects/{project.Id}/{project.Images.Hero}")"
+                                 alt="@project.NameTh">
+                        </div>
+                    </div>
+                }
+            }
+            
+        </div>
+    </div>
+</header>
+
+<div id="page-content">
+
+    <div class="block" id="about">
+        <div class="container">
+            <h2 class="animated-text scroll-animate">เกี่ยวกับเรา</h2>
+            <div class="row">
+                <div class="col-md-6 col-sm-6" data-scroll-reveal="enter bottom and move 20px">
+                    <h3>บริษัท พูลผลทรัพย์ จำกัด</h3>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ac ornare felis. 
+                        Nam velit neque, blandit id placerat eu, venenatis at purus. Nunc maximus ultrices 
+                        lacus eu fringilla. Suspendisse potenti. Ut posuere viverra lectus non scelerisque.
+                    </p>
+                  <!--  <ul class="check-marks">
+                        <li>Quiet and peaceful location near the nature</li>
+                        <li>Shopping and fitness center right inside the complex</li>
+                        <li>Lot of parking places, even for your visitors</li>
+                        <li>Many play areas for your kids</li>
+                    </ul> -->
+                </div>
+                <div class="col-md-6 col-sm-6" data-scroll-reveal="enter top and move 20px">
+                   
+                    <div class="image-showcase">
+                        <img src="~/images/Rico-Residence-Hathairath-Facility-1.png" alt="The Ricco Residence Quality Homes" class="img-responsive">
+                    </div>
+                    <figure class="note">Lorem ipsum dolor sit amet consectetur adipiscing elit</figure>
+                </div>
+            </div>
+        </div>
+        <div class="background-wrapper">
+            <div class="background-color background-color-black opacity-5"></div>
+        </div>
+    </div>
+
+    <div class="block" id="details">
+      <div class="container">
+                <h2>เชื่อมั่นในคุณภาพและประสบการณ์</h2>
+            </div>
+        <div class="container">
+            <div class="detail left-align" data-scroll-reveal="enter left and move 20px">
+                <div class="title">
+                    <h3 class="framed">Architecture & Design</h3>
+                </div>
+                <div class="row">
+                    <div class="col-md-7 col-sm-7">
+                        <div class="gallery">
+                            <div class="owl-carousel one-item-carousel" data-owl-items="1" data-owl-margin="0" data-owl-nav="0" data-owl-dots="1">
+                                <img src="~/images/Rico-Residence-Hathairath-Facility-1.png" alt="Modern Architecture Design">
+                                <img src="~/images/projects/ricco-residence-hathairat/QUARTZ_Perspective_Final_1.jpg" alt="QUARTZ Design">
+                                <img src="~/images/bannerprime01_02s.jpg" alt="Prime Collection">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-sm-5">
+                        <div class="description">
+                            <h4>High quality materials</h4>
+                            <p>Proin orci nisl, posuere viverra erat ut, pellentesque interdum urna. Curabitur
+                                eu risus convallis, auctor augue id, pharetra neque. Morbi pretium neque ac varius
+                                imperdiet. Aliquam sed sapien eget massa hendrerit aliquet. Integer auctor vel
+                                ligula eget faucibus
+                            </p>
+                            <h4>Modern Design</h4>
+                            <p>Donec tincidunt fermentum purus, eu pharetra arcu scelerisque a. Maecenas felis eros,
+                                volutpat ac justo non, imperdiet porttitor lorem. Nulla suscipit mi a arcu sollicitudin,
+                                sit amet
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="detail right-align" data-scroll-reveal="enter right and move 20px">
+                <div class="title">
+                    <h3 class="framed">Perfect for Living</h3>
+                </div>
+                <div class="row">
+                    <div class="col-md-5 col-sm-5">
+                        <div class="description">
+                            <h4>Feel your new home</h4>
+                            <p>Proin orci nisl, posuere viverra erat ut, pellentesque interdum urna. Curabitur
+                                eu risus convallis, auctor augue id, pharetra neque. Morbi pretium neque ac varius
+                                imperdiet. Aliquam sed sapien eget massa hendrerit aliquet. Integer auctor vel
+                                ligula eget faucibus. Donec tincidunt fermentum purus, eu pharetra arcu scelerisque a.
+                                Maecenas felis eros, volutpat ac justo non, imperdiet porttitor
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-7 col-sm-7">
+                        <div class="gallery">
+                            <div class="owl-carousel one-item-carousel" data-owl-items="1" data-owl-margin="0" data-owl-nav="0" data-owl-dots="1">
+                                <img src="~/images/projects/ricco-residence-hathairat/QUARTZ_Perspective_Final_1.jpg" alt="Interior Design">
+                                <img src="~/images/Rico-Residence-Hathairath-Facility-1.png" alt="Modern Living">
+                                <img src="~/images/bannerprime01_02s.jpg" alt="Premium Interior">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Projects Section -->
+                    <section class="projects-showcase" id="projects">
+                    <div class="container">
+                        <div class="section-header-center">
+                            <h2 class="projects-heading">"เดอะริคโค้" บ้าน <b>คุณภาพดี</b></h2>
+                            <p class="projects-subheading">เลือกชมโครงการตามความต้องการ ทั้งโครงการใหม่ บ้านเดี่ยว บ้านแฝด และทาวน์โฮม</p>
+                        </div>
+
+                        <div class="projects-filter">
+                            <div class="projects-filter__inner">
+                               <!-- <button class="projects-filter__btn active" data-category="new">
+                                    <svg class="filter-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-6v-6h-4v6H4a1 1 0 0 1-1-1V9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span>โครงการใหม่</span>
+                                </button> -->
+                                <button class="projects-filter__btn active" data-category="all">
+                                    <svg class="filter-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-6v-6h-4v6H4a1 1 0 0 1-1-1V9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span>โครงการทั้งหมด</span>
+                                </button>
+                                <button class="projects-filter__btn" data-category="single">
+                                    <svg class="filter-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4 10l8-6 8 6v9a1 1 0 0 1-1 1h-6v-5h-2v5H5a1 1 0 0 1-1-1v-9z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span>บ้านเดี่ยว</span>
+                                </button>
+                                <button class="projects-filter__btn" data-category="semi">
+                                    <svg class="filter-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="3" y="8" width="8" height="12" rx="1" stroke="currentColor" stroke-width="2"/>
+                                        <rect x="13" y="4" width="8" height="16" rx="1" stroke="currentColor" stroke-width="2"/>
+                                    </svg>
+                                    <span>บ้านแฝด</span>
+                                </button>
+                                <button class="projects-filter__btn" data-category="townhome">
+                                    <svg class="filter-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4 10l8-7 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M5 10h14v9a1 1 0 0 1-1 1h-4v-5h-4v5H6a1 1 0 0 1-1-1v-9z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span>ทาวน์โฮม</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="projects-grid">
+                            @if (Model != null && Model.Any())
+                            {
+                                @foreach (var project in Model)
+                                {
+                                    var categoryClass = project.Type switch
+                                    {
+                                        PPSAsset.Models.ProjectType.SingleHouse => "single",
+                                        PPSAsset.Models.ProjectType.Townhouse => "townhome",
+                                        PPSAsset.Models.ProjectType.TwinHouse => "semi",
+                                        _ => "single"
+                                    };
+
+                                    var statusBadge = project.Status switch
+                                    {
+                                        PPSAsset.Models.ProjectStatus.NewProject => "New Project",
+                                        PPSAsset.Models.ProjectStatus.Available => "", // No badge for Available
+                                        PPSAsset.Models.ProjectStatus.ComingSoon => "Coming Soon",
+                                        PPSAsset.Models.ProjectStatus.UnderConstruction => "Under Construction",
+                                        PPSAsset.Models.ProjectStatus.Completed => "Completed",
+                                        PPSAsset.Models.ProjectStatus.SoldOut => "",
+                                        _ => ""
+                                    };
+
+                                    var statusClass = project.Status.ToString().ToLower();
+
+                                    var badgeClass = project.Status == PPSAsset.Models.ProjectStatus.ComingSoon ? "project-card__badge--highlight" : "";
+
+                                    // Get the first house type for amenities display
+                                    var primaryHouseType = project.HouseTypes.FirstOrDefault();
+                                <article class="project-card" data-category="@categoryClass" data-status="@statusClass">
+                                    <div class="project-card__media">
+                                         <img src="@Url.Content($"~/images/projects/{project.Id}/{project.Images.Hero}")"
+                                             alt="@project.NameTh">
+                                        @if (!string.IsNullOrEmpty(statusBadge))
+                                        {
+                                            <span class="project-card__badge @badgeClass">@statusBadge</span>
+                                        }
+                                        <div class="project-card__overlay">
+                                           <h4 class="project-card__name-en">@project.NameEn</h4>
+                                        </div>
+                                    </div>
+                                    <div class="project-card__body">
+                                        <h3>@project.NameTh</h3> 
+                                        <p class="project-card__description">@project.Description</p>
+                                        @if (primaryHouseType != null)
+                                        {
+                                            <ul class="project-card__amenities">
+                                                <li>
+                                                    <i class="fas fa-bed"></i>
+                                                    <strong>@primaryHouseType.Bedrooms</strong> ห้องนอน
+                                                </li>
+                                                <li>
+                                                    <i class="fas fa-bath"></i>
+                                                    <strong>@primaryHouseType.Bathrooms</strong> ห้องน้ำ
+                                                </li>
+                                                <li>
+                                                    <i class="fas fa-car"></i>
+                                                    <strong>@primaryHouseType.Parking</strong> ที่จอดรถ
+                                                </li>
+                                            </ul>
+                                        }
+                                    </div>
+                                    <footer class="project-card__footer">
+                                        <div class="project-card__price">@(!string.IsNullOrEmpty(project.Details.PriceRange) ? project.Details.PriceRange : "สอบถามราคา")</div>
+                                        <a class="project-card__cta" href="@Url.Action("Project", "Home", new { id = project.Id })" target="_blank">ดูรายละเอียด</a>
+                                    </footer>
+                                </article>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center">
+                                    <p>ไม่พบข้อมูลโครงการ</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </section>
+
+
+    
+
+
+           
+
+   
+
+ <!--   <div class="block" id="contact">
+        <div class="container">
+            <div class="contact framed">
+                <div class="row">
+                    <div class="col-md-5 col-sm-5">
+                        <div class="person">
+                            <div class="row">
+                                <div class="col-md-5 col-sm-5">
+                                    <div class="image bg-transfer">
+                                        <img src="~/images/Rico-Residence-Hathairath-Facility-1.png" alt="Sales Representative">
+                                    </div>
+                                </div>
+                                <div class="col-md-7 col-sm-7">
+                                    <h3>ทีมขาย พูลผลทรัพย์</h3>
+                                    <div class="contact-data">
+                                        <figure>081-847-8461</figure>
+                                        <figure>02-381-3500</figure>
+                                        <a href="mailto:info@ppsasset.com" class="underline">info@ppsasset.com</a>
+                                    </div>
+                                    <hr>
+                                    <div class="social">
+                                        <a href="#"><i class="social_facebook_circle"></i>Facebook</a>
+                                        <a href="#"><i class="social_instagram_circle"></i>Instagram</a>
+                                        <a href="#"><i class="social_youtube_circle"></i>YouTube</a>
+                                        <a href="#"><i class="social_skype_circle"></i>Line</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7 col-sm-7">
+                        <form id="form-contact-agent" method="post" class="clearfix">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="form-contact-agent-name" name="name" placeholder="ชื่อ-นามสกุล / Full Name" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <input type="email" class="form-control" id="form-contact-agent-email" name="email" placeholder="อีเมล / Email" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <textarea class="form-control" id="form-contact-agent-message" rows="6" name="message" placeholder="ข้อความ / Message" required></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group clearfix">
+                                <button type="submit" class="btn pull-right btn-primary btn-rounded" id="form-contact-agent-submit">ส่งข้อความ</button>
+                            </div>
+                            <div id="form-contact-agent-status"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+</div>
+
+<!-- Bottom Center Contact Bar -->
+ <!--<div class="bottom-contact-bar">
+    <a href="https://m.me/ppsasset" class="contact-button facebook-btn">
+        <svg class="contact-icon" viewBox="0 0 24 24">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
+    </a>
+    
+    <a href="https://line.me/R/ti/p/@@ppsasset" class="contact-button line-btn">
+        <svg class="contact-icon" viewBox="0 0 24 24">
+            <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12.017.572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+        </svg>
+    </a>
+    
+    <a href="tel:02-381-3500" class="contact-button phone-btn">
+        <svg class="contact-icon" viewBox="0 0 24 24">
+            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+        </svg>
+    </a>
+    
+   
+</div> -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Responsive carousel configuration for projects and promotions
+    $('.big-gallery').each(function() {
+        var $this = $(this);
+        
+        // Destroy existing owl carousel if it exists
+        if ($this.hasClass('owl-loaded')) {
+            $this.trigger('destroy.owl.carousel');
+        }
+        
+        // Initialize with responsive settings
+        $this.owlCarousel({
+            items: 3,
+            autoWidth: false,
+            nav: true,
+            dots: false,
+            center: true,
+            loop: true,
+            navContainer: $this.data('owl-nav-container'),
+            responsive: {
+                0: {
+                    items: 1,
+                    center: false,
+                    margin: 10
+                },
+                768: {
+                    items: 2,
+                    center: true,
+                    margin: 20
+                },
+                992: {
+                    items: 3,
+                    center: true,
+                    margin: 30
+                }
+            }
+        });
+    });
+
+    // Project filtering functionality
+    const filterButtons = document.querySelectorAll('.projects-filter__inner .projects-filter__btn');
+    const projectCards = document.querySelectorAll('.projects-grid .project-card');
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const category = this.getAttribute('data-category');
+
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+
+            let visibleIndex = 0;
+            projectCards.forEach((card) => {
+                const cardCategory = card.getAttribute('data-category');
+                const cardStatus = card.getAttribute('data-status');
+                let match = false;
+
+                if (category === 'new') {
+                    // Show only NewProject status projects
+                    match = cardStatus === 'newproject';
+                } else if (category === 'all') {
+                    // Show all projects
+                    match = true;
+                } else {
+                    // Show by category (single, townhome, semi)
+                    match = cardCategory === category;
+                }
+
+                if (match) {
+                    card.style.display = 'flex';
+                    // Reset animation classes
+                    card.classList.remove('animate-in');
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(30px)';
+
+                    // Re-trigger animation with stagger
+                    setTimeout(() => {
+                        card.classList.add('animate-in');
+                    }, visibleIndex * 150);
+
+                    visibleIndex++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Scroll-triggered animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+                // Trigger staggered animations for child elements
+                const animatedChildren = entry.target.querySelectorAll('.animated-text');
+                animatedChildren.forEach((child, index) => {
+                    setTimeout(() => {
+                        child.style.animation = `fadeInUp 0.8s ease-out forwards`;
+                    }, index * 200);
+                });
+            }
+        });
+    }, observerOptions);
+
+    // Observe all scroll-animate elements
+    const scrollElements = document.querySelectorAll('.scroll-animate');
+    scrollElements.forEach(el => observer.observe(el));
+
+    const heroCTAElement = document.querySelector('.hero-cta');
+    let heroAnimationTimeouts = [];
+
+    // Back to top functionality
+    const backToTopButton = document.querySelector('.sticky-top');
+    if (backToTopButton) {
+        backToTopButton.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Show/hide back to top button based on scroll position
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                backToTopButton.style.opacity = '1';
+                backToTopButton.style.visibility = 'visible';
+            } else {
+                backToTopButton.style.opacity = '0';
+                backToTopButton.style.visibility = 'hidden';
+            }
+        });
+    }
+
+    // Banner text change functionality
+    function updateBannerText(slideIndex) {
+        const slides = document.querySelectorAll('.hero-slide');
+        const titleElement = document.getElementById('hero-main-title');
+        const subtitleElement = document.getElementById('hero-sub-title');
+        const descriptionElement = document.getElementById('hero-description');
+        const heroElements = [titleElement, subtitleElement, descriptionElement, heroCTAElement];
+
+        const slideCount = slides.length;
+        if (!slideCount || !titleElement || !subtitleElement || !descriptionElement) {
+            return;
+        }
+
+        const normalizedIndex = ((slideIndex % slideCount) + slideCount) % slideCount;
+
+        if (slides[normalizedIndex]) {
+            const currentSlide = slides[normalizedIndex];
+            const title = currentSlide.getAttribute('data-title') || '';
+            const subtitle = currentSlide.getAttribute('data-subtitle') || '';
+            const description = currentSlide.getAttribute('data-description') || '';
+
+            // Debug logging to check what values we're getting
+            console.log('Slide data:', {
+                title: title,
+                subtitle: subtitle,
+                description: description,
+                slideIndex: normalizedIndex
+            });
+
+            heroAnimationTimeouts.forEach(clearTimeout);
+            heroAnimationTimeouts = [];
+
+            heroElements.forEach(element => {
+                if (!element) return;
+                element.classList.remove('hero-text-enter');
+                void element.offsetWidth;
+            });
+
+            if (titleElement) {
+                titleElement.textContent = title;
+                console.log('Set title:', title);
+            }
+
+            if (subtitleElement) {
+                subtitleElement.textContent = subtitle;
+                subtitleElement.innerHTML = subtitle; // Also try innerHTML in case textContent fails
+                console.log('Set subtitle:', subtitle, 'Element:', subtitleElement);
+                // Force visibility
+                subtitleElement.style.display = 'block';
+                subtitleElement.style.visibility = 'visible';
+                subtitleElement.style.opacity = '1';
+            }
+
+            if (descriptionElement) {
+                descriptionElement.textContent = description;
+             //   descriptionElement.textContent = subtitle;
+              //  console.log('Set description:', description);
+            }
+
+            const sequence = [
+                { element: titleElement, delay: 100 },
+                { element: subtitleElement, delay: 300 },
+                { element: descriptionElement, delay: 500 },
+                { element: heroCTAElement, delay: 700 }
+            ];
+
+            sequence.forEach(({ element, delay }) => {
+                if (!element) return;
+                heroAnimationTimeouts.push(setTimeout(() => {
+                    element.classList.add('hero-text-enter');
+                }, delay));
+            });
+        }
+    }
+
+    // Initialize carousel with text change events - Multiple approaches
+    function initBannerTextChange() {
+        const heroCarousel = $('.hero-section .owl-carousel');
+      //  console.log('Hero carousel found:', heroCarousel.length); // Debug log
+
+        if (heroCarousel.length > 0) {
+            updateBannerText(0);
+            // Method 1: Using jQuery events
+            heroCarousel.on('changed.owl.carousel', function(event) {
+            //    console.log('Carousel changed event fired, slide:', event.item.index); // Debug log
+                updateBannerText(event.item.index);
+            });
+
+            // Method 2: Using translated event (backup)
+            heroCarousel.on('translated.owl.carousel', function(event) {
+            //    console.log('Carousel translated event fired, slide:', event.item.index); // Debug log
+                updateBannerText(event.item.index);
+            });
+
+            // Set initial text for first slide
+            setTimeout(() => {
+                updateBannerText(0);
+            }, 300);
+        }
+    }
+
+    // Try multiple initialization approaches
+    setTimeout(initBannerTextChange, 1000);
+    setTimeout(initBannerTextChange, 2000);
+    setTimeout(initBannerTextChange, 3000);
+
+    // Force initial text update
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+            console.log('Forcing initial banner text update');
+            updateBannerText(0);
+        }, 500);
+    });
+
+    // Alternative approach: Manual monitoring
+    let currentSlideIndex = 0;
+    setInterval(() => {
+        const activeSlide = document.querySelector('.hero-section .owl-carousel .owl-item.active');
+        if (activeSlide) {
+            const allSlides = document.querySelectorAll('.hero-section .owl-carousel .owl-item');
+            let newIndex = 0;
+            allSlides.forEach((slide, index) => {
+                if (slide === activeSlide) {
+                    newIndex = index;
+                }
+            });
+
+            if (newIndex !== currentSlideIndex) {
+            //    console.log('Slide changed manually detected:', newIndex); // Debug log
+                currentSlideIndex = newIndex;
+                updateBannerText(newIndex);
+            }
+        }
+    }, 500); // Check every 500ms
+
+    // Project card smooth hover animations
+    function initProjectHoverEffects() {
+        const projectCards = document.querySelectorAll('.project-card');
+
+        projectCards.forEach(card => {
+            const projectTitle = card.querySelector('.project-title');
+            const projectLocation = card.querySelector('.project-location');
+
+            if (projectTitle) {
+                // Add smooth reveal on hover
+                card.addEventListener('mouseenter', function() {
+                    // Trigger CSS animation by adding class
+                    projectTitle.style.animationDelay = '0s';
+
+                    // Optional: Add stagger effect for location
+                    if (projectLocation) {
+                        projectLocation.style.transitionDelay = '0.1s';
+                    }
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    // Reset animation state
+                    projectTitle.style.animationDelay = '';
+
+                    if (projectLocation) {
+                        projectLocation.style.transitionDelay = '';
+                    }
+                });
+            }
+        });
+    }
+
+    // Project card staggered animation function
+    function initProjectCardAnimations() {
+        const projectCards = document.querySelectorAll('.project-card');
+
+        // Create intersection observer for project cards
+        const projectObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const card = entry.target;
+                    const index = Array.from(projectCards).indexOf(card);
+
+                    // Add staggered delay for each card
+                    setTimeout(() => {
+                        card.classList.add('animate-in');
+                    }, index * 200); // 200ms delay between each card
+
+                    // Stop observing this card once animated
+                    projectObserver.unobserve(card);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        // Observe all project cards
+        projectCards.forEach(card => {
+            projectObserver.observe(card);
+        });
+    }
+
+    // Initialize smooth project hover effects
+    setTimeout(initProjectHoverEffects, 500);
+
+    // Initialize project card animations
+    setTimeout(initProjectCardAnimations, 100);
+});
+</script>
+
+<!-- Sticky Social Media Buttons -->
+<div class="sticky-social-buttons">
+    <a href="https://line.me/R/ti/p/@@ppsasset" class="sticky-social-button sticky-line" target="_blank" aria-label="LINE">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12.017.572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+        </svg>
+    </a>
+
+    <a href="https://facebook.com/ppsasset" class="sticky-social-button sticky-facebook" target="_blank" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
+    </a>
+
+    <button type="button" class="sticky-social-button sticky-top" aria-label="Back to top">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+        </svg>
+    </button>
+</div>

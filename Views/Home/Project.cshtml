@@ -1,0 +1,1794 @@
+@using System.Linq
+@using System.Net
+@using System.Globalization
+@using System.Collections.Generic
+@model PPSAsset.Models.ProjectViewModel
+@{
+    ViewData["Title"] = $"{Model.Name} - โครงการบ้านเดี่ยวพรีเมียม | PPS Asset";
+    var themeClass = ViewBag.ProjectTheme as string ?? "theme-default";
+    var primaryColor = ViewBag.ThemePrimaryColor as string ?? "#365523";
+    var secondaryColor = ViewBag.ThemeSecondaryColor as string ?? "#4A7030";
+    var lightBackground = ViewBag.ThemeLightBackground as string ?? "#F5F7F3";
+
+    string heroImage = Url.Content($"~/images/projects/{Model.Id}/{Model.Images.Hero}");
+    string logoImage = Url.Content($"~/images/projects/{Model.Id}/{Model.Images.Logo}");
+    string facilityImage = string.IsNullOrWhiteSpace(Model.Images.FacilityMain)
+        ? heroImage
+        : Url.Content($"~/images/projects/{Model.Id}/{Model.Images.FacilityMain}");
+    var registrationModel = ViewBag.RegistrationModel as PPSAsset.Models.RegistrationInputModel ?? new PPSAsset.Models.RegistrationInputModel
+    {
+        ProjectID = Model.Id,
+        ProjectName = string.IsNullOrWhiteSpace(Model.NameTh) ? Model.Name : Model.NameTh
+    };
+    var provinceOptions = new[] { "กรุงเทพมหานคร", "นนทบุรี", "ปทุมธานี", "สมุทรปราการ" };
+    var budgetOptions = new Dictionary<string, string>
+    {
+        { "8-10", "8-10 ล้านบาท" },
+        { "10-12", "10-12 ล้านบาท" },
+        { "12-15", "12-15 ล้านบาท" },
+        { "15+", "มากกว่า 15 ล้านบาท" }
+    };
+    var loginReturnUrl = (Context?.Request?.Path + Context?.Request?.QueryString) ?? Url.Action("Project", "Home", new { id = Model.Id });
+    var googlePopupUrl = Url.Action("Login", "Account", new { provider = "Google", returnUrl = loginReturnUrl, isPopup = true });
+    var facebookPopupUrl = Url.Action("Login", "Account", new { provider = "Facebook", returnUrl = loginReturnUrl, isPopup = true });
+    var authProvider = ViewBag.AuthProvider as string;
+    var isFacebookAuth = string.Equals(authProvider, "Facebook", System.StringComparison.OrdinalIgnoreCase);
+    var isGoogleAuth = string.Equals(authProvider, "Google", System.StringComparison.OrdinalIgnoreCase);
+    var providerButtonClass = isFacebookAuth ? "social-btn--facebook" : "social-btn--google";
+    var providerDisplayText = isFacebookAuth ? "FACEBOOK" : isGoogleAuth ? "GOOGLE" : authProvider?.ToUpperInvariant();
+}
+
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="~/css/style-custom.css" asp-append-version="true" />
+
+<div class="project-minisite @themeClass" style="--primary-color:@primaryColor; --secondary-color:@secondaryColor; --light-bg:@lightBackground;">
+    <div class="project-mobile-overlay" id="projectMobileOverlay"></div>
+
+    <header class="project-top-bar">
+        <div class="container project-top-bar__inner">
+            
+            <div class="project-top-bar__inner">
+                <img src="@Url.Content("~/images/pps-logo.png")" alt="PPS Asset" />
+            </div>
+        </div>
+    </header>
+
+    <nav class="project-nav" aria-label="Project navigation">
+        <div class="container project-nav__inner">
+            <a class="project-nav__logo" href="#hero">
+                <img src="@logoImage" alt="@Model.Name" />
+                
+            </a>
+            <button class="project-hamburger" id="projectHamburger" type="button" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="project-nav__menu" id="projectNavMenu">
+                <li><a class="project-nav__link" href="#concept">คอนเซปต์โครงการ</a></li>
+                <li><a class="project-nav__link" href="#details">รายละเอียดโครงการ</a></li>
+                <li><a class="project-nav__link" href="#facilities">สิ่งอำนวยความสะดวก</a></li>
+                <li><a class="project-nav__link" href="#masterplans">แบบบ้าน</a></li>
+                <li><a class="project-nav__link" href="#gallery">แกลเลอรี</a></li>
+                <li><a class="project-nav__link" href="#location">ทำเล</a></li>
+                <li><a class="project-nav__link project-nav__cta" href="#register">ลงทะเบียนรับสิทธิ์พิเศษ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="project-hero" id="hero" style="background-image: url('@heroImage');">
+        <div class="project-hero__overlay"></div>
+        <div class="container">
+             
+        </div>
+    </section>
+   <section class="project-section project-pillars" id="concept">
+        <div class="container">
+            <div class="section-header">
+                
+                <h3 class="section-title">คอนเซปต์โครงการ</h3>
+                @if (!string.IsNullOrWhiteSpace(Model.Concept))
+                {
+                    <p class="section-lead">@Model.Concept</p>
+                }
+            </div>
+
+            <div class="pillars-grid">
+                @if (Model.ConceptFeatures?.Any() == true)
+                {
+                    foreach (var feature in Model.ConceptFeatures)
+                    {
+                        <article class="pillar-card">
+                            <div class="pillar-icon">
+                                <span class="icon icon-star"></span>
+                            </div>
+                            <h4>@feature.Title</h4>
+                            <p>@feature.Description</p>
+                        </article>
+                    }
+                }
+                else 
+                {
+                    <article class="pillar-card">
+                        <div class="pillar-icon">
+                            <span class="icon icon-star"></span>
+                        </div>
+                        <h4>ทำเลคุณภาพ</h4>
+                        <p>โครงการออกแบบเพื่อการอยู่อาศัยที่สมบูรณ์แบบบนทำเลศักยภาพ</p>
+                    </article>
+                }
+            </div>
+        </div>
+    </section>
+  <section class="project-section project-register" id="register">
+        <div class="container">
+            <div class="register-card">
+                <div class="register-card__header">
+                    <h3>ลงทะเบียนรับสิทธิ์พิเศษ</h3>
+                    <p>กรอกข้อมูลเพื่อรับใบเสนอราคาและข้อมูลโปรโมชั่นพิเศษ</p>
+                    <div class="register-social">
+                        @if (!(User?.Identity?.IsAuthenticated ?? false))
+                        {
+                            <button type="button" class="social-btn social-btn--google" data-social-provider="Google" data-social-popup-url="@googlePopupUrl">GOOGLE</button>
+                            <noscript>
+                                <a class="social-btn social-btn--google" asp-controller="Account" asp-action="Login" asp-route-provider="Google" asp-route-returnUrl="@loginReturnUrl">GOOGLE</a>
+                            </noscript>
+                            <button type="button" class="social-btn social-btn--facebook" data-social-provider="Facebook" data-social-popup-url="@facebookPopupUrl">FACEBOOK</button>
+                            <noscript>
+                                <a class="social-btn social-btn--facebook" asp-controller="Account" asp-action="Login" asp-route-provider="Facebook" asp-route-returnUrl="@loginReturnUrl">FACEBOOK</a>
+                            </noscript>
+                        }
+                        else
+                        {
+                            <div class="social-authenticated">
+                                <span class="social-authenticated__label">เข้าระบบด้วย @providerDisplayText แล้ว</span>
+                                <span class="social-authenticated__name">@User?.Identity?.Name</span>
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="social-authenticated__logout">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="social-btn @providerButtonClass social-btn--logout">ออกจากระบบ</button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @using (Html.BeginForm("RegisterProject", "Home", FormMethod.Post, new { @class = "register-form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ProjectID" value="@registrationModel.ProjectID" />
+                    <input type="hidden" name="ProjectName" value="@registrationModel.ProjectName" />
+                    <input type="hidden" name="ClientFrom" id="registrationClientFrom" value="@registrationModel.ClientFrom" />
+                    <input type="hidden" name="UtmSource" value="@registrationModel.UtmSource" />
+                    <input type="hidden" name="UtmMedium" value="@registrationModel.UtmMedium" />
+                    <input type="hidden" name="UtmCampaign" value="@registrationModel.UtmCampaign" />
+                    <input type="hidden" name="UtmTerm" value="@registrationModel.UtmTerm" />
+                    <input type="hidden" name="UtmContent" value="@registrationModel.UtmContent" />
+
+                    <div class="validation-summary">@Html.ValidationSummary(false)</div>
+                    <fieldset class="form-fieldset">
+                        <legend>ข้อมูลการติดต่อ</legend>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="firstName">ชื่อ*</label>
+                                <input id="firstName" name="FirstName" type="text" required placeholder="ชื่อ" value="@registrationModel.FirstName" />
+                                <small class="form-hint">ชื่อ Ex. customer</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">นามสกุล*</label>
+                                <input id="lastName" name="LastName" type="text" placeholder="นามสกุล" value="@registrationModel.LastName" />
+                            </div>
+                            <div class="form-group">
+                                <label for="email">อีเมล*</label>
+                                <input id="email" name="Email" type="email" required placeholder="อีเมล Ex. customer@gmail.com" value="@registrationModel.Email" />
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">หมายเลขโทรศัพท์*</label>
+                                <input id="phone" name="TelNo" type="tel" required placeholder="หมายเลขโทรศัพท์ได้ถึง 10 หลัก เช่น 081-234-5678" value="@registrationModel.TelNo" />
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="form-fieldset">
+                        <legend>ที่อยู่ปัจจุบัน</legend>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="province">จังหวัด</label>
+                                <select id="province" name="Province" >
+                                    <option value="">จังหวัด</option>
+                                    @foreach (var province in provinceOptions)
+                                    {
+                                        if (string.Equals(registrationModel.Province, province, StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <option value="@province" selected>@province</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@province">@province</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="district">เขต / อำเภอ</label>
+                                <input id="district" name="District" type="text" placeholder="เขต / อำเภอ" value="@registrationModel.District" />
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="form-fieldset">
+                        <legend>ข้อมูลเพิ่มเติม</legend>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="budget">งบประมาณ</label>
+                                <select id="budget" name="Budget">
+                                    <option value="">เลือกช่วงงบประมาณ</option>
+                                    @foreach (var option in budgetOptions)
+                                    {
+                                        if (string.Equals(registrationModel.Budget, option.Key, StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <option value="@option.Key" selected>@option.Value</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@option.Key">@option.Value</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="visitDate">วันที่ติดต่อกลับ</label>
+                                <input id="visitDate" name="AppointmentDate" type="date" value="@(registrationModel.AppointmentDate?.ToString("yyyy-MM-dd"))" />
+                            </div>
+                            <div class="form-group">
+                                <label for="visitTime">เวลาที่ติดต่อกลับ</label>
+                                <input id="visitTime" name="AppointmentTime" type="time" value="@registrationModel.AppointmentTime" />
+                            </div>
+                            <div class="form-group form-group--full">
+                                <label for="notes">ข้อความเพิ่มเติม</label>
+                                <textarea id="notes" name="Remark" rows="3" placeholder="แจ้งความต้องการเพิ่มเติม...">@registrationModel.Remark</textarea>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="form-extra">
+                        <div class="recaptcha-placeholder" aria-hidden="true">
+                            <span>Google reCAPTCHA</span>
+                        </div>
+                    </div>
+
+                    <div class="form-footer">
+                        <label class="checkbox">
+                            <input type="hidden" name="ConsentMarketing" value="false" />
+                            <input type="checkbox" name="ConsentMarketing" value="true" @(registrationModel.ConsentMarketing ? "checked" : null) />
+                            <span>ยืนยันการยอมรับนโยบายความเป็นส่วนตัว</span>
+                        </label>
+                        <button type="submit" class="btn btn-primary">ลงทะเบียน</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+   
+
+        <section class="project-section project-details" id="details">
+            <div class="container">
+                <div class="section-header">
+                    <h3 class="section-title">รายละเอียดโครงการ</h3>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="project-details__grid">
+                    @if (!string.IsNullOrWhiteSpace(Model.Details.ProjectSize))
+                    {
+                        <div class="detail-card">
+                            <div class="detail-icon">
+                                <i class="fa fa-map"></i>
+                            </div>
+                            <div class="detail-content">
+                                <div class="detail-label">ขนาดพื้นที่โครงการ</div>
+                                <div class="detail-value">@Model.Details.ProjectSize</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Details.PropertyType))
+                    {
+                        <div class="detail-card">
+                            <div class="detail-icon">
+                                <i class="fa fa-home"></i>
+                            </div>
+                            <div class="detail-content">
+                                <div class="detail-label">ลักษณะโครงการ</div>
+                                <div class="detail-value">@Model.Details.PropertyType</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model.Details.TotalUnits > 0)
+                    {
+                        <div class="detail-card">
+                            <div class="detail-icon">
+                                <i class="fa fa-building"></i>
+                            </div>
+                            <div class="detail-content">
+                                <div class="detail-label">จำนวน</div>
+                                <div class="detail-value">@($"{Model.Details.TotalUnits:N0} ยูนิต")</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Details.LandSize))
+                    {
+                        <div class="detail-card">
+                            <div class="detail-icon">
+                                <i class="fa fa-expand"></i>
+                            </div>
+                            <div class="detail-content">
+                                <div class="detail-label">ขนาดพื้นที่ดิน</div>
+                                <div class="detail-value">@Model.Details.LandSize</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Details.UsableArea))
+                    {
+                        <div class="detail-card">
+                            <div class="detail-icon">
+                                <i class="fa fa-arrows-alt"></i>
+                            </div>
+                            <div class="detail-content">
+                                <div class="detail-label">ขนาดพื้นที่ใช้สอย</div>
+                                <div class="detail-value">@Model.Details.UsableArea</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Details.PriceRange))
+                    {
+                        <div class="detail-card">
+                            <div class="detail-icon">
+                                <i class="fa fa-tag"></i>
+                            </div>
+                            <div class="detail-content">
+                                <div class="detail-label">ราคา</div>
+                                <div class="detail-value">@Model.Details.PriceRange</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+
+      @if (Model.Facilities?.Any() == true)
+    {
+        <section class="project-section project-facilities" id="facilities">
+            <div class="container">
+                <div class="section-header">
+                    
+                    <h3 class="section-title">สิ่งอำนวยความสะดวก</h3>
+                </div>
+                <div class="facility-grid">
+                    @foreach (var facility in Model.Facilities)
+                    {
+                        <article class="facility-card">
+                            <div class="facility-icon">
+                                <i class="@facility.Icon"></i>
+                            </div>
+                            <div class="facility-body">
+                                <h4>@facility.Name</h4>
+                                <p>@facility.Description</p>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </div>
+        </section>
+    }    
+
+
+    @if (Model.HouseTypes?.Any() == true)
+    {
+        <section class="project-section project-plans" id="masterplans">
+            <div class="container">
+                <div class="section-header">
+                    <h3 class="section-title">แบบบ้าน</h3>
+                </div>
+
+                <!-- Filter Buttons -->
+                <div class="house-type-filters">
+                    <div class="filter-buttons">
+                         @{
+                            var houseTypeIndex = 0;
+                         }
+                        @foreach (var house in Model.HouseTypes)
+                        {
+                            @if (houseTypeIndex==0)
+                            {
+                            <button class="filter-btn active" data-filter="@house.Id">
+                                <i class="fa fa-home"></i>
+                                <span>@house.DisplayName</span>
+                            </button>
+                            }
+                            else
+                            {
+                            <button class="filter-btn" data-filter="@house.Id">
+                                <i class="fa fa-home"></i>
+                                <span>@house.DisplayName</span>
+                            </button>
+                            }
+                            houseTypeIndex++;
+                        }
+                    </div>
+                </div>
+
+                <!-- House Type Display Area -->
+                <div class="house-type-display">
+                    @foreach (var house in Model.HouseTypes)
+                    {
+                        var facadeImage = house.Images.FirstOrDefault();
+                        <div class="house-type-item" data-type="@house.Id">
+                            <div class="house-type-card-inline">
+                                @{
+                                    var defaultFloorPlan = house.FloorPlans.FirstOrDefault(fp => fp.Type == FloorType.Facade)
+                                                          ?? house.FloorPlans.FirstOrDefault(fp => fp.Type == FloorType.GroundFloor)
+                                                          ?? house.FloorPlans.FirstOrDefault(fp => fp.Type == FloorType.SecondFloor)
+                                                          ?? house.FloorPlans.FirstOrDefault();
+
+                                    var defaultImagePath = defaultFloorPlan?.ImagePath ?? "Home_S_Perspective_Final_1.jpg";
+                                }
+
+                                <!-- Main Content Layout: Image Left, Info Right -->
+                                <div class="house-main-content">
+                                    <!-- Floor Plan Image Section (LEFT) -->
+                                    <div class="house-floorplan-section">
+                                        <div class="main-floorplan-container">
+                                            <img src="@Url.Content($"~/images/projects/{Model.Id}/masterplan/{defaultImagePath}")"
+                                                 alt="@house.DisplayName Floor Plan"
+                                                 class="main-floorplan-image"
+                                                 id="mainFloorPlan-@house.Id" />
+                                        </div>
+
+                                        <!-- Floor Plan Thumbnails -->
+                                        <div class="floorplan-thumbnails">
+                                            @{
+                                                var floorPlanThumbnails = new List<FloorPlan>();
+
+                                                if (house.FloorPlans.Any())
+                                                {
+                                                    // Add floor plans in order: Facade, Ground Floor, Second Floor
+                                                    var facade = house.FloorPlans.FirstOrDefault(fp => fp.Type == FloorType.Facade);
+                                                    var ground = house.FloorPlans.FirstOrDefault(fp => fp.Type == FloorType.GroundFloor);
+                                                    var second = house.FloorPlans.FirstOrDefault(fp => fp.Type == FloorType.SecondFloor);
+
+                                                    if (facade != null) floorPlanThumbnails.Add(facade);
+                                                    if (ground != null) floorPlanThumbnails.Add(ground);
+                                                    if (second != null) floorPlanThumbnails.Add(second);
+                                                }
+
+                                                // If no floor plans, create fallback ones
+                                                if (!floorPlanThumbnails.Any())
+                                                {
+                                                    floorPlanThumbnails.AddRange(new[]
+                                                    {
+                                                        new FloorPlan { Name = "Facade", ImagePath = "Home_S_Perspective_Final_1.jpg", Type = FloorType.Facade },
+                                                        new FloorPlan { Name = "1st Floor", ImagePath = "Home_S_Perspective_Final_1.jpg", Type = FloorType.GroundFloor },
+                                                        new FloorPlan { Name = "2nd Floor", ImagePath = "Home_S_Perspective_Final_1.jpg", Type = FloorType.SecondFloor }
+                                                    });
+                                                }
+                                            }
+
+                                            @for (int i = 0; i < floorPlanThumbnails.Count; i++)
+                                            {
+                                                var floorPlan = floorPlanThumbnails[i];
+                                                var isActive = floorPlan.Type == FloorType.Facade ? "active" : "";
+
+                                                <div class="floorplan-thumb @isActive" onclick="changeFloorPlan('@house.Id', '@Url.Content($"~/images/projects/{Model.Id}/masterplan/{floorPlan.ImagePath}")', '@floorPlan.Name')">
+                                                    <img src="@Url.Content($"~/images/projects/{Model.Id}/masterplan/{floorPlan.ImagePath}")" alt="@floorPlan.Name" />
+                                                    <span class="thumb-label">@floorPlan.Name</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <!-- House Information Section (RIGHT) -->
+                                    <div class="house-info-section">
+                                        <!-- Header -->
+                                        <div class="house-header">
+                                            <h4 class="house-title">@house.DisplayName</h4>
+                                            
+                                        </div>
+
+                                        <!-- Specifications Grid -->
+                                        <div class="house-specs">
+                                            <div class="spec-row">
+                                                <div class="spec-icon">
+                                                    <i class="fa fa-arrows-alt"></i>
+                                                </div>
+                                                <div class="spec-details">
+                                                    <div class="spec-number">@house.UsableArea</div>
+                                                 </div>
+                                             </div>
+                                               <div class="spec-row">
+                                                <div class="spec-icon">
+                                                    <i class="fa fa-square-o"></i>
+                                                </div>
+                                                <div class="spec-details">
+                                                    <div class="spec-number">@house.LandSize </div>
+                                                 </div>
+                                            </div>
+                                            <div class="spec-row">
+                                                <div class="spec-icon">
+                                                    <i class="fa fa-bed"></i>
+                                                </div>
+                                                <div class="spec-details">
+                                                    <div class="spec-number">@house.Bedrooms</div>
+                                                    <div class="spec-unit">ห้อง</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="spec-row">
+                                                <div class="spec-icon">
+                                                    <i class="fa fa-bath"></i>
+                                                </div>
+                                                <div class="spec-details">
+                                                    <div class="spec-number">@house.Bathrooms</div>
+                                                    <div class="spec-unit">ห้อง</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="spec-row">
+                                                <div class="spec-icon">
+                                                    <i class="fa fa-car"></i>
+                                                </div>
+                                                <div class="spec-details">
+                                                    <div class="spec-number">@house.Parking</div>
+                                                    <div class="spec-unit">คัน</div>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+
+                                        
+
+                                        <!-- Price -->
+                                        @if (!string.IsNullOrWhiteSpace(house.PriceRange))
+                                        {
+                                            <div class="house-price">
+                                                <span class="price-label">ราคาเริ่มต้น</span>
+                                                <span class="price-value">@house.PriceRange</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    }
+
+  
+
+    @if (Model.Images.Gallery?.Any() == true)
+    {
+        <section class="project-section project-gallery" id="gallery">
+            <div class="container">
+                <div class="section-header">
+                     <h3 class="section-title">แกลเลอรี</h3>
+                </div>
+
+                <!-- Gallery Filters -->
+                <div class="gallery-filters">
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">
+                            <i class="fa fa-image"></i>
+                            <span>ทั้งหมด</span>
+                        </button>
+                        <button class="filter-btn" data-filter="facility">
+                            <i class="fa fa-building"></i>
+                            <span>ส่วนกลาง</span>
+                        </button>
+                         @if (Model.HouseTypes?.Any() == true)
+                        {
+                            @foreach (var house in Model.HouseTypes)
+                            {
+                                <button class="filter-btn" data-filter="@house.Id">
+                                <i class="fa fa-home"></i>
+                                <span>@house.DisplayName</span>
+                               </button>
+                            }
+                        }    
+                    </div>
+                </div>
+
+                <!-- Gallery Grid -->
+                <div class="gallery-grid">
+                    @foreach (var image in Model.Images.Gallery)
+                    {
+                        <a href="@Url.Content($"~/images/projects/{Model.Id}/galleries/{image}")"
+                           class="gallery-card"
+                           data-gallery="project-gallery"
+                           data-image-name="@image">
+                            <img src="@Url.Content($"~/images/projects/{Model.Id}/galleries/{image}")"
+                                 alt="@Model.Name"
+                                 loading="lazy" />
+                            <div class="gallery-overlay">
+                                <i class="fa fa-expand"></i>
+                            </div>
+                        </a>
+                    }
+                </div>
+            </div>
+        </section>
+    }
+
+    <!-- Image Gallery Modal -->
+    <div id="galleryModal" class="gallery-modal">
+        <div class="gallery-modal-content">
+            <button class="gallery-modal-close" aria-label="Close">&times;</button>
+            <button class="gallery-modal-prev" aria-label="Previous image">&#8249;</button>
+            <button class="gallery-modal-next" aria-label="Next image">&#8250;</button>
+            <img id="galleryModalImage" src="" alt="" class="gallery-modal-image">
+            <div class="gallery-modal-counter">
+                <span id="galleryModalCurrent">1</span> / <span id="galleryModalTotal">1</span>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Location != null)
+    {
+        <section class="project-section project-location" id="location">
+            <div class="container">
+                <div class="section-header">
+
+                    <h3 class="section-title">ทำเล</h3>
+                    @if (!string.IsNullOrWhiteSpace(Model.Details.Location))
+                    {
+                        <p class="project-location__address">ที่ตั้งโครงการ : @Model.Details.Location</p>
+                    }
+                </div>
+
+                <!-- Map Type Filters -->
+                <div class="house-type-filters">
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="google-map">
+                            <i class="fa fa-map"></i>
+                            <span>Google Map</span>
+                        </button>
+                        <button class="filter-btn" data-filter="graphic-map">
+                            <i class="fa fa-image"></i>
+                            <span>Graphic Map</span>
+                        </button>
+                    </div>
+                </div>
+
+                @{
+                    decimal latValue = Model.Location.Latitude;
+                    decimal lonValue = Model.Location.Longitude;
+                    bool hasCoordinates = latValue != 0m || lonValue != 0m;
+                    string mapSrc = string.Empty;
+
+                    if (hasCoordinates)
+                    {
+                        var lat = latValue.ToString(CultureInfo.InvariantCulture);
+                        var lon = lonValue.ToString(CultureInfo.InvariantCulture);
+                        mapSrc = $"https://www.google.com/maps?q={lat},{lon}&z=15&output=embed";
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Model.Location.Address))
+                    {
+                        mapSrc = $"https://www.google.com/maps?q={WebUtility.UrlEncode(Model.Location.Address)}&z=15&output=embed";
+                    }
+                    else
+                    {
+                        // Fallback with project location from Details
+                        var fallbackLocation = !string.IsNullOrWhiteSpace(Model.Details.Location)
+                            ? WebUtility.UrlEncode(Model.Details.Location)
+                            : WebUtility.UrlEncode("Bangkok, Thailand");
+                        mapSrc = $"https://www.google.com/maps?q={fallbackLocation}&z=12&output=embed";
+                    }
+                }
+
+                <!-- Google Maps Container -->
+                <div class="map-container" id="google-map-container">
+                    @if (!string.IsNullOrWhiteSpace(mapSrc))
+                    {
+                        <div class="location-map">
+                            <iframe loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="@mapSrc"></iframe>
+                        </div>
+                    }
+                </div>
+
+                <!-- Graphic Map Container -->
+                <div class="map-container" id="graphic-map-container" style="display: none;">
+                    <div class="location-map">
+                        <img src="@Url.Content($"~/images/projects/{Model.Id}/{Model.Images.LocationMap}")" alt="แผนที่โครงการ" />
+                    </div>
+                </div>
+
+                <!-- Nearby Places Info (shown for both map types) -->
+                <div class="project-location__info">
+                    @if (Model.Location.NearbyPlaces?.Any() == true)
+                    {
+                        var groupedPlaces = Model.Location.NearbyPlaces
+                            .GroupBy(p => string.IsNullOrWhiteSpace(p.Category) ? "สถานที่ใกล้เคียง" : p.Category);
+
+                        <div class="location-grid">
+                            @foreach (var group in groupedPlaces)
+                            {
+                                <div class="location-column">
+                                    <div class="location-category">
+                                        <div class="category-icon">
+                                            @{
+                                                var categoryIcon = group.FirstOrDefault()?.Icon;
+                                                if (!string.IsNullOrWhiteSpace(categoryIcon))
+                                                {
+                                                    <i class="@categoryIcon"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="fa fa-map-marker"></i>
+                                                }
+                                            }
+                                        </div>
+                                        <h4>@group.Key</h4>
+                                    </div>
+                                    <ul class="location-list">
+                                        @foreach (var place in group)
+                                        {
+                                            <li>
+                                                <span class="place-name">@place.Name</span>
+                                                <span class="place-distance">@place.Distance</span>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    }
+
+      
+
+
+   
+</div>
+
+
+
+@section Scripts {
+    <script>
+        window.handleSocialLoginSuccess = function (provider, targetUrl) {
+            if (!targetUrl) {
+                return;
+            }
+            var urlWithHash = targetUrl.indexOf('#register') >= 0 ? targetUrl : targetUrl + '#register';
+            try {
+                window.sessionStorage.setItem('pps-last-provider', provider || '');
+            } catch (err) {
+                // Ignore storage failures
+            }
+            window.location.href = urlWithHash;
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const socialPopupButtons = document.querySelectorAll('[data-social-popup-url]');
+            socialPopupButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const popupUrl = button.getAttribute('data-social-popup-url');
+                    if (!popupUrl) {
+                        return;
+                    }
+                    const popup = window.open(
+                        popupUrl,
+                        'GoogleLoginPopup',
+                        'width=600,height=700,menubar=no,toolbar=no,location=no,status=no'
+                    );
+
+                    if (!popup || popup.closed) {
+                        window.location.href = popupUrl;
+                    }
+                });
+            });
+
+            if (window.location.hash === '#register') {
+                const registerSection = document.getElementById('register');
+                registerSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            const hamburger = document.getElementById('projectHamburger');
+            const navMenu = document.getElementById('projectNavMenu');
+            const overlay = document.getElementById('projectMobileOverlay');
+            const body = document.body;
+
+            function closeMenu() {
+                navMenu?.classList.remove('is-open');
+                hamburger?.classList.remove('is-active');
+                overlay?.classList.remove('is-active');
+                hamburger?.setAttribute('aria-expanded', 'false');
+                body.classList.remove('nav-open');
+            }
+
+            function toggleMenu() {
+                const willOpen = !navMenu?.classList.contains('is-open');
+                navMenu?.classList.toggle('is-open');
+                hamburger?.classList.toggle('is-active');
+                overlay?.classList.toggle('is-active');
+                hamburger?.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+                body.classList.toggle('nav-open', willOpen);
+            }
+
+            hamburger?.addEventListener('click', toggleMenu);
+            overlay?.addEventListener('click', closeMenu);
+
+            navMenu?.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    closeMenu();
+
+                    // Add smooth scroll for anchor links
+                    const href = this.getAttribute('href');
+                    if (href && href.startsWith('#')) {
+                        e.preventDefault();
+                        const targetId = href.substring(1);
+                        const targetElement = document.getElementById(targetId);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }
+                });
+            });
+
+            // House Type Filter functionality
+            const filterButtons = document.querySelectorAll('.house-type-filters .filter-btn');
+            const houseItems = document.querySelectorAll('.house-type-item');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    const filterValue = this.getAttribute('data-filter');
+
+                    houseItems.forEach(item => {
+                        if (filterValue === 'all' || item.getAttribute('data-type') === filterValue) {
+                            item.style.display = 'block';
+                            // Add fade in animation
+                            item.style.opacity = '0';
+                            setTimeout(() => {
+                                item.style.opacity = '1';
+                            }, 50);
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // Initialize - show first house type by default
+            if (houseItems.length > 0) {
+                houseItems.forEach((item, index) => {
+                    item.style.display = index === 0 ? 'block' : 'none';
+                });
+            }
+        });
+
+        // Function to change main image when thumbnail is clicked
+        function changeMainImage(thumbnail) {
+            const container = thumbnail.closest('.house-image-container');
+            const mainImage = container.querySelector('.house-main-image');
+            const thumbnails = container.querySelectorAll('.thumbnail');
+
+            // Update main image source
+            mainImage.src = thumbnail.src;
+
+            // Update active thumbnail
+            thumbnails.forEach(thumb => thumb.classList.remove('active'));
+            thumbnail.classList.add('active');
+        }
+
+        // Floor plan modal functions
+        function openFloorPlanModal(triggerElement) {
+            const houseTypeItem = triggerElement.closest('.house-type-item');
+            const modal = houseTypeItem.querySelector('.floor-plan-modal');
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeFloorPlanModal(closeButton) {
+            const modal = closeButton.closest('.floor-plan-modal');
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function changeFloorPlan(houseId, imageSrc, floorName) {
+            // Update main floor plan image
+            const mainFloorPlan = document.getElementById(`mainFloorPlan-${houseId}`);
+            if (mainFloorPlan) {
+                mainFloorPlan.src = imageSrc;
+            }
+
+            // Update floor indicator
+            const currentFloor = document.getElementById(`currentFloor-${houseId}`);
+            if (currentFloor) {
+                currentFloor.textContent = floorName.toUpperCase();
+            }
+
+            // Update active thumbnail
+            const houseCard = mainFloorPlan.closest('.house-type-card-inline');
+            const thumbnails = houseCard.querySelectorAll('.floorplan-thumb');
+            thumbnails.forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+
+            // Add active class to clicked thumbnail
+            const clickedThumbnail = event.target.closest('.floorplan-thumb');
+            if (clickedThumbnail) {
+                clickedThumbnail.classList.add('active');
+            }
+        }
+
+        // Function to set up dynamic animation delays
+        function setupGalleryAnimations() {
+            const visibleCards = document.querySelectorAll('.gallery-card:not(.gallery-hidden)');
+            visibleCards.forEach((card, index) => {
+                const delay = 0.1 + (index * 0.05); // Start at 0.1s, add 0.05s for each item
+                card.style.animationDelay = delay + 's';
+                // Remove and re-add the animation class to restart it
+                card.classList.remove('animate');
+                setTimeout(() => {
+                    card.classList.add('animate');
+                }, 10);
+            });
+        }
+
+        // Function to observe when gallery section comes into view
+        function setupGalleryScrollAnimation() {
+            const gallerySection = document.querySelector('#gallery');
+            let hasAnimated = false;
+
+            if (!gallerySection) return;
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !hasAnimated) {
+                        hasAnimated = true;
+                        setupGalleryAnimations();
+                        observer.unobserve(gallerySection); // Only animate once
+                    }
+                });
+            }, {
+                threshold: 0.2, // Trigger when 20% of gallery is visible
+                rootMargin: '0px 0px -50px 0px' // Slightly before it fully comes into view
+            });
+
+            observer.observe(gallerySection);
+        }
+
+        // Gallery Modal Functions
+        let currentImageIndex = 0;
+        let galleryImages = [];
+
+        function initializeModal() {
+            const modal = document.getElementById('galleryModal');
+            const modalImage = document.getElementById('galleryModalImage');
+            const closeBtn = document.querySelector('.gallery-modal-close');
+            const prevBtn = document.querySelector('.gallery-modal-prev');
+            const nextBtn = document.querySelector('.gallery-modal-next');
+            const currentSpan = document.getElementById('galleryModalCurrent');
+            const totalSpan = document.getElementById('galleryModalTotal');
+
+            // Collect all visible gallery images
+            function updateGalleryImages() {
+                const visibleGalleryCards = document.querySelectorAll('.gallery-card:not(.gallery-hidden)');
+                galleryImages = Array.from(visibleGalleryCards).map(card => ({
+                    src: card.href,
+                    alt: card.querySelector('img').alt
+                }));
+                totalSpan.textContent = galleryImages.length;
+            }
+
+            // Open modal
+            function openModal(imageSrc) {
+                updateGalleryImages();
+                currentImageIndex = galleryImages.findIndex(img => img.src === imageSrc);
+                if (currentImageIndex === -1) currentImageIndex = 0;
+
+                showImage();
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+
+            // Close modal
+            function closeModal() {
+                modal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+
+            // Show current image
+            function showImage() {
+                if (galleryImages.length > 0) {
+                    const currentImage = galleryImages[currentImageIndex];
+                    modalImage.src = currentImage.src;
+                    modalImage.alt = currentImage.alt;
+                    currentSpan.textContent = currentImageIndex + 1;
+                }
+            }
+
+            // Navigation functions
+            function nextImage() {
+                currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
+                showImage();
+            }
+
+            function prevImage() {
+                currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
+                showImage();
+            }
+
+            // Event listeners
+            closeBtn.addEventListener('click', closeModal);
+            prevBtn.addEventListener('click', prevImage);
+            nextBtn.addEventListener('click', nextImage);
+
+            // Click outside modal to close
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (!modal.classList.contains('show')) return;
+
+                switch(e.key) {
+                    case 'Escape':
+                        closeModal();
+                        break;
+                    case 'ArrowLeft':
+                        prevImage();
+                        break;
+                    case 'ArrowRight':
+                        nextImage();
+                        break;
+                }
+            });
+
+            // Add click listeners to gallery images
+            document.addEventListener('click', function(e) {
+                const galleryCard = e.target.closest('.gallery-card');
+                if (galleryCard && !galleryCard.classList.contains('gallery-hidden')) {
+                    e.preventDefault();
+                    openModal(galleryCard.href);
+                }
+            });
+        }
+
+        // Initialize first thumbnail as active
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up scroll-triggered gallery animations
+            setupGalleryScrollAnimation();
+
+            // Initialize gallery modal
+            initializeModal();
+
+            const firstThumbnails = document.querySelectorAll('.house-image-thumbnails .thumbnail:first-child');
+            firstThumbnails.forEach(thumb => thumb.classList.add('active'));
+
+            const socialButtons = document.querySelectorAll('.register-social .social-btn');
+            const clientSourceInput = document.getElementById('registrationClientFrom');
+            socialButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    if (clientSourceInput) {
+                        clientSourceInput.value = this.textContent?.trim();
+                    }
+                });
+            });
+
+            // Back to top functionality
+            const backToTopButton = document.querySelector('.sticky-top');
+            if (backToTopButton) {
+                backToTopButton.addEventListener('click', function() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+
+                // Show/hide back to top button based on scroll position
+                window.addEventListener('scroll', function() {
+                    if (window.pageYOffset > 300) {
+                        backToTopButton.style.opacity = '1';
+                        backToTopButton.style.visibility = 'visible';
+                    } else {
+                        backToTopButton.style.opacity = '0';
+                        backToTopButton.style.visibility = 'hidden';
+                    }
+                });
+            }
+
+            // Location Map Filter functionality with smooth transitions
+            const locationMapFilterButtons = document.querySelectorAll('.project-location .house-type-filters .filter-btn');
+            const mapContainers = document.querySelectorAll('.map-container');
+            const locationInfo = document.querySelector('.project-location__info');
+
+            locationMapFilterButtons.forEach((button) => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    locationMapFilterButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    const filterValue = this.getAttribute('data-filter');
+
+                    // Add fade out effect to current map and location info
+                    mapContainers.forEach(container => {
+                        if (container.style.display !== 'none') {
+                            container.style.opacity = '0';
+                            container.style.transform = 'translateY(20px)';
+                        }
+                    });
+
+                    if (locationInfo) {
+                        locationInfo.style.opacity = '0';
+                        locationInfo.style.transform = 'translateY(20px)';
+                    }
+
+                    // After fade out, switch containers and fade in
+                    setTimeout(() => {
+                        // Hide all map containers
+                        mapContainers.forEach(container => {
+                            container.style.display = 'none';
+                            container.style.opacity = '0';
+                            container.style.transform = 'translateY(20px)';
+                        });
+
+                        // Show selected map container with fade in
+                        const targetContainer = document.getElementById(filterValue + '-container');
+                        if (targetContainer) {
+                            targetContainer.style.display = 'block';
+                            // Force reflow
+                            targetContainer.offsetHeight;
+                            // Start fade in animation
+                            setTimeout(() => {
+                                targetContainer.style.opacity = '1';
+                                targetContainer.style.transform = 'translateY(0)';
+                            }, 50);
+                        }
+
+                        // Fade in location info with staggered animation for columns
+                        if (locationInfo) {
+                            setTimeout(() => {
+                                locationInfo.style.opacity = '1';
+                                locationInfo.style.transform = 'translateY(0)';
+
+                                // Add staggered animation to location columns
+                                const locationColumns = locationInfo.querySelectorAll('.location-column');
+                                locationColumns.forEach((column, index) => {
+                                    column.style.opacity = '0';
+                                    column.style.transform = 'translateY(30px)';
+                                    setTimeout(() => {
+                                        column.style.opacity = '1';
+                                        column.style.transform = 'translateY(0)';
+                                    }, index * 150); // 150ms delay between each column
+                                });
+                            }, 100);
+                        }
+                    }, 300);
+                });
+            });
+
+            // Gallery Filter functionality
+            const galleryFilterButtons = document.querySelectorAll('.gallery-filters .filter-btn');
+            const galleryItems = document.querySelectorAll('.gallery-card');
+
+            galleryFilterButtons.forEach((button) => {
+                button.addEventListener('click', function(e) {
+                    // Remove active class from all buttons
+                    galleryFilterButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    const filterValue = this.getAttribute('data-filter');
+
+                    galleryItems.forEach((item) => {
+                        const imageName = item.getAttribute('data-image-name') || '';
+                        let shouldShow = false;
+
+                        if (filterValue === 'all') {
+                            shouldShow = true;
+                        } else if (filterValue === 'facility') {
+                            shouldShow = imageName.toLowerCase().includes('facility');
+                        } else {
+                            // Check for house type in both _housetype_ and -housetype- patterns
+                            const lowerImageName = imageName.toLowerCase();
+                            const lowerFilterValue = filterValue.toLowerCase();
+
+                            // Pattern 1: _housetype_ (underscore pattern)
+                            const underscorePattern = `_${lowerFilterValue}_`;
+                            // Pattern 2: -housetype- (dash pattern)
+                            const dashPattern = `-${lowerFilterValue}-`;
+
+                            shouldShow = lowerImageName.includes(underscorePattern) || lowerImageName.includes(dashPattern);
+                        }
+
+                        if (shouldShow) {
+                            item.classList.remove('gallery-hidden');
+                        } else {
+                            item.classList.add('gallery-hidden');
+                        }
+                    });
+
+                    // Re-setup animations for visible items after filtering
+                    setTimeout(() => {
+                        setupGalleryAnimations();
+                    }, 50);
+                });
+            });
+        });
+    </script>
+
+    <style>
+        /* Project Theme Colors */
+        :root {
+            --project-primary: #C2185B;
+            --project-secondary: #E91E63;
+            --project-light-bg: #FCE4EC;
+        }
+
+        /* Gallery animation styles */
+        .gallery-card {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+        }
+
+        .gallery-card.animate {
+            animation: fadeInGalleryItem 0.6s ease-out forwards;
+        }
+
+        .gallery-card:not(.gallery-hidden) {
+            transition: all 0.8s ease-in-out !important;
+        }
+
+        .gallery-grid {
+            opacity: 1;
+        }
+
+        @@keyframes fadeInGalleryItem {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+
+        /* Smooth filter animation */
+        .gallery-hidden {
+            opacity: 0 !important;
+            transform: scale(0.7) translateY(30px) !important;
+            transition: all 0.8s ease-in-out !important;
+        }
+
+        /* Map and Location Info Smooth Transitions */
+        .map-container {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .project-location__info {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .location-grid {
+            transition: all 0.4s ease-in-out;
+        }
+
+        .location-column {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .location-category {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .location-category:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Project Details Section - Use dynamic primary color to match registration button */
+        #details,
+        section#details,
+        section.project-section#details,
+        section.project-section.project-details#details,
+        .project-section.project-details,
+        .project-details {
+            background-color: var(--primary-color) !important;
+            background: var(--primary-color) !important;
+            color: white !important;
+            border-radius: 0 !important;
+        }
+
+        /* Project Details Grid */
+        .project-details__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Detail Card Styling */
+        .detail-card {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .detail-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .detail-icon i {
+            font-size: 20px;
+            color: white !important;
+        }
+
+        .detail-content {
+            flex: 1;
+        }
+
+        .detail-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8) !important;
+            margin-bottom: 5px;
+            font-weight: 400;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            color: white !important;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        /* Ensure all text elements inside project details are white */
+        #details *,
+        section#details *,
+        .project-details *,
+        .project-details h2,
+        .project-details h3,
+        .project-details p,
+        .project-details li,
+        .project-details span,
+        .project-details div,
+        .project-details .details-definition *,
+        .project-details__content *,
+        .project-details__content-left *,
+        .details-label,
+        .details-value {
+            color: white !important;
+        }
+
+        /* Override any nth-child or other selectors */
+        #details:nth-of-type(even),
+        #details:nth-of-type(odd),
+        section#details:nth-of-type(even),
+        section#details:nth-of-type(odd),
+        section.project-section#details:nth-of-type(even),
+        section.project-section#details:nth-of-type(odd) {
+            background-color: var(--primary-color) !important;
+            background: var(--primary-color) !important;
+            color: white !important;
+            border-radius: 0 !important;
+        }
+
+        /* Project Details Visual Right Container */
+        .project-details__visual-right {
+            margin-right: 20px;
+        }
+
+        /* Project Details Single Thumbnail */
+        .project-details__thumbnail {
+            width: 100%;
+            height: 380px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .project-details__thumbnail:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+        }
+
+        .project-details__thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .project-details__thumbnail:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Responsive adjustments for single thumbnail */
+        @@media (max-width: 1200px) {
+            .project-details__thumbnail {
+                height: 320px;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .project-details__thumbnail {
+                height: 280px;
+            }
+        }
+
+        /* Responsive Design for Project Details Grid */
+        @@media (max-width: 768px) {
+            .project-details__grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 30px 15px;
+            }
+
+            .detail-card {
+                padding: 15px;
+            }
+
+            .detail-icon {
+                width: 40px;
+                height: 40px;
+                margin-right: 12px;
+            }
+
+            .detail-icon i {
+                font-size: 18px;
+            }
+
+            .detail-label {
+                font-size: 13px;
+            }
+
+            .detail-value {
+                font-size: 15px;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .project-details__grid {
+                padding: 20px 10px;
+                gap: 12px;
+            }
+
+            .detail-card {
+                padding: 12px;
+            }
+
+            .detail-icon {
+                width: 35px;
+                height: 35px;
+                margin-right: 10px;
+            }
+
+            .detail-icon i {
+                font-size: 16px;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .project-details__thumbnail {
+                height: 240px;
+            }
+        }
+
+        /* Gallery Modal Styles */
+        .gallery-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(5px);
+        }
+
+        .gallery-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        .gallery-modal-content {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 24px;
+            box-sizing: border-box;
+        }
+
+        .gallery-modal-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery-modal-close {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 32px;
+            font-weight: 400;
+            cursor: pointer;
+            z-index: 10000;
+            width: 44px;
+            height: 44px;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .gallery-modal-close:hover {
+            color: rgba(255, 255, 255, 0.8);
+            transform: scale(1.1);
+        }
+
+        .gallery-modal-prev,
+        .gallery-modal-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            color: #2c3e50;
+            font-size: 20px;
+            font-weight: 400;
+            cursor: pointer;
+            width: 48px;
+            height: 48px;
+            border-radius: 24px;
+            transition: all 0.25s cubic-bezier(0.4, 0.0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .gallery-modal-prev {
+            left: 24px;
+        }
+
+        .gallery-modal-next {
+            right: 24px;
+        }
+
+        .gallery-modal-prev:hover,
+        .gallery-modal-next:hover {
+            background: rgba(255, 255, 255, 1);
+            color: #1a252f;
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .gallery-modal-counter {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        @@keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Mobile responsive */
+        @@media (max-width: 768px) {
+            .gallery-modal-prev {
+                left: 15px;
+                font-size: 24px;
+                padding: 16px 20px;
+                background: rgba(0, 0, 0, 0.8);
+                border: 2px solid rgba(255, 255, 255, 0.4);
+            }
+
+            .gallery-modal-next {
+                right: 15px;
+                font-size: 24px;
+                padding: 16px 20px;
+                background: rgba(0, 0, 0, 0.8);
+                border: 2px solid rgba(255, 255, 255, 0.4);
+            }
+
+            .gallery-modal-close {
+                top: 15px;
+                right: 15px;
+                font-size: 28px;
+                padding: 14px 18px;
+                background: rgba(0, 0, 0, 0.8);
+                border: 2px solid rgba(255, 255, 255, 0.4);
+            }
+
+            .gallery-modal-counter {
+                bottom: 20px;
+                font-size: 14px;
+                background: rgba(0, 0, 0, 0.8);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+            }
+        }
+
+        /* Location Grid Styles */
+        .location-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .location-column {
+            background: transparent;
+            padding: 24px;
+        }
+
+        .location-category {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary-color, #365523);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .category-icon i {
+            color: white;
+            font-size: 20px;
+        }
+
+        .location-category h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .location-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .location-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+        }
+
+        .place-name {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .place-distance {
+            font-size: 14px;
+            color: #666;
+            font-weight: 400;
+        }
+
+        @@media (max-width: 1024px) {
+            .location-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .location-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+}
+
+<!-- Sticky Social Media Buttons -->
+<div class="sticky-social-buttons">
+    <a href="https://line.me/R/ti/p/@@ppsasset" class="sticky-social-button sticky-line" target="_blank" aria-label="LINE">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12.017.572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+        </svg>
+    </a>
+
+    <a href="https://facebook.com/ppsasset" class="sticky-social-button sticky-facebook" target="_blank" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
+    </a>
+
+    <button type="button" class="sticky-social-button sticky-top" aria-label="Back to top">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+        </svg>
+    </button>
+</div>
