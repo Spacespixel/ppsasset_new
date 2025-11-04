@@ -4,7 +4,46 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="PPS Asset">
-    <title>@ViewData["Title"] - PPS Asset</title>
+
+    <!-- SEO Meta Tags -->
+    @if (!string.IsNullOrEmpty(ViewBag.SeoTitle as string))
+    {
+        <title>@ViewBag.SeoTitle</title>
+    }
+    else
+    {
+        <title>@ViewData["Title"] - PPS Asset</title>
+    }
+
+    @if (!string.IsNullOrEmpty(ViewBag.SeoDescription as string))
+    {
+        <meta name="description" content="@ViewBag.SeoDescription" />
+    }
+
+    @if (!string.IsNullOrEmpty(ViewBag.SeoKeywords as string))
+    {
+        <meta name="keywords" content="@ViewBag.SeoKeywords" />
+    }
+
+    @if (!string.IsNullOrEmpty(ViewBag.SeoCanonical as string))
+    {
+        <link rel="canonical" href="@ViewBag.SeoCanonical" />
+    }
+
+    <!-- JSON-LD Schema Markup -->
+    @if (!string.IsNullOrEmpty(ViewBag.JsonLdOrganization as string))
+    {
+        <script type="application/ld+json">
+            @Html.Raw(ViewBag.JsonLdOrganization)
+        </script>
+    }
+
+    @if (!string.IsNullOrEmpty(ViewBag.JsonLdProperty as string))
+    {
+        <script type="application/ld+json">
+            @Html.Raw(ViewBag.JsonLdProperty)
+        </script>
+    }
 
     @if (!string.IsNullOrEmpty(ViewBag.GtmId as string))
     {

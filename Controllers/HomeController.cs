@@ -19,8 +19,9 @@ namespace PPSAsset.Controllers
         private readonly RegistrationService _registrationService;
         private readonly IConfiguration _configuration;
         private readonly IGtmService _gtmService;
+        private readonly ISeoService _seoService;
 
-        public HomeController(ILogger<HomeController> logger, IProjectService projectService, IThemeService themeService, DatabaseMigration databaseMigration, IConfiguration configuration, RegistrationService registrationService, IGtmService gtmService)
+        public HomeController(ILogger<HomeController> logger, IProjectService projectService, IThemeService themeService, DatabaseMigration databaseMigration, IConfiguration configuration, RegistrationService registrationService, IGtmService gtmService, ISeoService seoService)
         {
             _logger = logger;
             _projectService = projectService;
@@ -29,6 +30,7 @@ namespace PPSAsset.Controllers
             _registrationService = registrationService;
             _configuration = configuration;
             _gtmService = gtmService;
+            _seoService = seoService;
         }
 
         public async Task<IActionResult> Index()
@@ -43,6 +45,16 @@ namespace PPSAsset.Controllers
             // Set GTM ID for global site
             ViewBag.GtmId = await _gtmService.GetGlobalGtmIdAsync();
 
+            // Set SEO metadata for homepage
+            var seoMetadata = _seoService.GetPageMetadata("home");
+            ViewBag.SeoTitle = seoMetadata.Title;
+            ViewBag.SeoDescription = seoMetadata.Description;
+            ViewBag.SeoKeywords = seoMetadata.Keywords;
+            ViewBag.SeoCanonical = _seoService.GetCanonicalUrl(Request.Host.ToString(), "/");
+
+            // Set JSON-LD Organization schema
+            ViewBag.JsonLdOrganization = _seoService.GetOrganizationSchema();
+
             // Get available projects using the simplified DatabaseProjectService
             var featuredProjects = _projectService.GetAvailableProjects();
 
@@ -54,6 +66,16 @@ namespace PPSAsset.Controllers
             // Set GTM ID for global site
             ViewBag.GtmId = await _gtmService.GetGlobalGtmIdAsync();
 
+            // Set SEO metadata for about page
+            var seoMetadata = _seoService.GetPageMetadata("about");
+            ViewBag.SeoTitle = seoMetadata.Title;
+            ViewBag.SeoDescription = seoMetadata.Description;
+            ViewBag.SeoKeywords = seoMetadata.Keywords;
+            ViewBag.SeoCanonical = _seoService.GetCanonicalUrl(Request.Host.ToString(), "/About");
+
+            // Set JSON-LD Organization schema
+            ViewBag.JsonLdOrganization = _seoService.GetOrganizationSchema();
+
             return View();
         }
 
@@ -61,6 +83,16 @@ namespace PPSAsset.Controllers
         {
             // Set GTM ID for global site
             ViewBag.GtmId = await _gtmService.GetGlobalGtmIdAsync();
+
+            // Set SEO metadata for contact page
+            var seoMetadata = _seoService.GetPageMetadata("contact");
+            ViewBag.SeoTitle = seoMetadata.Title;
+            ViewBag.SeoDescription = seoMetadata.Description;
+            ViewBag.SeoKeywords = seoMetadata.Keywords;
+            ViewBag.SeoCanonical = _seoService.GetCanonicalUrl(Request.Host.ToString(), "/Contact");
+
+            // Set JSON-LD Organization schema
+            ViewBag.JsonLdOrganization = _seoService.GetOrganizationSchema();
 
             return View();
         }
@@ -92,6 +124,22 @@ namespace PPSAsset.Controllers
                 gtmId = await _gtmService.GetGlobalGtmIdAsync();
             }
             ViewBag.GtmId = gtmId;
+
+            // Set SEO metadata for project page
+            var seoMetadata = _seoService.GetProjectMetadata(project);
+            ViewBag.SeoTitle = seoMetadata.Title;
+            ViewBag.SeoDescription = seoMetadata.Description;
+            ViewBag.SeoKeywords = seoMetadata.Keywords;
+            ViewBag.SeoCanonical = _seoService.GetCanonicalUrl(Request.Host.ToString(), $"/Project/{projectId}");
+            ViewBag.SeoOgImage = seoMetadata.OgImage;
+            ViewBag.SeoOgImageAlt = seoMetadata.OgImageAlt;
+
+            // Set JSON-LD Property schema for this specific project
+            var propertySchema = _seoService.GetJsonLdSchema("property", project);
+            ViewBag.JsonLdProperty = propertySchema;
+
+            // Set JSON-LD Organization schema
+            ViewBag.JsonLdOrganization = _seoService.GetOrganizationSchema();
 
             ViewBag.RegistrationModel = BuildRegistrationModel(project);
             ViewBag.AuthProvider = GetAuthenticatedProvider();

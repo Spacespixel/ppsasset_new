@@ -66,6 +66,9 @@ builder.Services.AddScoped<DatabaseMigration>();
 // GTM service for Google Tag Manager integration
 builder.Services.AddScoped<IGtmService, GtmService>();
 
+// SEO service for managing meta tags and structured data
+builder.Services.AddScoped<ISeoService, SeoService>();
+
 // Add logging for better debugging and monitoring
 builder.Services.AddLogging(logging =>
 {
