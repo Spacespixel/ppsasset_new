@@ -132,11 +132,11 @@ namespace PPSAsset.Data
                 INSERT INTO sy_project (
                     ProjectID, ProjectName, ProjectNameEN, ProjectAddress, ProjectType, ProjectEmail,
                     ProjectSubtitle, ProjectDescription, ProjectConcept, ProjectStatus, ProjectSize,
-                    TotalUnits, LandSize, UsableArea, Developer, PriceRange
+                    TotalUnits, LandSize, UsableArea, Developer, PriceRange, GtmId
                 ) VALUES (
                     @ProjectID, @ProjectName, @ProjectNameEN, @ProjectAddress, @ProjectType, @ProjectEmail,
                     @ProjectSubtitle, @ProjectDescription, @ProjectConcept, @ProjectStatus, @ProjectSize,
-                    @TotalUnits, @LandSize, @UsableArea, @Developer, @PriceRange
+                    @TotalUnits, @LandSize, @UsableArea, @Developer, @PriceRange, @GtmId
                 ) ON DUPLICATE KEY UPDATE
                     ProjectName = VALUES(ProjectName),
                     ProjectNameEN = VALUES(ProjectNameEN),
@@ -153,6 +153,7 @@ namespace PPSAsset.Data
                     UsableArea = VALUES(UsableArea),
                     Developer = VALUES(Developer),
                     PriceRange = VALUES(PriceRange),
+                    GtmId = VALUES(GtmId),
                     ModifiedDate = CURRENT_TIMESTAMP";
 
             var parameters = new
@@ -172,7 +173,8 @@ namespace PPSAsset.Data
                 LandSize = project.Details.LandSize,
                 UsableArea = project.Details.UsableArea,
                 Developer = project.Details.Developer,
-                PriceRange = project.Details.PriceRange
+                PriceRange = project.Details.PriceRange,
+                GtmId = project.GtmId
             };
 
             await connection.ExecuteAsync(sql, parameters, transaction);

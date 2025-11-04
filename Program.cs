@@ -63,6 +63,9 @@ builder.Services.AddSingleton<IThemeService, ThemeService>();
 // Database migration service for data management
 builder.Services.AddScoped<DatabaseMigration>();
 
+// GTM service for Google Tag Manager integration
+builder.Services.AddScoped<IGtmService, GtmService>();
+
 // Add logging for better debugging and monitoring
 builder.Services.AddLogging(logging =>
 {
@@ -93,6 +96,12 @@ app.MapControllerRoute(
     pattern: "{projectType}/{projectName}/{location}",
     defaults: new { controller = "Home", action = "Project" },
     constraints: new { projectType = @"singlehouse|townhome|twinhouse" });
+
+// Simple project route
+app.MapControllerRoute(
+    name: "simple-project",
+    pattern: "project/{id}",
+    defaults: new { controller = "Home", action = "Project" });
 
 // Legacy project route (backward compatibility)
 app.MapControllerRoute(
