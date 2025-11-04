@@ -82,6 +82,26 @@
     align-items: center;
     justify-content: center;
     padding: 60px 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.success-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.success-container .container {
+    position: relative;
+    z-index: 2;
 }
 
 .success-card {
@@ -391,7 +411,7 @@
 </header>
 
 <div id="page-content">
-    <div class="success-container">
+    <div class="success-container" style="@(ViewBag.BackgroundImage != null ? $"background-image: url('{ViewBag.BackgroundImage}');" : "")">
         <div class="container">
             <div class="success-card">
                 <div class="success-icon">
@@ -401,7 +421,7 @@
                 <h1 class="success-title">ลงทะเบียนสำเร็จ</h1>
                 
                 <div class="success-message">
-                    <p>ขอบคุณที่ลงทะเบียนกับเดอะริคโค้ เรสซิเด้นซ์ รามอินทรา-หทัยราษฎร์</p>
+                    <p>ขอบคุณที่ลงทะเบียนกับ@(ViewBag.Project?.Name ?? "โครงการของเรา")</p>
                     <p> ข้อมูลของคุณได้รับการบันทึกเรียบร้อยแล้ว</p>
                     <p>ทีมงานของเราจะติดต่อกลับในเวลาทำการ 09:00-18:00</p>
                  </div>

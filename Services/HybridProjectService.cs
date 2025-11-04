@@ -276,9 +276,9 @@ namespace PPSAsset.Services
             }
         }
 
-        private ProjectViewModel EnhanceProjectWithGallery(ProjectViewModel project)
+        private ProjectViewModel? EnhanceProjectWithGallery(ProjectViewModel? project)
         {
-            if (project == null) return project;
+            if (project == null) return null;
 
             var galleryImages = GetGalleryImages(project.Id);
             project.Images.Gallery = galleryImages;

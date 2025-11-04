@@ -203,3 +203,82 @@ The application uses comprehensive models in `Models/ProjectModels.cs`:
 3. Ensure mobile responsiveness for all new components
 4. Test performance impact of image-heavy content
 5. Consider bilingual content structure in view design
+
+## SEO Strategy & Competitive Analysis (Updated 2024-11-04)
+
+### SEO Goals
+- **Primary Target**: Top 3 rankings for "[Project Name] + Bangkok" keywords
+- **Organic Traffic**: 150% increase within 6 months
+- **Core Web Vitals**: LCP <2.5s, FID <100ms, CLS <0.1
+- **Mobile Performance**: PageSpeed score >85/100
+- **Local Focus**: Bangkok suburban districts (หทัยราษฎร์, จตุโชติ, สายไหม, ลำลูกกา)
+
+### Target Keywords
+- **Primary**: "บ้านเดี่ยว + [Location]", "ทาวน์โฮม + [District]"
+- **Long-tail**: "บ้านราคาดี หทัยราษฎร์", "โครงการใหม่ วงแหวน"
+- **Decision Intent**: "ซื้อบ้านใหม่ กรุงเทพ 2024"
+- **Brand Terms**: "เดอะริคโค้ เรสซิเดนซ์" + variants
+
+### Competitor Analysis
+
+#### Direct Competitors
+1. **Sansiri** (www.sansiri.com)
+   - **Strengths**: 40-year established brand, comprehensive content, multiple languages
+   - **Weaknesses**: Generic content, limited schema markup, slow performance
+   - **Opportunity**: Developer-direct authentic content vs. corporate generic messaging
+
+2. **Craftwork** (craftwork.co.th)
+   - **Strengths**: Local Pattaya focus, Next.js framework, clear project structure
+   - **Weaknesses**: Limited schema markup, performance issues, narrow geographic focus
+   - **Opportunity**: Bangkok market focus vs. their Pattaya specialization
+
+3. **Peace & Living** (peaceandliving.co.th)
+   - **Strengths**: Good organization schema implementation, clear site structure
+   - **Weaknesses**: Limited scale and market reach
+   - **Opportunity**: Broader project portfolio and better content strategy
+
+#### Indirect Competitors
+4. **AP Thai** (apthai.com/th)
+   - **Strengths**: Major property listing portal, wide market coverage
+   - **Weaknesses**: Basic technical implementation, generic listing approach
+   - **Opportunity**: Specialized developer focus vs. generic property portal
+
+### SEO Implementation Strategy
+
+#### Phase 1 (Months 1-2): Technical Foundation
+- **Core Web Vitals optimization**: Image compression, lazy loading, CSS/JS bundling
+- **Schema markup**: Real estate structured data for all project pages
+- **Meta optimization**: Project-specific titles, descriptions, and keywords
+- **Mobile-first**: Responsive design improvements and performance optimization
+
+#### Phase 2 (Months 3-4): Content Authority
+- **Location pages**: Bangkok district-specific landing pages
+- **Property guides**: Buyer decision trees and area comparisons
+- **FAQ implementation**: Schema-enhanced answers for common queries
+- **Internal linking**: Strategic link architecture for authority distribution
+
+#### Phase 3 (Months 5-6): Market Domination
+- **Voice search optimization**: Natural language query targeting
+- **Video SEO**: Virtual tour and project video optimization
+- **Featured snippets**: Content optimized for position zero
+- **Local citations**: Bangkok real estate directory listings
+
+### Technical SEO Advantages
+- **ASP.NET Core Performance**: Superior to competitors' average 3.5-4.2s load times
+- **Hybrid Architecture**: Database + static fallback ensures 100% uptime
+- **Mobile-First Design**: Critical for Thai market where mobile usage dominates
+- **Schema Implementation**: Comprehensive real estate structured data vs. competitors' basic markup
+
+### Success Metrics & Tracking
+- **Google Search Console**: Primary keyword tracking and performance monitoring
+- **Core Web Vitals**: LCP, FID, CLS measurements via PageSpeed Insights
+- **Local Rankings**: Bangkok district-specific position tracking
+- **Organic CTR**: Target 8-12% for top 3 positions
+- **Conversion Tracking**: Lead generation from organic traffic
+
+### Competitive Advantage
+- **Developer Direct**: Authentic content vs. generic property portals
+- **Local Expertise**: Bangkok suburban focus vs. broad market coverage
+- **Technical Superior**: Modern ASP.NET stack vs. competitors' legacy systems
+- **Content Strategy**: Project-specific optimization vs. generic approaches
+- **Performance Edge**: <2.5s load times vs. competitors' 3.5-4.2s average
