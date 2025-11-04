@@ -68,7 +68,6 @@
             <ul class="project-nav__menu" id="projectNavMenu">
                 <li><a class="project-nav__link" href="#concept">คอนเซปต์โครงการ</a></li>
                 <li><a class="project-nav__link" href="#details">รายละเอียดโครงการ</a></li>
-                <li><a class="project-nav__link" href="#facilities">สิ่งอำนวยความสะดวก</a></li>
                 <li><a class="project-nav__link" href="#masterplans">แบบบ้าน</a></li>
                 <li><a class="project-nav__link" href="#gallery">แกลเลอรี</a></li>
                 <li><a class="project-nav__link" href="#location">ทำเล</a></li>
@@ -84,43 +83,230 @@
         </div>
     </section>
    <section class="project-section project-pillars" id="concept">
-        <div class="container">
-            <div class="section-header">
-                
-                <h3 class="section-title">คอนเซปต์โครงการ</h3>
-                @if (!string.IsNullOrWhiteSpace(Model.Concept))
-                {
-                    <p class="section-lead">@Model.Concept</p>
-                }
-            </div>
+        <div class="concept-section">
+            <div class="container">
+                <!-- Simple horizontal concept blocks like the reference image -->
+                <div class="concept-blocks">
+                    @{
+                        // Use available images for concept features
+                        var availableImages = new List<string>();
+                        if (!string.IsNullOrEmpty(Model.Images?.Thumbnail)) availableImages.Add(Model.Images.Thumbnail);
+                        if (Model.Images?.Gallery != null) availableImages.AddRange(Model.Images.Gallery.Take(2));
+                        if (!string.IsNullOrEmpty(Model.Images?.Hero)) availableImages.Add(Model.Images.Hero);
 
-            <div class="pillars-grid">
-                @if (Model.ConceptFeatures?.Any() == true)
-                {
-                    foreach (var feature in Model.ConceptFeatures)
-                    {
-                        <article class="pillar-card">
-                            <div class="pillar-icon">
-                                <span class="icon icon-star"></span>
-                            </div>
-                            <h4>@feature.Title</h4>
-                            <p>@feature.Description</p>
-                        </article>
+                        // Get concept features from database or fallback to empty list
+                        var conceptFeatures = Model.ConceptFeatures ?? new List<PPSAsset.Models.ConceptFeature>();
                     }
-                }
-                else 
-                {
-                    <article class="pillar-card">
-                        <div class="pillar-icon">
-                            <span class="icon icon-star"></span>
+
+                    @if (conceptFeatures.Any())
+                    {
+                        @for (int i = 0; i < Math.Min(conceptFeatures.Count, 2); i++)
+                        {
+                            var feature = conceptFeatures[i];
+                            var isReverse = i % 2 == 1;
+                            var imageSource = !string.IsNullOrEmpty(feature.Image)
+                                ? Url.Content($"~/images/projects/{Model.Id}/{feature.Image}")
+                                : (availableImages.Count > i ? Url.Content($"~/images/projects/{Model.Id}/{availableImages[i]}") : "");
+
+                            <div class="concept-row @(isReverse ? "concept-row-reverse" : "")">
+                                @if (!isReverse)
+                                {
+                                    <!-- Text on left, Image on right -->
+                                    <div class="concept-text-section">
+                                        <h3>@feature.Title</h3>
+                                        <p>@feature.Description</p>
+                                    </div>
+                                    <div class="concept-image-section">
+                                        @if (!string.IsNullOrEmpty(imageSource))
+                                        {
+                                            <img src="@imageSource" alt="@feature.Title" />
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <!-- Image on left, Text on right -->
+                                    <div class="concept-image-section">
+                                        @if (!string.IsNullOrEmpty(imageSource))
+                                        {
+                                            <img src="@imageSource" alt="@feature.Title" />
+                                        }
+                                    </div>
+                                    <div class="concept-text-section">
+                                        <h3>@feature.Title</h3>
+                                        <p>@feature.Description</p>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <!-- Fallback content if no concept features available -->
+                        <div class="concept-row">
+                            <div class="concept-text-section">
+                                <h3>@(!string.IsNullOrEmpty(Model.Concept) ? Model.Name : "โครงการคุณภาพ")</h3>
+                                <p>@(!string.IsNullOrEmpty(Model.Concept) ? Model.Concept : Model.Description)</p>
+                            </div>
+                            <div class="concept-image-section">
+                                @if (availableImages.Count > 0)
+                                {
+                                    <img src="@Url.Content($"~/images/projects/{Model.Id}/{availableImages[0]}")" alt="@Model.Name" />
+                                }
+                            </div>
                         </div>
-                        <h4>ทำเลคุณภาพ</h4>
-                        <p>โครงการออกแบบเพื่อการอยู่อาศัยที่สมบูรณ์แบบบนทำเลศักยภาพ</p>
-                    </article>
-                }
+                    }
+            </div>
             </div>
         </div>
     </section>
+
+    <style>
+        /* Override all concept styling with simple clean design */
+        .concept-section {
+            background: var(--light-bg) !important;
+            padding: 60px 0 !important;
+            margin: 0 !important;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1.2s ease-out;
+        }
+
+        .concept-section.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .concept-blocks {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .concept-row {
+            display: flex;
+            margin-bottom: 40px;
+            min-height: 350px;
+            align-items: stretch;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s ease-out;
+        }
+
+        .concept-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .concept-row:nth-child(even) {
+            transform: translateX(50px);
+        }
+
+        .concept-section.animate-in .concept-row {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .concept-section.animate-in .concept-row:nth-child(1) {
+            transition-delay: 0.3s;
+        }
+
+        .concept-section.animate-in .concept-row:nth-child(2) {
+            transition-delay: 0.6s;
+        }
+
+        .concept-text-section {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: transparent;
+        }
+
+        .concept-image-section {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .concept-image-section img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .concept-text-section h3 {
+            font-family: 'Prompt', 'Kanit', 'Montserrat', sans-serif !important;
+            font-size: 36px;
+            font-weight: 700;
+            color: #2d3436;
+            margin: 0 0 20px 0;
+            line-height: 1.2;
+        }
+
+        .concept-text-section p {
+            font-family: 'Sarabun', 'Prompt', sans-serif !important;
+            font-size: 18px;
+            color: #636e72;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Hide old card elements */
+        .concept-cards-grid,
+        .concept-card,
+        .concept-header,
+        .concept-main-title,
+        .concept-subtitle {
+            display: none !important;
+        }
+
+        /* Responsive Design */
+        @@media (max-width: 768px) {
+            .concept-row {
+                flex-direction: column;
+                min-height: auto;
+            }
+
+            .concept-text-section {
+                padding: 40px 30px;
+            }
+
+            .concept-image-section {
+                height: 250px;
+            }
+
+            .concept-text-section h3 {
+                font-size: 28px;
+            }
+
+            .concept-text-section p {
+                font-size: 16px;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const conceptSection = document.querySelector('.concept-section');
+
+            if (conceptSection) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('animate-in');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.2,
+                    rootMargin: '0px 0px -10% 0px'
+                });
+
+                observer.observe(conceptSection);
+            }
+        });
+    </script>
+
   <section class="project-section project-register" id="register">
         <div class="container">
             <div class="register-card">
@@ -152,7 +338,7 @@
                         }
                     </div>
                 </div>
-                @using (Html.BeginForm("RegisterProject", "Home", FormMethod.Post, new { @class = "register-form" }))
+                @using (Html.BeginForm("RegisterProject", "Home", FormMethod.Post, new { @class = "register-form", id = "registrationForm" }))
                 {
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="ProjectID" value="@registrationModel.ProjectID" />
@@ -268,6 +454,50 @@
             </div>
         </div>
     </section>
+
+    <!-- Registration Success Modal -->
+    <div id="registrationSuccessModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="registrationSuccessModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="success-icon">
+                        <i class="icon_check"></i>
+                    </div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <h2 class="success-title">ลงทะเบียนสำเร็จ</h2>
+                    <div class="success-message">
+                        <p>ขอบคุณที่ลงทะเบียนกับ<span id="modalProjectName">โครงการของเรา</span></p>
+                        <p>ข้อมูลของคุณได้รับการบันทึกเรียบร้อยแล้ว</p>
+                        <p>ทีมงานของเราจะติดต่อกลับในเวลาทำการ 09:00-18:00</p>
+                    </div>
+
+                    <div class="success-actions">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ดูโครงการต่อ</button>
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">กลับหน้าหลัก</a>
+                    </div>
+
+                    <div class="social-buttons">
+                        <a href="https://line.me/ti/p/~@@ppsasset" class="btn-line" target="_blank">
+                            <svg width="20" height="20" viewBox="0 0 24 24" style="margin-right: 8px;">
+                                <path fill="white" d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12.017.572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+                            </svg>
+                            สอบถามผ่าน LINE
+                        </a>
+                        <a href="https://facebook.com/ppsasset" class="btn-facebook" target="_blank">
+                            <i class="social_facebook"></i> แชทผ่าน Facebook
+                        </a>
+                        <a href="tel:081-933-2888" class="btn-phone">
+                            <i class="icon_phone"></i> โทร 081-933-2888
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
    
 
         <section class="project-section project-details" id="details">
@@ -356,35 +586,27 @@
                             </div>
                         </div>
                     }
-                </div>
-            </div>
-        </section>
 
-      @if (Model.Facilities?.Any() == true)
-    {
-        <section class="project-section project-facilities" id="facilities">
-            <div class="container">
-                <div class="section-header">
-                    
-                    <h3 class="section-title">สิ่งอำนวยความสะดวก</h3>
-                </div>
-                <div class="facility-grid">
-                    @foreach (var facility in Model.Facilities)
+                    @if (Model.Facilities?.Any() == true)
                     {
-                        <article class="facility-card">
-                            <div class="facility-icon">
-                                <i class="@facility.Icon"></i>
+                        @foreach (var facility in Model.Facilities)
+                        {
+                            <div class="detail-card">
+                                <div class="detail-icon">
+                                    <i class="@facility.Icon"></i>
+                                </div>
+                                <div class="detail-content">
+                                    <div class="detail-label">@facility.Name</div>
+                                    <div class="detail-value">@facility.Description</div>
+                                </div>
                             </div>
-                            <div class="facility-body">
-                                <h4>@facility.Name</h4>
-                                <p>@facility.Description</p>
-                            </div>
-                        </article>
+                        }
                     }
                 </div>
             </div>
         </section>
-    }    
+
+    
 
 
     @if (Model.HouseTypes?.Any() == true)
@@ -571,7 +793,7 @@
 
   
 
-    @if (Model.Images.Gallery?.Any() == true)
+    @if (Model.Images?.Gallery?.Any() == true)
     {
         <section class="project-section project-gallery" id="gallery">
             <div class="container">
@@ -1238,10 +1460,284 @@
                     }, 50);
                 });
             });
+
+            // Registration form submission handling with AJAX
+            const registrationForm = document.getElementById('registrationForm');
+            if (registrationForm) {
+                registrationForm.addEventListener('submit', function(e) {
+                    e.preventDefault(); // Prevent default form submission
+
+                    // Check if form validation passes
+                    if (this.checkValidity()) {
+                        // Show loading state on submit button
+                        const submitButton = this.querySelector('button[type="submit"]');
+                        const originalText = submitButton ? submitButton.textContent : '';
+
+                        if (submitButton) {
+                            submitButton.disabled = true;
+                            submitButton.textContent = 'กำลังส่งข้อมูล...';
+                        }
+
+                        // Prepare form data
+                        const formData = new FormData(this);
+
+                        // Submit form via AJAX
+                        fetch(this.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Update modal project name
+                                const modalProjectName = document.getElementById('modalProjectName');
+                                if (modalProjectName && data.projectName) {
+                                    modalProjectName.textContent = data.projectName;
+                                }
+
+                                // Track registration success event in GTM
+                                if (typeof gtag !== 'undefined') {
+                                    gtag('event', 'registration_success', {
+                                        'event_category': 'engagement',
+                                        'event_label': data.projectName || 'Unknown Project',
+                                        'project_id': '@Model.Id',
+                                        'project_name': data.projectName,
+                                        'registration_method': 'modal'
+                                    });
+                                }
+
+                                // Track with dataLayer if available
+                                if (typeof dataLayer !== 'undefined') {
+                                    dataLayer.push({
+                                        'event': 'registration_success',
+                                        'eventCategory': 'engagement',
+                                        'eventAction': 'form_submit',
+                                        'eventLabel': data.projectName,
+                                        'projectId': '@Model.Id',
+                                        'projectName': data.projectName,
+                                        'registrationMethod': 'modal'
+                                    });
+                                }
+
+                                // Show success modal
+                                $('#registrationSuccessModal').modal('show');
+
+                                // Track modal view event
+                                if (typeof gtag !== 'undefined') {
+                                    gtag('event', 'modal_view', {
+                                        'event_category': 'engagement',
+                                        'event_label': 'registration_success_modal',
+                                        'project_id': '@Model.Id'
+                                    });
+                                }
+
+                                // Reset form
+                                this.reset();
+                            } else {
+                                // Track registration error
+                                if (typeof gtag !== 'undefined') {
+                                    gtag('event', 'registration_error', {
+                                        'event_category': 'engagement',
+                                        'event_label': data.message || 'Unknown Error',
+                                        'project_id': '@Model.Id'
+                                    });
+                                }
+
+                                alert(data.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Registration error:', error);
+                            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
+                        })
+                        .finally(() => {
+                            // Restore submit button
+                            if (submitButton) {
+                                submitButton.disabled = false;
+                                submitButton.textContent = originalText;
+                            }
+                        });
+                    }
+                });
+            }
         });
     </script>
 
     <style>
+        /* Registration Success Modal Styles */
+        #registrationSuccessModal .modal-header {
+            border: none;
+            padding: 30px 30px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        #registrationSuccessModal .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #365523;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0;
+        }
+
+        #registrationSuccessModal .success-icon i {
+            color: white;
+            font-size: 36px;
+        }
+
+        #registrationSuccessModal .close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: normal;
+            color: #999;
+            text-shadow: none;
+            opacity: 0.8;
+        }
+
+        #registrationSuccessModal .close:hover {
+            opacity: 1;
+            color: #666;
+        }
+
+        #registrationSuccessModal .modal-body {
+            padding: 20px 30px 30px;
+        }
+
+        #registrationSuccessModal .success-title {
+            color: #365523;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        #registrationSuccessModal .success-message {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        #registrationSuccessModal .success-message p {
+            margin-bottom: 8px;
+        }
+
+        #registrationSuccessModal .success-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        #registrationSuccessModal .btn-primary {
+            background: #365523;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        #registrationSuccessModal .btn-primary:hover {
+            background: #1e7e34;
+            color: white;
+            text-decoration: none;
+        }
+
+        #registrationSuccessModal .btn-secondary {
+            background: transparent;
+            color: #666;
+            padding: 12px 24px;
+            border: 2px solid #afb5b2;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        #registrationSuccessModal .btn-secondary:hover {
+            background: #61676d;
+            color: white;
+            text-decoration: none;
+        }
+
+        #registrationSuccessModal .social-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        #registrationSuccessModal .btn-line,
+        #registrationSuccessModal .btn-facebook,
+        #registrationSuccessModal .btn-phone {
+            background: #afb5b2;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        #registrationSuccessModal .btn-line:hover,
+        #registrationSuccessModal .btn-facebook:hover,
+        #registrationSuccessModal .btn-phone:hover {
+            background: #9ba19e;
+            color: white;
+            text-decoration: none;
+        }
+
+        @@media (max-width: 768px) {
+            #registrationSuccessModal .modal-dialog {
+                margin: 10px;
+            }
+
+            #registrationSuccessModal .success-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #registrationSuccessModal .btn-primary,
+            #registrationSuccessModal .btn-secondary {
+                width: 100%;
+                max-width: 250px;
+            }
+
+            #registrationSuccessModal .social-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #registrationSuccessModal .btn-line,
+            #registrationSuccessModal .btn-facebook,
+            #registrationSuccessModal .btn-phone {
+                width: 100%;
+                max-width: 240px;
+                justify-content: center;
+            }
+        }
+
         /* Project Theme Colors */
         :root {
             --project-primary: #C2185B;
@@ -1338,6 +1834,37 @@
             padding: 40px 20px;
             max-width: 1200px;
             margin: 0 auto;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.6s ease-out;
+        }
+
+        .project-details__grid.animate-in {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Animation Keyframes */
+        @@keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes slideInScale {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         /* Detail Card Styling */
@@ -1350,7 +1877,27 @@
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
+
+        .detail-card.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Staggered Animation Delays */
+        .detail-card:nth-child(1).animate-in { transition-delay: 0.1s; }
+        .detail-card:nth-child(2).animate-in { transition-delay: 0.2s; }
+        .detail-card:nth-child(3).animate-in { transition-delay: 0.3s; }
+        .detail-card:nth-child(4).animate-in { transition-delay: 0.4s; }
+        .detail-card:nth-child(5).animate-in { transition-delay: 0.5s; }
+        .detail-card:nth-child(6).animate-in { transition-delay: 0.6s; }
+        .detail-card:nth-child(7).animate-in { transition-delay: 0.7s; }
+        .detail-card:nth-child(8).animate-in { transition-delay: 0.8s; }
+        .detail-card:nth-child(9).animate-in { transition-delay: 0.9s; }
+        .detail-card:nth-child(10).animate-in { transition-delay: 1.0s; }
 
         .detail-card:hover {
             background: rgba(255, 255, 255, 0.15);
@@ -1465,6 +2012,178 @@
         @@media (max-width: 768px) {
             .project-details__thumbnail {
                 height: 280px;
+            }
+        }
+
+        /* Concept Cards Styling */
+        .concept-section {
+            background: linear-gradient(135deg, #e91e63 0%, #f06292 50%, #f8bbd9 100%);
+            padding: 60px 20px;
+            margin: 60px 0;
+        }
+
+        .concept-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .concept-main-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 15px;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .concept-subtitle {
+            font-size: 18px;
+            color: #636e72;
+            margin: 0;
+            font-weight: 300;
+        }
+
+        .concept-cards-grid {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 30px;
+            padding: 0;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+            max-width: 1400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .concept-cards-grid.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .concept-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            flex: 1 1 auto;
+            min-width: 250px;
+        }
+
+        .concept-card.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .concept-card:nth-child(1).animate-in { transition-delay: 0.1s; }
+        .concept-card:nth-child(2).animate-in { transition-delay: 0.2s; }
+        .concept-card:nth-child(3).animate-in { transition-delay: 0.3s; }
+
+        .concept-card__image {
+            height: 200px;
+            overflow: hidden;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .concept-card__image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .concept-card__placeholder {
+            height: 200px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #dee2e6;
+            font-size: 14px;
+        }
+
+        .concept-card__content {
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        .concept-card__title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 12px;
+            line-height: 1.3;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .concept-card__description {
+            font-size: 15px;
+            color: #636e72;
+            line-height: 1.5;
+            margin: 0;
+            font-weight: 300;
+        }
+
+        /* Responsive Design for Concept Cards */
+        @@media (max-width: 992px) {
+            .concept-main-title {
+                font-size: 40px;
+            }
+
+            .concept-cards-grid {
+                gap: 20px;
+            }
+
+            .concept-card {
+                flex: 1 1 auto;
+                min-width: 280px;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .concept-section {
+                padding: 40px 15px;
+                margin: 40px 0;
+            }
+
+            .concept-main-title {
+                font-size: 32px;
+            }
+
+            .concept-subtitle {
+                font-size: 16px;
+            }
+
+            .concept-cards-grid {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .concept-card {
+                flex: none;
+                width: 100%;
+                max-width: 350px;
+                min-width: auto;
+            }
+
+            .concept-card__image {
+                height: 200px;
+            }
+
+            .concept-card__content {
+                padding: 25px 20px;
+            }
+
+            .concept-card__title {
+                font-size: 20px;
+            }
+
+            .concept-card__description {
+                font-size: 15px;
             }
         }
 
@@ -1792,3 +2511,64 @@
         </svg>
     </button>
 </div>
+
+<script>
+    // Intersection Observer for scroll-triggered animations
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create intersection observer with options
+        const observerOptions = {
+            threshold: 0.1,  // Trigger when 10% of element is visible
+            rootMargin: '0px 0px -50px 0px'  // Trigger 50px before element comes into view
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    // Add animation class when element comes into view
+                    entry.target.classList.add('animate-in');
+
+                    // If it's the project details grid container, also animate its children with staggered delays
+                    if (entry.target.classList.contains('project-details__grid')) {
+                        const cards = entry.target.querySelectorAll('.detail-card');
+                        cards.forEach(function(card, index) {
+                            setTimeout(function() {
+                                card.classList.add('animate-in');
+                            }, 200 + (index * 100)); // 200ms base delay + 100ms per card
+                        });
+                    }
+
+                    // If it's the concept cards grid container, animate its children with staggered delays
+                    if (entry.target.classList.contains('concept-cards-grid')) {
+                        const conceptCards = entry.target.querySelectorAll('.concept-card');
+                        conceptCards.forEach(function(card, index) {
+                            setTimeout(function() {
+                                card.classList.add('animate-in');
+                            }, 300 + (index * 150)); // 300ms base delay + 150ms per card
+                        });
+                    }
+
+                    // Stop observing once animated
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Observe the project details grid container
+        const projectGrid = document.querySelector('.project-details__grid');
+        if (projectGrid) {
+            observer.observe(projectGrid);
+        }
+
+        // Observe the concept cards grid
+        const conceptGrid = document.querySelector('.concept-cards-grid');
+        if (conceptGrid) {
+            observer.observe(conceptGrid);
+        }
+
+        // Also observe any other sections that might have animations
+        const animatedSections = document.querySelectorAll('.house-content, .contact-info-section');
+        animatedSections.forEach(function(section) {
+            observer.observe(section);
+        });
+    });
+</script>

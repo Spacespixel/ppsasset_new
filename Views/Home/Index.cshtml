@@ -323,8 +323,60 @@
                     </div>
                 </section>
 
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+           
 
-    
+            <div class="features-horizontal-grid">
+                <div class="feature-box" style="background-image: url('https://images.unsplash.com/photo-1518780664697-55e3ad937233?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1965&q=80');">
+                    <div class="feature-overlay"></div>
+                    <div class="feature-content">
+                        <div class="feature-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h3>Prime Location</h3>
+                        <p  >ทำเลศักยภาพสูง ใกล้แหล่งความสะดวก เข้าถึงได้ง่าย ติดถนนใหญ่</p>
+                    </div>
+                </div>
+
+                <div class="feature-box" style="background-image: url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1973&q=80');">
+                    <div class="feature-overlay"></div>
+                    <div class="feature-content">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h3>Good Neighborhoods</h3>
+                        <p  >ชุมชนดี สิ่งแวดล้อมปลอดภัย เหมาะสำหรับการอยู่อาศัย มีความเป็นส่วนตัว</p>
+                    </div>
+                </div>
+
+                <div class="feature-box" style="background-image: url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+                    <div class="feature-overlay"></div>
+                    <div class="feature-content">
+                        <div class="feature-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h3>Unceasing Advancement</h3>
+                        <p  >การพัฒนาอย่างต่อเนื่อง เพื่อมูลค่าที่เพิ่มขึ้น โครงสร้างพื้นฐานสมบูรณ์</p>
+                    </div>
+                </div>
+
+                <div class="feature-box" style="background-image: url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2075&q=80');">
+                    <div class="feature-overlay"></div>
+                    <div class="feature-content">
+                        <div class="feature-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h3 >Legacy</h3>
+                        <p  >มรดกตกทอด คุณภาพที่คงอยู่ตลอดกาล การลงทุนที่คุ้มค่า</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
 
 
            
@@ -532,6 +584,52 @@ document.addEventListener('DOMContentLoaded', function() {
     scrollElements.forEach(el => observer.observe(el));
 
     const heroCTAElement = document.querySelector('.hero-cta');
+    const heroCarouselElement = document.querySelector('.hero-section .owl-carousel');
+    const heroCarousel = heroCarouselElement ? $(heroCarouselElement) : null;
+
+    const heroSlideElements = heroCarouselElement
+        ? Array.from(heroCarouselElement.querySelectorAll('.hero-slide')).filter(slide => {
+            const owlItem = slide.closest('.owl-item');
+            return !owlItem || !owlItem.classList.contains('cloned');
+        })
+        : Array.from(document.querySelectorAll('.hero-slide'));
+
+    const heroSlideData = heroSlideElements.map(slide => ({
+        title: slide.getAttribute('data-title') || '',
+        subtitle: slide.getAttribute('data-subtitle') || '',
+        description: slide.getAttribute('data-description') || ''
+    }));
+
+    console.log('Hero slide data snapshot:', heroSlideData);
+
+    const heroServerData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        Model.Take(5).Select(p => new { id = p.Id, title = p.NameTh, subtitle = p.Subtitle, description = p.Description })
+    ));
+    console.log('Hero server data:', heroServerData);
+
+    // Ensure subtitle container exists so banner text updater can run
+    (function ensureHeroSubtitle() {
+        let subtitle = document.getElementById('hero-sub-title');
+        if (subtitle) {
+            return;
+        }
+
+        subtitle = document.createElement('p');
+        subtitle.id = 'hero-sub-title';
+        subtitle.className = 'hero-subtitle hero-text-item';
+        subtitle.style.display = 'none';
+
+        const heroTextWrapper = document.querySelector('.hero-section .hero-title .animate');
+        const description = document.getElementById('hero-description');
+
+        if (heroTextWrapper) {
+            heroTextWrapper.insertBefore(subtitle, heroTextWrapper.firstChild);
+        } else if (description && description.parentNode) {
+            description.parentNode.insertBefore(subtitle, description);
+        }
+    })();
+
+    let bannerTextInitialized = false;
     let heroAnimationTimeouts = [];
 
     // Back to top functionality
@@ -557,103 +655,133 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Banner text change functionality
+    function resolveHeroSlideIndex(slideIndex) {
+        if (heroSlideData.length === 0) {
+            return 0;
+        }
+
+        if (typeof slideIndex === 'number' && !Number.isNaN(slideIndex)) {
+            return ((slideIndex % heroSlideData.length) + heroSlideData.length) % heroSlideData.length;
+        }
+
+        if (heroCarouselElement && heroCarousel && heroCarousel.length) {
+            const carouselInstance = heroCarousel.data('owl.carousel');
+            if (carouselInstance) {
+                return carouselInstance.relative(carouselInstance.current());
+            }
+        }
+
+        return 0;
+    }
+
     function updateBannerText(slideIndex) {
-        const slides = document.querySelectorAll('.hero-slide');
         const titleElement = document.getElementById('hero-main-title');
         const subtitleElement = document.getElementById('hero-sub-title');
         const descriptionElement = document.getElementById('hero-description');
         const heroElements = [titleElement, subtitleElement, descriptionElement, heroCTAElement];
 
-        const slideCount = slides.length;
-        if (!slideCount || !titleElement || !subtitleElement || !descriptionElement) {
+        if (!titleElement || !subtitleElement || !descriptionElement || heroSlideData.length === 0) {
             return;
         }
 
-        const normalizedIndex = ((slideIndex % slideCount) + slideCount) % slideCount;
+        const normalizedIndex = resolveHeroSlideIndex(slideIndex);
 
-        if (slides[normalizedIndex]) {
-            const currentSlide = slides[normalizedIndex];
-            const title = currentSlide.getAttribute('data-title') || '';
-            const subtitle = currentSlide.getAttribute('data-subtitle') || '';
-            const description = currentSlide.getAttribute('data-description') || '';
+        let slideData = heroSlideData.length > normalizedIndex
+            ? heroSlideData[normalizedIndex]
+            : { title: '', subtitle: '', description: '' };
 
-            // Debug logging to check what values we're getting
-            console.log('Slide data:', {
-                title: title,
-                subtitle: subtitle,
-                description: description,
-                slideIndex: normalizedIndex
-            });
-
-            heroAnimationTimeouts.forEach(clearTimeout);
-            heroAnimationTimeouts = [];
-
-            heroElements.forEach(element => {
-                if (!element) return;
-                element.classList.remove('hero-text-enter');
-                void element.offsetWidth;
-            });
-
-            if (titleElement) {
-                titleElement.textContent = title;
-                console.log('Set title:', title);
+        if (heroCarouselElement) {
+            const activeSlideElement = heroCarouselElement.querySelector('.owl-item.active .hero-slide');
+            if (activeSlideElement) {
+                slideData = {
+                    title: activeSlideElement.getAttribute('data-title') || slideData.title || '',
+                    subtitle: activeSlideElement.getAttribute('data-subtitle') || slideData.subtitle || '',
+                    description: activeSlideElement.getAttribute('data-description') || slideData.description || ''
+                };
             }
+        }
 
-            if (subtitleElement) {
-                subtitleElement.textContent = subtitle;
-                subtitleElement.innerHTML = subtitle; // Also try innerHTML in case textContent fails
-                console.log('Set subtitle:', subtitle, 'Element:', subtitleElement);
-                // Force visibility
+        console.log('Updating banner text for index:', normalizedIndex, 'with data:', slideData);
+
+        const title = slideData.title;
+        const subtitle = slideData.subtitle;
+        const description = slideData.description;
+
+        heroAnimationTimeouts.forEach(clearTimeout);
+        heroAnimationTimeouts = [];
+
+        heroElements.forEach(element => {
+            if (!element) return;
+            element.classList.remove('hero-text-enter');
+            void element.offsetWidth;
+        });
+
+        if (titleElement) {
+            titleElement.textContent = title;
+        }
+
+        if (subtitleElement) {
+            const hasSubtitle = subtitle && subtitle.trim().length > 0;
+            subtitleElement.textContent = '';
+            subtitleElement.innerHTML = '';
+            if (hasSubtitle) {
+                subtitleElement.innerHTML = subtitle;
                 subtitleElement.style.display = 'block';
                 subtitleElement.style.visibility = 'visible';
                 subtitleElement.style.opacity = '1';
+            } else {
+                subtitleElement.style.display = 'none';
+                subtitleElement.style.visibility = 'hidden';
+                subtitleElement.style.opacity = '0';
             }
-
-            if (descriptionElement) {
-                descriptionElement.textContent = description;
-             //   descriptionElement.textContent = subtitle;
-              //  console.log('Set description:', description);
-            }
-
-            const sequence = [
-                { element: titleElement, delay: 100 },
-                { element: subtitleElement, delay: 300 },
-                { element: descriptionElement, delay: 500 },
-                { element: heroCTAElement, delay: 700 }
-            ];
-
-            sequence.forEach(({ element, delay }) => {
-                if (!element) return;
-                heroAnimationTimeouts.push(setTimeout(() => {
-                    element.classList.add('hero-text-enter');
-                }, delay));
-            });
         }
+
+        if (descriptionElement) {
+            descriptionElement.textContent = description;
+         //   descriptionElement.textContent = subtitle;
+          //  console.log('Set description:', description);
+        }
+
+        const sequence = [
+            { element: titleElement, delay: 100 },
+            { element: subtitleElement, delay: 300 },
+            { element: descriptionElement, delay: 500 },
+            { element: heroCTAElement, delay: 700 }
+        ];
+
+        sequence.forEach(({ element, delay }) => {
+            if (!element) return;
+            heroAnimationTimeouts.push(setTimeout(() => {
+                element.classList.add('hero-text-enter');
+            }, delay));
+        });
     }
 
     // Initialize carousel with text change events - Multiple approaches
     function initBannerTextChange() {
-        const heroCarousel = $('.hero-section .owl-carousel');
+        const localCarousel = heroCarousel;
       //  console.log('Hero carousel found:', heroCarousel.length); // Debug log
 
-        if (heroCarousel.length > 0) {
-            updateBannerText(0);
+        if (localCarousel && localCarousel.length > 0) {
+            if (bannerTextInitialized) {
+                updateBannerText();
+                return;
+            }
+
+            bannerTextInitialized = true;
+            updateBannerText();
             // Method 1: Using jQuery events
-            heroCarousel.on('changed.owl.carousel', function(event) {
-            //    console.log('Carousel changed event fired, slide:', event.item.index); // Debug log
-                updateBannerText(event.item.index);
-            });
+            const syncBanner = function(event) {
+                if (event && event.relatedTarget && typeof event.item?.index === 'number') {
+                    const relativeIndex = event.relatedTarget.relative(event.item.index);
+                    updateBannerText(relativeIndex);
+                } else {
+                    updateBannerText();
+                }
+            };
 
-            // Method 2: Using translated event (backup)
-            heroCarousel.on('translated.owl.carousel', function(event) {
-            //    console.log('Carousel translated event fired, slide:', event.item.index); // Debug log
-                updateBannerText(event.item.index);
-            });
-
-            // Set initial text for first slide
-            setTimeout(() => {
-                updateBannerText(0);
-            }, 300);
+            localCarousel.on('changed.owl.carousel', syncBanner);
+            localCarousel.on('translated.owl.carousel', syncBanner);
         }
     }
 
@@ -671,25 +799,27 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Alternative approach: Manual monitoring
-    let currentSlideIndex = 0;
+    let currentSlideSignature = '';
     setInterval(() => {
-        const activeSlide = document.querySelector('.hero-section .owl-carousel .owl-item.active');
-        if (activeSlide) {
-            const allSlides = document.querySelectorAll('.hero-section .owl-carousel .owl-item');
-            let newIndex = 0;
-            allSlides.forEach((slide, index) => {
-                if (slide === activeSlide) {
-                    newIndex = index;
-                }
-            });
+        const activeSlideElement = heroCarouselElement
+            ? heroCarouselElement.querySelector('.owl-item.active .hero-slide')
+            : document.querySelector('.hero-slide');
 
-            if (newIndex !== currentSlideIndex) {
-            //    console.log('Slide changed manually detected:', newIndex); // Debug log
-                currentSlideIndex = newIndex;
-                updateBannerText(newIndex);
-            }
+        if (!activeSlideElement) {
+            return;
         }
-    }, 500); // Check every 500ms
+
+        const signature = [
+            activeSlideElement.getAttribute('data-title') || '',
+            activeSlideElement.getAttribute('data-subtitle') || '',
+            activeSlideElement.getAttribute('data-description') || ''
+        ].join('|');
+
+        if (signature !== currentSlideSignature) {
+            currentSlideSignature = signature;
+            updateBannerText();
+        }
+    }, 600); // Monitor carousel in case events fail
 
     // Project card smooth hover animations
     function initProjectHoverEffects() {
@@ -759,6 +889,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize project card animations
     setTimeout(initProjectCardAnimations, 100);
+
+    // Smooth scroll for "ดูเพิ่มเติม" button
+    const viewMoreButton = document.querySelector('.btn-primary-cta[href="#projects"]');
+    if (viewMoreButton) {
+        viewMoreButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector('#projects');
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    }
 });
 </script>
 

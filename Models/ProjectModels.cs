@@ -18,6 +18,7 @@ namespace PPSAsset.Models
         public LocationInfo Location { get; set; } = new();
         public ContactInfo Contact { get; set; } = new();
         public List<ConceptFeature> ConceptFeatures { get; set; } = new();
+        public string? GtmId { get; set; }
     }
 
     public class ProjectDetails
@@ -194,5 +195,22 @@ namespace PPSAsset.Models
         public ProjectStatus NewStatus { get; set; }
         public string? ChangedBy { get; set; }
         public string? Reason { get; set; }
+    }
+
+    /// <summary>
+    /// GTM Configuration model for storing Google Tag Manager settings
+    /// </summary>
+    public class GtmConfiguration
+    {
+        public int Id { get; set; }
+        public string ConfigKey { get; set; } = string.Empty;
+        public string GtmId { get; set; } = string.Empty;
+        public string? ProjectId { get; set; }
+        public string Environment { get; set; } = "Production";
+        public bool IsActive { get; set; } = true;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? Description { get; set; }
     }
 }

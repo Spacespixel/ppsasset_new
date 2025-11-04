@@ -18,8 +18,9 @@ namespace PPSAsset.Controllers
         private readonly DatabaseMigration _databaseMigration;
         private readonly RegistrationService _registrationService;
         private readonly IConfiguration _configuration;
+        private readonly IGtmService _gtmService;
 
-        public HomeController(ILogger<HomeController> logger, IProjectService projectService, IThemeService themeService, DatabaseMigration databaseMigration, IConfiguration configuration, RegistrationService registrationService)
+        public HomeController(ILogger<HomeController> logger, IProjectService projectService, IThemeService themeService, DatabaseMigration databaseMigration, IConfiguration configuration, RegistrationService registrationService, IGtmService gtmService)
         {
             _logger = logger;
             _projectService = projectService;
@@ -27,9 +28,10 @@ namespace PPSAsset.Controllers
             _databaseMigration = databaseMigration;
             _registrationService = registrationService;
             _configuration = configuration;
+            _gtmService = gtmService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             // Homepage uses default theme from theme service
             var theme = _themeService.GetDefaultTheme();
@@ -38,23 +40,32 @@ namespace PPSAsset.Controllers
             ViewBag.ThemeSecondaryColor = theme.SecondaryColor;
             ViewBag.ThemeLightBackground = theme.LightBackground;
 
+            // Set GTM ID for global site
+            ViewBag.GtmId = await _gtmService.GetGlobalGtmIdAsync();
+
             // Get available projects using the simplified DatabaseProjectService
             var featuredProjects = _projectService.GetAvailableProjects();
 
             return View(featuredProjects);
         }
 
-        public IActionResult About()
+        public async Task<IActionResult> About()
         {
+            // Set GTM ID for global site
+            ViewBag.GtmId = await _gtmService.GetGlobalGtmIdAsync();
+
             return View();
         }
 
-        public IActionResult Contact()
+        public async Task<IActionResult> Contact()
         {
+            // Set GTM ID for global site
+            ViewBag.GtmId = await _gtmService.GetGlobalGtmIdAsync();
+
             return View();
         }
 
-        public IActionResult Project(string id = "ricco-residence-hathairat", string projectType = null, string projectName = null, string location = null)
+        public async Task<IActionResult> Project(string id = "ricco-residence-hathairat", string projectType = null, string projectName = null, string location = null)
         {
             string projectId = id;
 
@@ -73,8 +84,18 @@ namespace PPSAsset.Controllers
             }
 
             ApplyTheme(projectId);
+
+            // Set GTM ID - try project-specific first, fallback to global
+            var gtmId = await _gtmService.GetGtmIdAsync(projectId);
+            if (string.IsNullOrEmpty(gtmId))
+            {
+                gtmId = await _gtmService.GetGlobalGtmIdAsync();
+            }
+            ViewBag.GtmId = gtmId;
+
             ViewBag.RegistrationModel = BuildRegistrationModel(project);
             ViewBag.AuthProvider = GetAuthenticatedProvider();
+            ViewBag.GetProjectUrl = new Func<string, string>(ConvertProjectIdToPpsUrl);
 
             return View(project);
         }
@@ -120,12 +141,33 @@ namespace PPSAsset.Controllers
                 input.UtmContent ??= Request.Query["utm_content"].ToString();
 
                 await _registrationService.SaveAsync(input, Request);
-                return RedirectToAction(nameof(RegistrationSuccess));
+
+                // Check if it's an AJAX request
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    var project = _projectService.GetProject(input.ProjectID ?? string.Empty);
+                    return Json(new {
+                        success = true,
+                        message = "ลงทะเบียนสำเร็จ",
+                        projectName = project?.NameTh ?? project?.Name ?? "โครงการของเรา"
+                    });
+                }
+
+                return RedirectToAction(nameof(RegistrationSuccess), new { projectId = input.ProjectID });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to register enquiry for project {ProjectId}", projectId);
                 ModelState.AddModelError(string.Empty, "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
+
+                // Check if it's an AJAX request
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new {
+                        success = false,
+                        message = "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง"
+                    });
+                }
 
                 var project = _projectService.GetProject(projectId ?? string.Empty);
                 if (project == null)
@@ -171,6 +213,12 @@ namespace PPSAsset.Controllers
 
             var urlKey = $"{projectType}/{projectName}/{location}";
             return mapping.TryGetValue(urlKey, out var projectId) ? projectId : "ricco-residence-hathairat";
+        }
+
+        private string ConvertProjectIdToPpsUrl(string projectId)
+        {
+            // Simple URL structure: /project/projectname
+            return $"/project/{projectId}";
         }
 
         private void ApplyTheme(string projectId)
@@ -228,8 +276,61 @@ namespace PPSAsset.Controllers
 
         
 
-        public IActionResult RegistrationSuccess()
+        public async Task<IActionResult> RegistrationSuccess(string? projectId = null)
         {
+            string? backgroundImage = null;
+            ProjectViewModel? project = null;
+
+            if (!string.IsNullOrEmpty(projectId))
+            {
+                project = _projectService.GetProject(projectId);
+                if (project != null)
+                {
+                    _logger.LogInformation("RegistrationSuccess: Project found - {ProjectId}", project.Id);
+                    _logger.LogInformation("RegistrationSuccess: Hero={Hero}, Thumbnail={Thumbnail}, GalleryCount={GalleryCount}",
+                        project.Images?.Hero, project.Images?.Thumbnail, project.Images?.Gallery?.Count ?? 0);
+
+                    // Try to get Hero image first, then fallback to thumbnail or first gallery image
+                    if (!string.IsNullOrEmpty(project.Images?.Hero))
+                    {
+                        backgroundImage = Url.Content($"~/images/projects/{project.Id}/{project.Images.Hero}");
+                        _logger.LogInformation("RegistrationSuccess: Using Hero image - {BackgroundImage}", backgroundImage);
+                    }
+                    else if (!string.IsNullOrEmpty(project.Images?.Thumbnail))
+                    {
+                        backgroundImage = Url.Content($"~/images/projects/{project.Id}/{project.Images.Thumbnail}");
+                        _logger.LogInformation("RegistrationSuccess: Using Thumbnail image - {BackgroundImage}", backgroundImage);
+                    }
+                    else if (project.Images?.Gallery?.Any() == true)
+                    {
+                        backgroundImage = Url.Content($"~/images/projects/{project.Id}/galleries/{project.Images.Gallery.First()}");
+                        _logger.LogInformation("RegistrationSuccess: Using Gallery image - {BackgroundImage}", backgroundImage);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("RegistrationSuccess: No images found for project {ProjectId}", project.Id);
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("RegistrationSuccess: Project not found for projectId {ProjectId}", projectId);
+                }
+            }
+
+            // Set GTM ID - try project-specific first, fallback to global
+            string? gtmId = null;
+            if (!string.IsNullOrEmpty(projectId))
+            {
+                gtmId = await _gtmService.GetGtmIdAsync(projectId);
+            }
+            if (string.IsNullOrEmpty(gtmId))
+            {
+                gtmId = await _gtmService.GetGlobalGtmIdAsync();
+            }
+            ViewBag.GtmId = gtmId;
+
+            ViewBag.BackgroundImage = backgroundImage;
+            ViewBag.Project = project;
             return View();
         }
 
