@@ -1,15 +1,8 @@
 /* PPS Asset Custom Styles */
 
-/* Typography - Thai/English Support */
-body {
-    font-family: 'Kanit', 'Montserrat', sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Kanit', 'Montserrat', sans-serif;
-}
+/* Typography - Imported from typography.css */
+/* All font definitions are now centralized in typography.css */
+/* This ensures consistent font families, sizes, and weights across the entire site */
 
 .hero-subtitle {
     font-size: 18px;
