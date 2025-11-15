@@ -48,6 +48,8 @@ namespace PPSAsset.Models
 
         public bool ConsentMarketing { get; set; }
 
+        public string? RecaptchaToken { get; set; }
+
         public string? UtmSource { get; set; }
         public string? UtmMedium { get; set; }
         public string? UtmCampaign { get; set; }

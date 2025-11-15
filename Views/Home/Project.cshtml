@@ -42,6 +42,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="~/css/style-custom.css" asp-append-version="true" />
 
+<!-- Google reCAPTCHA v3 Script -->
+<script src="https://www.google.com/recaptcha/api.js?render=@ViewBag.RecaptchaSiteKey"></script>
+
 <div class="project-minisite @themeClass" style="--primary-color:@primaryColor; --secondary-color:@secondaryColor; --light-bg:@lightBackground;">
     <div class="project-mobile-overlay" id="projectMobileOverlay"></div>
 
@@ -79,7 +82,17 @@
     <section class="project-hero" id="hero" style="background-image: url('@heroImage');">
         <div class="project-hero__overlay"></div>
         <div class="container">
-             
+            <div class="project-hero__content">
+                <h1 class="project-hero__title">@(!string.IsNullOrEmpty(Model.NameTh) ? Model.NameTh : Model.Name)</h1>
+                @if (!string.IsNullOrEmpty(Model.Subtitle))
+                {
+                    <p class="project-hero__subtitle">@Model.Subtitle</p>
+                }
+                else if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <p class="project-hero__subtitle">@Model.Description</p>
+                }
+            </div>
         </div>
     </section>
    <section class="project-section project-pillars" id="concept">
@@ -235,8 +248,8 @@
         }
 
         .concept-text-section h3 {
-            font-family: 'Prompt', 'Kanit', 'Montserrat', sans-serif !important;
-            font-size: 36px;
+            /* Font family inherited from typography.css */
+            font-size: 3.5rem;      /* 56px - matches .section-title in project details */
             font-weight: 700;
             color: #2d3436;
             margin: 0 0 20px 0;
@@ -244,8 +257,8 @@
         }
 
         .concept-text-section p {
-            font-family: 'Sarabun', 'Prompt', sans-serif !important;
-            font-size: 18px;
+            /* Font family inherited from typography.css */
+            font-size: 1.125rem;    /* 18px - consistent with text-large */
             color: #636e72;
             line-height: 1.6;
             margin: 0;
@@ -276,11 +289,21 @@
             }
 
             .concept-text-section h3 {
-                font-size: 28px;
+                font-size: 1.625rem;    /* 26px - tablet h3 */
             }
 
             .concept-text-section p {
-                font-size: 16px;
+                font-size: 1rem;        /* 16px - tablet body */
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .concept-text-section h3 {
+                font-size: 1.375rem;    /* 22px - mobile h3 */
+            }
+
+            .concept-text-section p {
+                font-size: 0.875rem;    /* 14px - mobile body */
             }
         }
     </style>
@@ -437,8 +460,9 @@
                     </fieldset>
 
                     <div class="form-extra">
-                        <div class="recaptcha-placeholder" aria-hidden="true">
-                            <span>Google reCAPTCHA</span>
+                        <input type="hidden" name="RecaptchaToken" id="recaptchaToken" />
+                        <div class="recaptcha-placeholder" id="recaptchaStatus" aria-hidden="true">
+                            <span id="recaptchaMessage">Google reCAPTCHA - ตรวจสอบ...</span>
                         </div>
                     </div>
 
@@ -448,7 +472,12 @@
                             <input type="checkbox" name="ConsentMarketing" value="true" @(registrationModel.ConsentMarketing ? "checked" : null) />
                             <span>ยืนยันการยอมรับนโยบายความเป็นส่วนตัว</span>
                         </label>
-                        <button type="submit" class="btn btn-primary">ลงทะเบียน</button>
+                        <button type="submit" class="btn btn-primary" id="registrationSubmitBtn" disabled>
+                            <span class="btn-text">ลงทะเบียน</span>
+                            <span class="btn-spinner" style="display: none;">
+                                <i class="spinner-icon"></i>
+                            </span>
+                        </button>
                     </div>
                 }
             </div>
@@ -943,16 +972,10 @@
                                     <div class="location-category">
                                         <div class="category-icon">
                                             @{
-                                                var categoryIcon = group.FirstOrDefault()?.Icon;
-                                                if (!string.IsNullOrWhiteSpace(categoryIcon))
-                                                {
-                                                    <i class="@categoryIcon"></i>
-                                                }
-                                                else
-                                                {
-                                                    <i class="fa fa-map-marker"></i>
-                                                }
+                                                var categoryName = group.Key.ToLower();
+                                                string iconPath = GetCategoryIconPath(categoryName);
                                             }
+                                            <img src="@iconPath" alt="@group.Key" class="category-icon-img" />
                                         </div>
                                         <h4>@group.Key</h4>
                                     </div>
@@ -974,13 +997,42 @@
         </section>
     }
 
-      
 
 
-   
+
+
 </div>
 
+@functions {
+    private string GetCategoryIconPath(string category)
+    {
+        return category switch
+        {
+            // Transportation
+            _ when category.Contains("การเดินทาง") || category.Contains("transport") =>
+                "~/images/icons/category-transportation.svg",
 
+            // Shopping malls
+            _ when category.Contains("ห้างสรรพสินค้า") || category.Contains("shopping") || category.Contains("mall") =>
+                "~/images/icons/category-shopping.svg",
+
+            // Hospital
+            _ when category.Contains("สถานพยาบาล") || category.Contains("hospital") || category.Contains("medical") =>
+                "~/images/icons/category-hospital.svg",
+
+            // Education/School
+            _ when category.Contains("สถานศึกษา") || category.Contains("school") || category.Contains("education") =>
+                "~/images/icons/category-school.svg",
+
+            // Park/Recreation
+            _ when category.Contains("สวน") || category.Contains("park") || category.Contains("tree") =>
+                "~/images/icons/category-park.svg",
+
+            // Default
+            _ => "~/images/icons/category-location.svg"
+        };
+    }
+}
 
 @section Scripts {
     <script>
@@ -1197,6 +1249,18 @@
             });
 
             observer.observe(gallerySection);
+
+            // Fallback: If gallery is already visible on page load, animate immediately
+            setTimeout(() => {
+                if (!hasAnimated) {
+                    const rect = gallerySection.getBoundingClientRect();
+                    if (rect.top < window.innerHeight && rect.bottom > 0) {
+                        hasAnimated = true;
+                        setupGalleryAnimations();
+                        observer.unobserve(gallerySection);
+                    }
+                }
+            }, 100);
         }
 
         // Gallery Modal Functions
@@ -1461,21 +1525,69 @@
                 });
             });
 
+            // Google reCAPTCHA v3 initialization and handling
+            const recaptchaToken = document.getElementById('recaptchaToken');
+            const recaptchaMessage = document.getElementById('recaptchaMessage');
+            const registrationSubmitBtn = document.getElementById('registrationSubmitBtn');
+            let recaptchaVerified = false;
+
+            function executeRecaptcha() {
+                if (typeof grecaptcha !== 'undefined') {
+                    grecaptcha.ready(function() {
+                        grecaptcha.execute('@ViewBag.RecaptchaSiteKey', { action: 'register' }).then(function(token) {
+                            if (recaptchaToken) {
+                                recaptchaToken.value = token;
+                            }
+                            recaptchaVerified = true;
+                            if (recaptchaMessage) {
+                                recaptchaMessage.textContent = 'Google reCAPTCHA - ยืนยันแล้ว ✓';
+                            }
+                            // Enable submit button once reCAPTCHA is verified
+                            if (registrationSubmitBtn) {
+                                registrationSubmitBtn.disabled = false;
+                            }
+                        }).catch(function(error) {
+                            console.error('reCAPTCHA error:', error);
+                            if (recaptchaMessage) {
+                                recaptchaMessage.textContent = 'Google reCAPTCHA - เกิดข้อผิดพลาด';
+                            }
+                        });
+                    });
+                } else {
+                    // If grecaptcha is not loaded, retry after a delay
+                    setTimeout(executeRecaptcha, 1000);
+                }
+            }
+
+            // Initialize reCAPTCHA when page loads
+            executeRecaptcha();
+
+            // Re-verify reCAPTCHA token periodically (every 2 minutes) to keep it fresh
+            setInterval(executeRecaptcha, 120000);
+
             // Registration form submission handling with AJAX
             const registrationForm = document.getElementById('registrationForm');
             if (registrationForm) {
                 registrationForm.addEventListener('submit', function(e) {
                     e.preventDefault(); // Prevent default form submission
 
+                    // Check if reCAPTCHA is verified
+                    if (!recaptchaVerified || !recaptchaToken.value) {
+                        alert('กรุณารอให้ Google reCAPTCHA ตรวจสอบเสร็จสิ้น');
+                        return;
+                    }
+
                     // Check if form validation passes
                     if (this.checkValidity()) {
                         // Show loading state on submit button
-                        const submitButton = this.querySelector('button[type="submit"]');
-                        const originalText = submitButton ? submitButton.textContent : '';
+                        const submitButton = document.getElementById('registrationSubmitBtn');
+                        const btnText = submitButton ? submitButton.querySelector('.btn-text') : null;
+                        const btnSpinner = submitButton ? submitButton.querySelector('.btn-spinner') : null;
 
                         if (submitButton) {
                             submitButton.disabled = true;
-                            submitButton.textContent = 'กำลังส่งข้อมูล...';
+                            if (btnText) btnText.style.display = 'none';
+                            if (btnSpinner) btnSpinner.style.display = 'inline-block';
                         }
 
                         // Prepare form data
@@ -1557,7 +1669,8 @@
                             // Restore submit button
                             if (submitButton) {
                                 submitButton.disabled = false;
-                                submitButton.textContent = originalText;
+                                if (btnText) btnText.style.display = 'inline-block';
+                                if (btnSpinner) btnSpinner.style.display = 'none';
                             }
                         });
                     }
@@ -1736,6 +1849,52 @@
                 max-width: 240px;
                 justify-content: center;
             }
+        }
+
+        /* Spinner Animation for Submit Button */
+        @@keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn-spinner {
+            display: inline-block;
+            margin-left: 8px;
+        }
+
+        .spinner-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        #registrationSubmitBtn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #registrationSubmitBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: #999 !important;
+            color: #fff !important;
+        }
+
+        #registrationSubmitBtn:not(:disabled) {
+            opacity: 1;
+            transition: all 0.3s ease;
+        }
+
+        #registrationSubmitBtn:hover:not(:disabled) {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         /* Project Theme Colors */
@@ -2442,6 +2601,19 @@
         .category-icon i {
             color: white;
             font-size: 20px;
+        }
+
+        .category-icon .icon-nearby {
+            width: 28px;
+            height: 28px;
+            color: white;
+        }
+
+        .category-icon-img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
         }
 
         .location-category h4 {

@@ -19,6 +19,8 @@ builder.Services.AddScoped<DatabaseProjectService>();
 builder.Services.AddScoped<StaticProjectService>();
 // Use DatabaseProjectService directly as the primary IProjectService (database-only for floor plans)
 builder.Services.AddScoped<IProjectService, DatabaseProjectService>();
+// ProjectMappingService - maps string project IDs to numeric MappedProjectID for backward compatibility
+builder.Services.AddScoped<IProjectMappingService, ProjectMappingService>();
 builder.Services.AddScoped<RegistrationService>();
 
 builder.Services
@@ -66,6 +68,12 @@ builder.Services.AddScoped<DatabaseMigration>();
 // GTM service for Google Tag Manager integration
 builder.Services.AddScoped<IGtmService, GtmService>();
 
+// SEO service for managing meta tags and structured data
+builder.Services.AddScoped<ISeoService, SeoService>();
+
+// reCAPTCHA service for form submission validation
+builder.Services.AddHttpClient<IRecaptchaService, RecaptchaService>();
+
 // Add logging for better debugging and monitoring
 builder.Services.AddLogging(logging =>
 {
@@ -90,20 +98,14 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// PPS Asset style project routes
+// PPS Asset style project routes (Preferred format as per CLAUDE.md)
 app.MapControllerRoute(
     name: "project-type-route",
     pattern: "{projectType}/{projectName}/{location}",
     defaults: new { controller = "Home", action = "Project" },
     constraints: new { projectType = @"singlehouse|townhome|twinhouse" });
 
-// Simple project route
-app.MapControllerRoute(
-    name: "simple-project",
-    pattern: "project/{id}",
-    defaults: new { controller = "Home", action = "Project" });
-
-// Legacy project route (backward compatibility)
+// Legacy project route (Backward compatibility as per CLAUDE.md)
 app.MapControllerRoute(
     name: "project",
     pattern: "Project/{id=ricco-residence-hathairat}",

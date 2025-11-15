@@ -8,21 +8,27 @@ namespace PPSAsset.Services
     {
         private readonly string _connectionString;
         private readonly ILogger<RegistrationService> _logger;
+        private readonly IProjectMappingService _projectMappingService;
 
-        public RegistrationService(IConfiguration configuration, ILogger<RegistrationService> logger)
+        public RegistrationService(IConfiguration configuration, ILogger<RegistrationService> logger, IProjectMappingService projectMappingService)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Database connection string not found");
             _logger = logger;
+            _projectMappingService = projectMappingService;
         }
 
         public async Task SaveAsync(RegistrationInputModel input, HttpRequest request)
         {
             var transactionId = DateTime.UtcNow.ToString("yyMMddHHmmssfff");
 
+            // Get the MappedProjectID (legacy code like SG06, TH01) from the string ProjectID for backward compatibility
+            var mappedProjectId = await _projectMappingService.GetMappedProjectIdAsync(input.ProjectID);
+
             var parameters = new DynamicParameters();
             parameters.Add("@TransactoinID", transactionId);
-            parameters.Add("@ProjectID", input.ProjectID);
+            // Use MappedProjectID (legacy code) instead of string ProjectID for backward compatibility with old data
+            parameters.Add("@ProjectID", mappedProjectId ?? string.Empty);
             parameters.Add("@ProjectName", input.ProjectName);
             parameters.Add("@FirstName", input.FirstName);
             parameters.Add("@LastName", input.LastName);
@@ -94,11 +100,13 @@ namespace PPSAsset.Services
             {
                 using var connection = new MySqlConnection(_connectionString);
                 await connection.ExecuteAsync(sql, parameters);
-                _logger.LogInformation("Inserted transaction {TransactionId} for project {ProjectId}", transactionId, input.ProjectID);
+                _logger.LogInformation("Inserted transaction {TransactionId} for project {ProjectId} (MappedProjectID: {MappedProjectId})",
+                    transactionId, input.ProjectID, mappedProjectId ?? "NOT_FOUND");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to insert transaction for project {ProjectId}", input.ProjectID);
+                _logger.LogError(ex, "Failed to insert transaction for project {ProjectId} (MappedProjectID: {MappedProjectId})",
+                    input.ProjectID, mappedProjectId ?? "NOT_FOUND");
                 throw;
             }
         }

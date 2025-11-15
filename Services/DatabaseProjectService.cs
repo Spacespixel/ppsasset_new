@@ -34,6 +34,7 @@ namespace PPSAsset.Services
                         p.ProjectConcept as Concept,
                         p.ProjectType as Type,
                         p.ProjectStatus as Status,
+                        p.SortOrder,
                         p.ProjectAddress as Location,
                         p.ProjectSize,
                         p.TotalUnits,
@@ -87,6 +88,7 @@ namespace PPSAsset.Services
                         p.ProjectConcept as Concept,
                         p.ProjectType as Type,
                         p.ProjectStatus as Status,
+                        p.SortOrder,
                         p.ProjectAddress as Location,
                         p.ProjectSize,
                         p.TotalUnits,
@@ -95,7 +97,7 @@ namespace PPSAsset.Services
                         p.Developer,
                         p.PriceRange
                     FROM sy_project p
-                    ORDER BY p.ModifiedDate DESC";
+                    ORDER BY p.SortOrder ASC, p.ModifiedDate DESC";
 
                 var projects = connection.Query<dynamic>(sql).ToList();
                 var projectViewModels = new List<ProjectViewModel>();
@@ -135,6 +137,7 @@ namespace PPSAsset.Services
                         p.ProjectConcept as Concept,
                         p.ProjectType as Type,
                         p.ProjectStatus as Status,
+                        p.SortOrder,
                         p.ProjectAddress as Location,
                         p.ProjectSize,
                         p.TotalUnits,
@@ -144,7 +147,7 @@ namespace PPSAsset.Services
                         p.PriceRange
                     FROM sy_project p
                     WHERE p.ProjectType = @ProjectType
-                    ORDER BY p.ModifiedDate DESC";
+                    ORDER BY p.SortOrder ASC, p.ModifiedDate DESC";
 
                 var projects = connection.Query<dynamic>(sql, new { ProjectType = type.ToString() }).ToList();
                 var projectViewModels = new List<ProjectViewModel>();
@@ -181,6 +184,7 @@ namespace PPSAsset.Services
                         p.ProjectConcept as Concept,
                         p.ProjectType as Type,
                         p.ProjectStatus as Status,
+                        p.SortOrder,
                         p.ProjectAddress as Location,
                         p.ProjectSize,
                         p.TotalUnits,
@@ -190,7 +194,7 @@ namespace PPSAsset.Services
                         p.PriceRange
                     FROM sy_project p
                     WHERE p.ProjectStatus IN ('NewProject', 'Available')
-                    ORDER BY p.ModifiedDate DESC";
+                    ORDER BY p.SortOrder ASC, p.ModifiedDate DESC";
 
                 var projects = connection.Query<dynamic>(sql).ToList();
                 var projectViewModels = new List<ProjectViewModel>();
@@ -298,6 +302,7 @@ namespace PPSAsset.Services
                 Concept = project.Concept ?? string.Empty,
                 Type = Enum.TryParse<ProjectType>(project.Type?.ToString(), out ProjectType type) ? type : ProjectType.SingleHouse,
                 Status = Enum.TryParse<ProjectStatus>(project.Status?.ToString(), out ProjectStatus status) ? status : ProjectStatus.Available,
+                SortOrder = project.SortOrder ?? 0,
                 Details = new ProjectDetails
                 {
                     Location = project.Location ?? string.Empty,
@@ -456,13 +461,13 @@ namespace PPSAsset.Services
             // Load floor plans for each house type
             foreach (var houseType in houseTypes)
             {
-                houseType.FloorPlans = LoadFloorPlans(connection, houseType.Id);
+                houseType.FloorPlans = LoadFloorPlans(connection, houseType.HouseTypeID);
             }
 
             return houseTypes;
         }
 
-        private List<FloorPlan> LoadFloorPlans(IDbConnection connection, string houseTypeCode)
+        private List<FloorPlan> LoadFloorPlans(IDbConnection connection, int houseTypeId)
         {
             const string sql = @"
                 SELECT
@@ -471,11 +476,10 @@ namespace PPSAsset.Services
                     fp.ImagePath,
                     fp.FloorType as Type
                 FROM sy_project_floor_plans fp
-                INNER JOIN sy_project_house_types ht ON fp.HouseTypeID = ht.HouseTypeID
-                WHERE ht.HouseTypeCode = @HouseTypeCode
+                WHERE fp.HouseTypeID = @HouseTypeID
                 ORDER BY fp.SortOrder";
 
-            var floorPlans = connection.Query<dynamic>(sql, new { HouseTypeCode = houseTypeCode }).ToList();
+            var floorPlans = connection.Query<dynamic>(sql, new { HouseTypeID = houseTypeId }).ToList();
 
             return floorPlans.Select(fp => new FloorPlan
             {

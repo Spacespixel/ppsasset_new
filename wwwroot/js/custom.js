@@ -318,22 +318,22 @@ function initializeOwl(){
             var items = parseInt( $(this).attr("data-owl-items"), 10);
             if( !items ) items = 1;
 
-            var nav = parseInt( $(this).attr("data-owl-nav"), 2);
+            var nav = parseInt( $(this).attr("data-owl-nav"), 10);
             if( !nav ) nav = 0;
 
-            var dots = parseInt( $(this).attr("data-owl-dots"), 2);
+            var dots = parseInt( $(this).attr("data-owl-dots"), 10);
             if( !dots ) dots = 0;
 
-            var center = parseInt( $(this).attr("data-owl-center"), 2);
+            var center = parseInt( $(this).attr("data-owl-center"), 10);
             if( !center ) center = 0;
 
-            var loop = parseInt( $(this).attr("data-owl-loop"), 2);
+            var loop = parseInt( $(this).attr("data-owl-loop"), 10);
             if( !loop ) loop = 0;
 
-            var margin = parseInt( $(this).attr("data-owl-margin"), 2);
+            var margin = parseInt( $(this).attr("data-owl-margin"), 10);
             if( !margin ) margin = 0;
 
-            var autoWidth = parseInt( $(this).attr("data-owl-auto-width"), 2);
+            var autoWidth = parseInt( $(this).attr("data-owl-auto-width"), 10);
             if( !autoWidth ) autoWidth = 0;
 
             var navContainer = $(this).attr("data-owl-nav-container");
@@ -346,7 +346,7 @@ function initializeOwl(){
             if( !fadeOut ) fadeOut = 0;
             else fadeOut = "fadeOut";
 
-            $(this).owlCarousel({
+            var owlInstance = $(this).owlCarousel({
                 navContainer: navContainer,
                 animateOut: fadeOut,
                 autoplaySpeed: 2000,
@@ -374,6 +374,9 @@ function initializeOwl(){
                     }
                 }
             });
+
+            // Carousel text updates are now handled in Index.cshtml
+            // This prevents conflicts and ensures proper timing with page lifecycle
         });
 
     }
