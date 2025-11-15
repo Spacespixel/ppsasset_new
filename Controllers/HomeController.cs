@@ -7,6 +7,8 @@ using Dapper;
 using System.Net;
 using System.Security.Claims;
 using System.Linq;
+using MySql.Data.MySqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace PPSAsset.Controllers
 {
@@ -20,8 +22,9 @@ namespace PPSAsset.Controllers
         private readonly IConfiguration _configuration;
         private readonly IGtmService _gtmService;
         private readonly ISeoService _seoService;
+        private readonly IRecaptchaService _recaptchaService;
 
-        public HomeController(ILogger<HomeController> logger, IProjectService projectService, IThemeService themeService, DatabaseMigration databaseMigration, IConfiguration configuration, RegistrationService registrationService, IGtmService gtmService, ISeoService seoService)
+        public HomeController(ILogger<HomeController> logger, IProjectService projectService, IThemeService themeService, DatabaseMigration databaseMigration, IConfiguration configuration, RegistrationService registrationService, IGtmService gtmService, ISeoService seoService, IRecaptchaService recaptchaService)
         {
             _logger = logger;
             _projectService = projectService;
@@ -31,6 +34,12 @@ namespace PPSAsset.Controllers
             _configuration = configuration;
             _gtmService = gtmService;
             _seoService = seoService;
+            _recaptchaService = recaptchaService;
+        }
+
+        private string GetConnectionString()
+        {
+            return _configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
         }
 
         public async Task<IActionResult> Index()
@@ -141,6 +150,9 @@ namespace PPSAsset.Controllers
             // Set JSON-LD Organization schema
             ViewBag.JsonLdOrganization = _seoService.GetOrganizationSchema();
 
+            // Set reCAPTCHA site key
+            ViewBag.RecaptchaSiteKey = _configuration.GetSection("RecaptchaSettings")["SiteKey"] ?? string.Empty;
+
             ViewBag.RegistrationModel = BuildRegistrationModel(project);
             ViewBag.AuthProvider = GetAuthenticatedProvider();
             ViewBag.GetProjectUrl = new Func<string, string>(ConvertProjectIdToPpsUrl);
@@ -161,6 +173,24 @@ namespace PPSAsset.Controllers
                 input.Email ??= User.FindFirstValue(ClaimTypes.Email);
                 input.FirstName ??= User.FindFirstValue(ClaimTypes.GivenName) ?? User.Identity?.Name;
                 input.LastName ??= User.FindFirstValue(ClaimTypes.Surname);
+            }
+
+            // Verify reCAPTCHA token
+            bool recaptchaValid = await _recaptchaService.VerifyTokenAsync(input.RecaptchaToken ?? string.Empty);
+            if (!recaptchaValid)
+            {
+                _logger.LogWarning("reCAPTCHA validation failed for project {ProjectId}", projectId);
+
+                // Check if it's an AJAX request
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new {
+                        success = false,
+                        message = "reCAPTCHA ยืนยันไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"
+                    });
+                }
+
+                ModelState.AddModelError(string.Empty, "reCAPTCHA ยืนยันไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
             }
 
             if (!ModelState.IsValid)
@@ -235,38 +265,76 @@ namespace PPSAsset.Controllers
 
         private string ConvertPpsUrlToProjectId(string projectType, string projectName, string location)
         {
-            // Convert URL-friendly format to our project ID format
-            // Example: singlehouse/ricco-residence-ramintra/hathairat -> ricco-residence-hathairat
+            // Convert URL-friendly format to our project ID format using database mapping
+            // Example: singlehouse/thericcoresidence/ramindrachatuchot -> ricco-residence-chatuchot
 
-            var mapping = new Dictionary<string, string>
+            try
             {
-                // Single Houses - Available
-                {"singlehouse/ricco-residence-ramintra/hathairat", "ricco-residence-hathairat"},
-                {"singlehouse/ricco-residence-ramintra/chatuchot", "ricco-residence-chatuchot"},
-                {"singlehouse/thericcoresidenceprime/wongwaenhathairat", "ricco-residence-prime-hathairat"},
-                {"singlehouse/thericcoresidenceprime/wongwaenchatuchot", "ricco-residence-prime-chatuchot"},
+                var urlPattern = $"{projectType}/{projectName}/{location}";
 
-                // Townhomes - Available
-                {"townhome/thericcotown/phahonyothin_saimai53", "ricco-town-phahonyothin-saimai53"},
-                {"townhome/thericcotown/wongwaen_lumlukka", "ricco-town-wongwaen-lamlukka"},
+                // Query the database for the mapping
+                using (var connection = new MySqlConnection(GetConnectionString()))
+                {
+                    connection.Open();
+                    var query = @"
+                        SELECT ProjectID
+                        FROM sy_project_mapping
+                        WHERE UrlPattern = @UrlPattern
+                        AND IsActive = 1
+                        LIMIT 1";
 
-                // Legacy mappings for backward compatibility
-                {"singlehouse/ricco-residence-prime-ringroad/hathairat", "ricco-residence-prime-hathairat"},
-                {"singlehouse/ricco-residence-prime-ringroad/chatuchot", "ricco-residence-prime-chatuchot"},
-                {"townhome/ricco-town-ringroad/lamlukka", "ricco-town-wongwaen-lamlukka"},
+                    var result = connection.QueryFirstOrDefault<string>(query, new { UrlPattern = urlPattern });
 
-                // Twin Houses (for future use)
-                {"twinhouse/ricco-twin-ringroad/lamlukka", "ricco-twin-ringroad-lamlukka"}
-            };
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        _logger.LogInformation($"Converted PPS URL to project ID: {urlPattern} -> {result}");
+                        return result;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error converting PPS URL to project ID: {ex.Message}");
+            }
 
-            var urlKey = $"{projectType}/{projectName}/{location}";
-            return mapping.TryGetValue(urlKey, out var projectId) ? projectId : "ricco-residence-hathairat";
+            // Fallback to static service if database lookup fails
+            _logger.LogWarning($"No mapping found for URL pattern: {projectType}/{projectName}/{location}");
+            return null; // Let the caller handle null (instead of wrong default)
         }
 
         private string ConvertProjectIdToPpsUrl(string projectId)
         {
-            // Simple URL structure: /project/projectname
-            return $"/project/{projectId}";
+            // Convert project ID back to PPS Asset format using database mapping
+            // Example: ricco-residence-chatuchot -> /singlehouse/thericcoresidence/ramindrachatuchot
+
+            try
+            {
+                using (var connection = new MySqlConnection(GetConnectionString()))
+                {
+                    connection.Open();
+                    var query = @"
+                        SELECT UrlPattern
+                        FROM sy_project_mapping
+                        WHERE ProjectID = @ProjectId
+                        AND IsActive = 1
+                        LIMIT 1";
+
+                    var result = connection.QueryFirstOrDefault<string>(query, new { ProjectId = projectId });
+
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        return $"/{result}";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error converting project ID to PPS URL: {ex.Message}");
+            }
+
+            // Fallback: return null and let caller handle missing mapping
+            _logger.LogWarning($"No URL pattern found for project ID: {projectId}");
+            return null;
         }
 
         private void ApplyTheme(string projectId)
@@ -488,6 +556,55 @@ namespace PPSAsset.Controllers
                     success = false,
                     message = "Internal server error retrieving status history",
                     error = ex.Message
+                });
+            }
+        }
+
+        /// <summary>
+        /// Debug endpoint to check project data - development only
+        /// </summary>
+        public IActionResult DebugProject(string projectId = "ricco-residence-hathairat")
+        {
+            // Only allow in development environment for security
+            if (!HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment())
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                var project = _projectService.GetProject(projectId);
+
+                if (project == null)
+                {
+                    return Json(new
+                    {
+                        error = "Project not found",
+                        projectId
+                    });
+                }
+
+                return Json(new
+                {
+                    projectId,
+                    id = project.Id,
+                    name = project.Name,
+                    nameTh = project.NameTh,
+                    nameEn = project.NameEn,
+                    subtitle = project.Subtitle,
+                    description = project.Description,
+                    concept = project.Concept,
+                    type = project.Type.ToString(),
+                    status = project.Status.ToString()
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    error = ex.Message,
+                    stackTrace = ex.StackTrace,
+                    projectId
                 });
             }
         }
