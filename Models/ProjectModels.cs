@@ -11,6 +11,7 @@ namespace PPSAsset.Models
         public string Concept { get; set; } = string.Empty;
         public ProjectType Type { get; set; }
         public ProjectStatus Status { get; set; }
+        public int SortOrder { get; set; } = 0;
         public ProjectDetails Details { get; set; } = new();
         public ProjectImages Images { get; set; } = new();
         public List<HouseType> HouseTypes { get; set; } = new();
@@ -49,6 +50,7 @@ namespace PPSAsset.Models
 
     public class HouseType
     {
+        public int HouseTypeID { get; set; }
         public string Id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string DisplayName { get; set; } = string.Empty;
