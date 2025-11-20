@@ -338,7 +338,34 @@ Headers:		'Montserrat', sans-serif;
 .hero-section .wrapper .hero-title {
   display: table-cell;
   vertical-align: middle;
+  padding: 20px;
 }
+
+/* Mobile: Hero Title Container */
+@media (max-width: 768px) {
+  .hero-section .wrapper .hero-title {
+    display: block !important;
+    vertical-align: auto;
+    padding: 0 20px 20px 20px;
+  }
+
+  .hero-section .wrapper .hero-title .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .hero-section .wrapper .hero-title .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section .wrapper .hero-title {
+    padding: 0 16px 16px 16px;
+  }
+}
+
 .hero-section .owl-carousel, .hero-section .owl-stage-outer, .hero-section .owl-stage, .hero-section .owl-item {
   height: 100%;
 }
@@ -3937,6 +3964,93 @@ form .status i {
     padding-left: 25px;
 }
 
+/* Base Dropdown Menu Styling - For All Screen Sizes */
+.dropdown-menu {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.dropdown-menu li {
+    display: block;
+}
+
+.dropdown-menu .dropdown-header {
+    padding: 12px 20px;
+    font-weight: 600;
+    color: #365523;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.dropdown-menu .dropdown-header:first-child {
+    margin-top: 0;
+}
+
+.dropdown-menu li a {
+    display: block;
+    padding: 12px 20px !important;
+    color: #365523 !important;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 400;
+    transition: all 0.3s ease;
+    margin: 0 !important;
+}
+
+.dropdown-menu li a:hover {
+    background-color: rgba(54, 85, 35, 0.1);
+    padding-left: 25px !important;
+}
+
+.dropdown-menu .divider {
+    height: 1px;
+    margin: 0.5rem 0;
+    background-color: rgba(54, 85, 35, 0.2);
+}
+
+/* Desktop Dropdown Menu Styling */
+@media (min-width: 769px) {
+    .dropdown:hover .dropdown-menu {
+        display: block !important;
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .dropdown-menu {
+        display: none !important;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+}
+
+/* Mobile Dropdown Menu Styling */
+@media (max-width: 768px) {
+    .dropdown-menu {
+        display: none !important;
+        position: static;
+        float: none;
+        width: 100%;
+        margin: 0;
+        padding: 0.5rem 0;
+        border: none;
+        box-shadow: none;
+        background-color: rgba(255, 255, 255, 0.95);
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+
+    .dropdown-menu.show,
+    .dropdown-menu[style*="display: block"] {
+        display: block !important;
+    }
+
+    /* Ensure dropdown toggle doesn't have ::after on mobile */
+    .navigation-links .dropdown-toggle::after {
+        display: none;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .hero h1 {
@@ -4308,17 +4422,45 @@ form .status i {
     text-align: center;
 }
 
+.map-container {
+    margin-bottom: 3rem;
+}
+
 .location-map {
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    margin-bottom: 3rem;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 500px;
 }
 
-.location-map iframe {
+.location-map iframe,
+.location-map img {
     width: 100%;
-    height: 400px;
+    height: 100%;
     border: none;
+    display: block;
+    object-fit: cover;
+}
+
+/* Optimized map sizing for different screen sizes */
+@media (min-width: 1200px) {
+    .location-map {
+        max-height: 450px;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .location-map {
+        max-height: 400px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .location-map {
+        max-height: 350px;
+    }
 }
 
 .nearby-places {
@@ -4532,8 +4674,12 @@ form .status i {
         height: 200px;
     }
     
+    .location-map {
+        max-height: 250px;
+    }
+
     .location-map iframe {
-        height: 300px;
+        height: 100%;
     }
 }
 
@@ -4543,22 +4689,27 @@ form .status i {
     .project-hero h1 {
         font-size: 1.6rem;
     }
-    
+
     .btn {
         font-size: 0.9rem;
         padding: 8px 16px;
     }
-    
+
     .facility-card i {
         font-size: 2rem;
     }
-    
+
     .overview-item i {
         font-size: 2rem;
     }
-    
+
     .contact-info-item i {
         font-size: 1.2rem;
+    }
+
+    /* Optimize map size for small phones */
+    .location-map {
+        max-height: 200px;
     }
 }
 
@@ -4775,9 +4926,10 @@ form .status i {
     font-family: 'Prompt', 'Kanit', 'Montserrat', sans-serif;
     color: #1f1f1f;
     background-color: #ffffff;
-    --primary-color: #365523;
-    --secondary-color: #4A7030;
-    --light-bg: #f4f6f3;
+    /* CSS variables now set inline from Project.cshtml to support dynamic theme colors */
+    /* --primary-color: #365523; */
+    /* --secondary-color: #4A7030; */
+    /* --light-bg: #f4f6f3; */
 }
 
 .project-minisite .container {
@@ -4901,6 +5053,7 @@ form .status i {
     padding: 10px 16px;
     border-radius: 24px;
     transition: background .2s ease, color .2s ease;
+    font-size: 1rem;            /* 16px - matches project details card text */
 }
 
 /* Removed hover effect for regular navigation links */
@@ -4911,6 +5064,7 @@ form .status i {
     font-weight: 700 !important;
     letter-spacing: 0.5px !important;
     transition: color 0.3s ease !important;
+    font-size: 1.0625rem !important;    /* 17px - slightly larger for CTA prominence */
 }
 
 .project-nav__cta:hover {
@@ -5021,6 +5175,77 @@ form .status i {
     margin-bottom: 24px;
     max-width: 520px;
     opacity: .9;
+}
+
+/* ===== MOBILE OPTIMIZATION FOR HERO BANNER ===== */
+
+/* Mobile: Hero Section Height */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 350px;
+        height: auto;
+    }
+
+    .hero-section .wrapper {
+        display: flex !important;
+        align-items: flex-end;
+        justify-content: flex-start;
+        padding-bottom: 30px;
+    }
+
+    /* Reduce main title size on mobile */
+    #hero-main-title {
+        font-size: 1.8rem !important;
+        margin-bottom: 12px !important;
+        line-height: 1.3 !important;
+        word-break: break-word;
+    }
+
+    /* Reduce subtitle size on mobile */
+    #hero-description {
+        font-size: 0.95rem !important;
+        margin-bottom: 16px !important;
+        opacity: 0.95 !important;
+    }
+
+    /* Optimize hero CTA button on mobile */
+    .hero-cta {
+        display: inline-block;
+        margin-top: 10px;
+    }
+
+    .hero-cta .btn-primary-cta {
+        padding: 10px 20px !important;
+        font-size: 14px !important;
+        white-space: nowrap;
+    }
+}
+
+/* Extra small phones (< 480px) */
+@media (max-width: 480px) {
+    .hero-section {
+        min-height: 300px;
+    }
+
+    .hero-section .wrapper {
+        padding-bottom: 20px;
+    }
+
+    #hero-main-title {
+        font-size: 1.5rem !important;
+        margin-bottom: 8px !important;
+    }
+
+    #hero-description {
+        font-size: 0.88rem !important;
+        margin-bottom: 12px !important;
+        line-height: 1.4;
+    }
+
+    .hero-cta .btn-primary-cta {
+        padding: 8px 16px !important;
+        font-size: 13px !important;
+    }
 }
 
 /* Ensure no black borders or backgrounds on hero content */
@@ -5684,16 +5909,61 @@ form .status i {
     height: 18px;
 }
 
+/* Default registration button styling (shared across themes) */
 .project-register .btn-primary {
-    background: #b0217d;
     border: none;
     padding: 16px 36px;
     border-radius: 999px;
     min-width: 220px;
 }
 
-.project-register .btn-primary:hover {
-    background: #951868;
+/* Theme-specific registration button colors */
+.theme-magenta .project-register .btn-primary {
+    background: #C2185B;
+}
+
+.theme-magenta .project-register .btn-primary:hover {
+    background: #E91E63;
+}
+
+.theme-red .project-register .btn-primary {
+    background: #B71C1C;
+}
+
+.theme-red .project-register .btn-primary:hover {
+    background: #D32F2F;
+}
+
+.theme-blue .project-register .btn-primary {
+    background: #1976D2;
+}
+
+.theme-blue .project-register .btn-primary:hover {
+    background: #2196F3;
+}
+
+.theme-dark-red .project-register .btn-primary {
+    background: #580709;
+}
+
+.theme-dark-red .project-register .btn-primary:hover {
+    background: #b9834c;
+}
+
+.theme-maroon .project-register .btn-primary {
+    background: #8D1537;
+}
+
+.theme-maroon .project-register .btn-primary:hover {
+    background: #AD1457;
+}
+
+.theme-default .project-register .btn-primary {
+    background: #365523;
+}
+
+.theme-default .project-register .btn-primary:hover {
+    background: #4A7030;
 }
 
 .project-contact .contact-grid {
@@ -6065,8 +6335,23 @@ form .status i {
 
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 32px;
+    max-width: 100%;
+    margin: 0 auto;
+    width: 100%;
+}
+
+@media (max-width: 1200px) {
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Project card fade-in animation */
@@ -6092,6 +6377,7 @@ form .status i {
     /* Initially hidden for animation */
     opacity: 0;
     transform: translateY(30px);
+    max-width: 100%;
 }
 
 .project-card.animate-in {
@@ -8003,12 +8289,65 @@ form .status i {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 48px;
-    min-height: 48px;
+    min-width: 70px;
+    min-height: 70px;
+    width: 70px;
+    height: 70px;
+    background-color: #C2185B;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-bottom: 15px;
 }
 
+.category-icon i,
 .category-icon .icon-nearby {
-    width: 40px;
-    height: 40px;
+    font-size: 32px;
+    color: white;
+    width: auto;
+    height: auto;
     margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.location-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.location-category {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.location-category h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    margin-top: 5px;
+}
+
+.location-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .location-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .location-grid {
+        grid-template-columns: 1fr;
+    }
 }

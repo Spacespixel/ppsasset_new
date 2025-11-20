@@ -2,7 +2,62 @@
 @using System.Net
 @using System.Globalization
 @using System.Collections.Generic
+@using System.Text.RegularExpressions
 @model PPSAsset.Models.ProjectViewModel
+
+@{
+    // Helper function to split text into summary and details
+    string SplitConceptText(string fullText, out string summary, out string details)
+    {
+        if (string.IsNullOrEmpty(fullText))
+        {
+            summary = string.Empty;
+            details = string.Empty;
+            return string.Empty;
+        }
+
+        // Try to split by sentence first (Thai text with punctuation)
+        var sentences = Regex.Split(fullText, @"(?<=[\.!?฿])\s+");
+        sentences = sentences.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+
+        // If we got sentences from punctuation splitting
+        if (sentences.Length > 1)
+        {
+            int summaryCount = Math.Max(1, sentences.Length / 2);
+            summary = string.Join(" ", sentences.Take(summaryCount)).Trim();
+            details = string.Join(" ", sentences.Skip(summaryCount)).Trim();
+        }
+        else
+        {
+            // Fallback: split by character count (for Thai text without clear punctuation)
+            // Split at roughly 50% of text length, trying to find a good breaking point (space or comma)
+            int midPoint = fullText.Length / 2;
+
+            // Find the nearest space or comma after midpoint
+            int breakPoint = midPoint;
+            for (int i = midPoint; i < fullText.Length && i < midPoint + 100; i++)
+            {
+                if (fullText[i] == ' ' || fullText[i] == ',' || fullText[i] == '、')
+                {
+                    breakPoint = i;
+                    break;
+                }
+            }
+
+            summary = fullText.Substring(0, breakPoint).Trim();
+            details = fullText.Substring(breakPoint).Trim();
+        }
+
+        // Ensure we have content in both parts
+        if (string.IsNullOrWhiteSpace(details))
+        {
+            details = string.Empty;
+        }
+
+        return fullText;
+    }
+}
+
 @{
     ViewData["Title"] = $"{Model.Name} - โครงการบ้านเดี่ยวพรีเมียม | PPS Asset";
     var themeClass = ViewBag.ProjectTheme as string ?? "theme-default";
@@ -45,7 +100,7 @@
 <!-- Google reCAPTCHA v3 Script -->
 <script src="https://www.google.com/recaptcha/api.js?render=@ViewBag.RecaptchaSiteKey"></script>
 
-<div class="project-minisite @themeClass" style="--primary-color:@primaryColor; --secondary-color:@secondaryColor; --light-bg:@lightBackground;">
+<div class="project-minisite @themeClass" style="--primary-color: @primaryColor; --secondary-color: @secondaryColor; --light-bg: @lightBackground;">
     <div class="project-mobile-overlay" id="projectMobileOverlay"></div>
 
     <header class="project-top-bar">
@@ -104,8 +159,21 @@
                         // Use available images for concept features
                         var availableImages = new List<string>();
                         if (!string.IsNullOrEmpty(Model.Images?.Thumbnail)) availableImages.Add(Model.Images.Thumbnail);
-                        if (Model.Images?.Gallery != null) availableImages.AddRange(Model.Images.Gallery.Take(2));
+                        if (Model.Images?.Gallery != null) availableImages.AddRange(Model.Images.Gallery.Take(3));
                         if (!string.IsNullOrEmpty(Model.Images?.Hero)) availableImages.Add(Model.Images.Hero);
+
+                        // Ensure we have at least 2 images for two-part concept layout
+                        // If only 1 image, duplicate it for Block 2
+                        if (availableImages.Count == 1)
+                        {
+                            availableImages.Add(availableImages[0]);
+                        }
+                        // If no images at all, use placeholder
+                        else if (availableImages.Count == 0)
+                        {
+                            availableImages.Add("placeholder-concept.jpg");
+                            availableImages.Add("placeholder-concept.jpg");
+                        }
 
                         // Get concept features from database or fallback to empty list
                         var conceptFeatures = Model.ConceptFeatures ?? new List<PPSAsset.Models.ConceptFeature>();
@@ -155,19 +223,49 @@
                     }
                     else
                     {
-                        <!-- Fallback content if no concept features available -->
+                        <!-- Fallback content if no concept features available - Split into two blocks -->
+                        {
+                            var fullConcept = !string.IsNullOrEmpty(Model.Concept) ? Model.Concept : Model.Description;
+                            SplitConceptText(fullConcept, out string summaryText, out string detailsText);
+
+                            <!-- Block 1: Title + Concept Label + Summary Intro -->
                         <div class="concept-row">
-                            <div class="concept-text-section">
-                                <h3>@(!string.IsNullOrEmpty(Model.Concept) ? Model.Name : "โครงการคุณภาพ")</h3>
-                                <p>@(!string.IsNullOrEmpty(Model.Concept) ? Model.Concept : Model.Description)</p>
+                                <div class="concept-text-section">
+                                    <h3>@(!string.IsNullOrEmpty(Model.Concept) ? Model.Name : "โครงการคุณภาพ")</h3>
+                                    <p class="concept-subtitle">คอนเซปต์โครงการ</p>
+                                    @if (!string.IsNullOrEmpty(summaryText))
+                                    {
+                                        <p class="concept-intro">@summaryText</p>
+                                    }
+                                </div>
+                                <div class="concept-image-section">
+                                    @if (availableImages.Count > 0)
+                                    {
+                                        <img src="@Url.Content($"~/images/projects/{Model.Id}/{availableImages[0]}")" alt="@Model.Name" />
+                                    }
+                                </div>
                             </div>
-                            <div class="concept-image-section">
-                                @if (availableImages.Count > 0)
-                                {
-                                    <img src="@Url.Content($"~/images/projects/{Model.Id}/{availableImages[0]}")" alt="@Model.Name" />
-                                }
+
+                            <!-- Block 2: Detailed Description + Second Image (Reversed) -->
+                            <div class="concept-row concept-row-reverse">
+                                <div class="concept-text-section">
+                                    @if (!string.IsNullOrEmpty(detailsText))
+                                    {
+                                        <p>@detailsText</p>
+                                    }
+                                    else
+                                    {
+                                        <p>@fullConcept</p>
+                                    }
+                                </div>
+                                <div class="concept-image-section">
+                                    @if (availableImages.Count > 1)
+                                    {
+                                        <img src="@Url.Content($"~/images/projects/{Model.Id}/{availableImages[1]}")" alt="@Model.Name - Details" />
+                                    }
+                                </div>
                             </div>
-                        </div>
+                        }
                     }
             </div>
             </div>
@@ -178,7 +276,7 @@
         /* Override all concept styling with simple clean design */
         .concept-section {
             background: var(--light-bg) !important;
-            padding: 60px 0 !important;
+            padding: 80px 0 !important;      /* Increased vertical padding */
             margin: 0 !important;
             opacity: 0;
             transform: translateY(50px);
@@ -198,8 +296,8 @@
 
         .concept-row {
             display: flex;
-            margin-bottom: 40px;
-            min-height: 350px;
+            margin-bottom: 70px;        /* Increased spacing between rows */
+            min-height: 420px;          /* Increased height for better proportions */
             align-items: stretch;
             opacity: 0;
             transform: translateX(-50px);
@@ -210,8 +308,10 @@
             margin-bottom: 0;
         }
 
-        .concept-row:nth-child(even) {
+        .concept-row:nth-child(even),
+        .concept-row-reverse {
             transform: translateX(50px);
+            flex-direction: row-reverse;   /* Reverse the order for alternating layout */
         }
 
         .concept-section.animate-in .concept-row {
@@ -229,7 +329,7 @@
 
         .concept-text-section {
             flex: 1;
-            padding: 50px;
+            padding: 60px 70px;         /* Increased padding for better breathing room */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -252,16 +352,44 @@
             font-size: 3.5rem;      /* 56px - matches .section-title in project details */
             font-weight: 700;
             color: #2d3436;
-            margin: 0 0 20px 0;
+            margin: 0 0 40px 0;     /* Increased spacing after title */
             line-height: 1.2;
+        }
+
+        .concept-subtitle {
+            /* Subtitle under project name */
+            font-size: 1.25rem;     /* 20px */
+            color: var(--primary-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin: 0 0 20px 0;     /* Space before intro text */
+        }
+
+        .concept-intro {
+            /* Summary/intro text in Block 1 */
+            font-size: 1.25rem;     /* 20px - slightly smaller than details for hierarchy */
+            color: #636e72;
+            line-height: 1.6;
+            margin: 0;
+            font-weight: 500;
+            padding-top: 15px;      /* Space between subtitle and intro */
+            border-top: 2px solid var(--primary-color);
+            border-top-opacity: 0.2;
         }
 
         .concept-text-section p {
             /* Font family inherited from typography.css */
-            font-size: 1.125rem;    /* 18px - consistent with text-large */
+            font-size: 1.5rem;      /* 24px - matches project details card size */
             color: #636e72;
-            line-height: 1.6;
+            line-height: 1.7;
             margin: 0;
+            font-weight: 500;       /* Slightly bolder for better readability */
+        }
+
+        .concept-text-section p:first-of-type {
+            /* First paragraph (details in Block 2) */
+            margin-top: 0;
         }
 
         /* Hide old card elements */
@@ -275,35 +403,81 @@
 
         /* Responsive Design */
         @@media (max-width: 768px) {
+            .concept-section {
+                padding: 60px 0 !important;     /* Reduced from 80px on mobile */
+            }
+
             .concept-row {
                 flex-direction: column;
                 min-height: auto;
+                margin-bottom: 50px;            /* Reduced from 70px on tablet */
             }
 
             .concept-text-section {
-                padding: 40px 30px;
+                padding: 50px 40px;             /* Increased from 40px 30px */
             }
 
             .concept-image-section {
-                height: 250px;
+                height: 300px;                  /* Increased from 250px */
             }
 
             .concept-text-section h3 {
                 font-size: 1.625rem;    /* 26px - tablet h3 */
+                margin: 0 0 25px 0;     /* Adjust spacing for smaller screens */
+            }
+
+            .concept-subtitle {
+                font-size: 1.0625rem;   /* 17px - scaled for tablet */
+                margin: 0 0 15px 0;
+            }
+
+            .concept-intro {
+                font-size: 1.0625rem;   /* 17px - tablet intro */
+                padding-top: 12px;
+                border-top-width: 1px;
             }
 
             .concept-text-section p {
-                font-size: 1rem;        /* 16px - tablet body */
+                font-size: 1.25rem;     /* 20px - tablet body, scaled down from 24px */
             }
         }
 
         @@media (max-width: 480px) {
+            .concept-section {
+                padding: 50px 0 !important;     /* Further reduced on mobile */
+            }
+
+            .concept-row {
+                margin-bottom: 40px;            /* Reduced further on mobile */
+            }
+
+            .concept-text-section {
+                padding: 40px 25px;             /* Reduced for mobile screen */
+            }
+
             .concept-text-section h3 {
                 font-size: 1.375rem;    /* 22px - mobile h3 */
+                margin: 0 0 20px 0;     /* Reduced title spacing on mobile */
+            }
+
+            .concept-subtitle {
+                font-size: 1rem;        /* 16px - mobile subtitle */
+                margin: 0 0 12px 0;
+            }
+
+            .concept-intro {
+                font-size: 1rem;        /* 16px - mobile intro */
+                padding-top: 10px;
+                border-top-width: 1px;
+                line-height: 1.5;
             }
 
             .concept-text-section p {
-                font-size: 0.875rem;    /* 14px - mobile body */
+                font-size: 1rem;        /* 16px - mobile body, scaled down from 24px */
+            }
+
+            .concept-image-section {
+                height: 220px;                  /* Reduced on mobile */
             }
         }
     </style>
@@ -973,9 +1147,9 @@
                                         <div class="category-icon">
                                             @{
                                                 var categoryName = group.Key.ToLower();
-                                                string iconPath = GetCategoryIconPath(categoryName);
+                                                string iconClass = GetCategoryIcon(categoryName);
                                             }
-                                            <img src="@iconPath" alt="@group.Key" class="category-icon-img" />
+                                            <i class="@iconClass"></i>
                                         </div>
                                         <h4>@group.Key</h4>
                                     </div>
@@ -1004,32 +1178,32 @@
 </div>
 
 @functions {
-    private string GetCategoryIconPath(string category)
+    private string GetCategoryIcon(string category)
     {
         return category switch
         {
             // Transportation
             _ when category.Contains("การเดินทาง") || category.Contains("transport") =>
-                "~/images/icons/category-transportation.svg",
+                "fa fa-train",
 
             // Shopping malls
             _ when category.Contains("ห้างสรรพสินค้า") || category.Contains("shopping") || category.Contains("mall") =>
-                "~/images/icons/category-shopping.svg",
+                "fa fa-shopping-bag",
 
             // Hospital
             _ when category.Contains("สถานพยาบาล") || category.Contains("hospital") || category.Contains("medical") =>
-                "~/images/icons/category-hospital.svg",
+                "fa fa-hospital-o",
 
             // Education/School
             _ when category.Contains("สถานศึกษา") || category.Contains("school") || category.Contains("education") =>
-                "~/images/icons/category-school.svg",
+                "fa fa-graduation-cap",
 
             // Park/Recreation
             _ when category.Contains("สวน") || category.Contains("park") || category.Contains("tree") =>
-                "~/images/icons/category-park.svg",
+                "fa fa-tree",
 
             // Default
-            _ => "~/images/icons/category-location.svg"
+            _ => "fa fa-map-marker"
         };
     }
 }
@@ -2086,7 +2260,7 @@
         }
 
         .detail-label {
-            font-size: 14px;
+            font-size: 16px;
             color: rgba(255, 255, 255, 0.8) !important;
             margin-bottom: 5px;
             font-weight: 400;
@@ -2369,11 +2543,11 @@
             }
 
             .detail-label {
-                font-size: 13px;
+                font-size: 15px;
             }
 
             .detail-value {
-                font-size: 15px;
+                font-size: 16px;
             }
         }
 
