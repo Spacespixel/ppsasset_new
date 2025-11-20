@@ -4836,23 +4836,23 @@ form .status i {
 
 /* Magenta theme (Ricco Residence Hathairat) */
 .theme-magenta .tab-btn.active {
-    background: #C2185B !important;
+    background: #AF017F !important;
     color: #ffffff !important;
-    box-shadow: 0 2px 8px rgba(194, 24, 91, 0.3) !important;
+    box-shadow: 0 2px 8px rgba(175, 1, 127, 0.3) !important;
 }
 
 .theme-magenta .btn-primary {
-    background-color: #C2185B !important;
-    border-color: #C2185B !important;
+    background-color: #AF017F !important;
+    border-color: #AF017F !important;
 }
 
 .theme-magenta .btn-primary:hover {
-    background-color: #E91E63 !important;
-    border-color: #E91E63 !important;
+    background-color: #D91E6F !important;
+    border-color: #D91E6F !important;
 }
 
 .theme-magenta .section-bg-light {
-    background-color: #FCE4EC !important;
+    background-color: #F8D9E9 !important;
 }
 
 /* Red theme (Ricco Residence Chatuchot) */
@@ -5919,11 +5919,11 @@ form .status i {
 
 /* Theme-specific registration button colors */
 .theme-magenta .project-register .btn-primary {
-    background: #C2185B;
+    background: #AF017F;
 }
 
 .theme-magenta .project-register .btn-primary:hover {
-    background: #E91E63;
+    background: #D91E6F;
 }
 
 .theme-red .project-register .btn-primary {

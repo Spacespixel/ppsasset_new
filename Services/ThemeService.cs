@@ -44,9 +44,9 @@ namespace PPSAsset.Services
                 ["ricco-residence-hathairat"] = new ProjectTheme
                 {
                     ThemeName = "magenta",
-                    PrimaryColor = "#C2185B",
-                    SecondaryColor = "#E91E63",
-                    LightBackground = "#FCE4EC",
+                    PrimaryColor = "#AF017F",
+                    SecondaryColor = "#D91E6F",
+                    LightBackground = "#F8D9E9",
                     CssClass = "theme-magenta"
                 },
                 ["ricco-residence-chatuchot"] = new ProjectTheme
