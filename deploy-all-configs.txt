@@ -1,0 +1,26 @@
+Files to update in production C:\inetpub\wwwroot\ppsasset.com\publish\:
+
+1. appsettings.json - Add OAuth credentials
+2. appsettings.Production.json - Add OAuth credentials  
+3. production-appsettings.json - Add OAuth credentials (if exists)
+
+Copy the Authentication and RecaptchaSettings blocks to ALL config files:
+
+{
+  "Authentication": {
+    "Google": {
+      "ClientId": "66616759669-mmk4if133gqalrigdqgfv9hfbhm6v2ro.apps.googleusercontent.com",
+      "ClientSecret": "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"
+    },
+    "Facebook": {
+      "AppId": "200683946036369",
+      "AppSecret": "9a72d58412bfd1a92635402bcfcc6a62"
+    }
+  },
+  "RecaptchaSettings": {
+    "SiteKey": "6LfPawssAAAAAKdFROS6J-c9ftvQEwl9500WGrVi",
+    "SecretKey": "6LfPawssAAAAALXf-mXU9dG7t_JbRLWDlo5C6S2j"
+  }
+}
+
+Then restart IIS App Pool.

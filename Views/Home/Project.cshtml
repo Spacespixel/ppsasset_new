@@ -2,7 +2,62 @@
 @using System.Net
 @using System.Globalization
 @using System.Collections.Generic
+@using System.Text.RegularExpressions
 @model PPSAsset.Models.ProjectViewModel
+
+@{
+    // Helper function to split text into summary and details
+    string SplitConceptText(string fullText, out string summary, out string details)
+    {
+        if (string.IsNullOrEmpty(fullText))
+        {
+            summary = string.Empty;
+            details = string.Empty;
+            return string.Empty;
+        }
+
+        // Try to split by sentence first (Thai text with punctuation)
+        var sentences = Regex.Split(fullText, @"(?<=[\.!?฿])\s+");
+        sentences = sentences.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+
+        // If we got sentences from punctuation splitting
+        if (sentences.Length > 1)
+        {
+            int summaryCount = Math.Max(1, sentences.Length / 2);
+            summary = string.Join(" ", sentences.Take(summaryCount)).Trim();
+            details = string.Join(" ", sentences.Skip(summaryCount)).Trim();
+        }
+        else
+        {
+            // Fallback: split by character count (for Thai text without clear punctuation)
+            // Split at roughly 50% of text length, trying to find a good breaking point (space or comma)
+            int midPoint = fullText.Length / 2;
+
+            // Find the nearest space or comma after midpoint
+            int breakPoint = midPoint;
+            for (int i = midPoint; i < fullText.Length && i < midPoint + 100; i++)
+            {
+                if (fullText[i] == ' ' || fullText[i] == ',' || fullText[i] == '、')
+                {
+                    breakPoint = i;
+                    break;
+                }
+            }
+
+            summary = fullText.Substring(0, breakPoint).Trim();
+            details = fullText.Substring(breakPoint).Trim();
+        }
+
+        // Ensure we have content in both parts
+        if (string.IsNullOrWhiteSpace(details))
+        {
+            details = string.Empty;
+        }
+
+        return fullText;
+    }
+}
+
 @{
     ViewData["Title"] = $"{Model.Name} - โครงการบ้านเดี่ยวพรีเมียม | PPS Asset";
     var themeClass = ViewBag.ProjectTheme as string ?? "theme-default";
@@ -45,7 +100,7 @@
 <!-- Google reCAPTCHA v3 Script -->
 <script src="https://www.google.com/recaptcha/api.js?render=@ViewBag.RecaptchaSiteKey"></script>
 
-<div class="project-minisite @themeClass" style="--primary-color:@primaryColor; --secondary-color:@secondaryColor; --light-bg:@lightBackground;">
+<div class="project-minisite @themeClass" style="--primary-color: @primaryColor; --secondary-color: @secondaryColor; --light-bg: @lightBackground;">
     <div class="project-mobile-overlay" id="projectMobileOverlay"></div>
 
     <header class="project-top-bar">
@@ -69,8 +124,8 @@
                 <span></span>
             </button>
             <ul class="project-nav__menu" id="projectNavMenu">
-                <li><a class="project-nav__link" href="#concept">คอนเซปต์โครงการ</a></li>
                 <li><a class="project-nav__link" href="#details">รายละเอียดโครงการ</a></li>
+                <li><a class="project-nav__link" href="#concept">คอนเซปต์โครงการ</a></li>
                 <li><a class="project-nav__link" href="#masterplans">แบบบ้าน</a></li>
                 <li><a class="project-nav__link" href="#gallery">แกลเลอรี</a></li>
                 <li><a class="project-nav__link" href="#location">ทำเล</a></li>
@@ -95,257 +150,22 @@
             </div>
         </div>
     </section>
-   <section class="project-section project-pillars" id="concept">
-        <div class="concept-section">
-            <div class="container">
-                <!-- Simple horizontal concept blocks like the reference image -->
-                <div class="concept-blocks">
-                    @{
-                        // Use available images for concept features
-                        var availableImages = new List<string>();
-                        if (!string.IsNullOrEmpty(Model.Images?.Thumbnail)) availableImages.Add(Model.Images.Thumbnail);
-                        if (Model.Images?.Gallery != null) availableImages.AddRange(Model.Images.Gallery.Take(2));
-                        if (!string.IsNullOrEmpty(Model.Images?.Hero)) availableImages.Add(Model.Images.Hero);
 
-                        // Get concept features from database or fallback to empty list
-                        var conceptFeatures = Model.ConceptFeatures ?? new List<PPSAsset.Models.ConceptFeature>();
-                    }
-
-                    @if (conceptFeatures.Any())
-                    {
-                        @for (int i = 0; i < Math.Min(conceptFeatures.Count, 2); i++)
-                        {
-                            var feature = conceptFeatures[i];
-                            var isReverse = i % 2 == 1;
-                            var imageSource = !string.IsNullOrEmpty(feature.Image)
-                                ? Url.Content($"~/images/projects/{Model.Id}/{feature.Image}")
-                                : (availableImages.Count > i ? Url.Content($"~/images/projects/{Model.Id}/{availableImages[i]}") : "");
-
-                            <div class="concept-row @(isReverse ? "concept-row-reverse" : "")">
-                                @if (!isReverse)
-                                {
-                                    <!-- Text on left, Image on right -->
-                                    <div class="concept-text-section">
-                                        <h3>@feature.Title</h3>
-                                        <p>@feature.Description</p>
-                                    </div>
-                                    <div class="concept-image-section">
-                                        @if (!string.IsNullOrEmpty(imageSource))
-                                        {
-                                            <img src="@imageSource" alt="@feature.Title" />
-                                        }
-                                    </div>
-                                }
-                                else
-                                {
-                                    <!-- Image on left, Text on right -->
-                                    <div class="concept-image-section">
-                                        @if (!string.IsNullOrEmpty(imageSource))
-                                        {
-                                            <img src="@imageSource" alt="@feature.Title" />
-                                        }
-                                    </div>
-                                    <div class="concept-text-section">
-                                        <h3>@feature.Title</h3>
-                                        <p>@feature.Description</p>
-                                    </div>
-                                }
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <!-- Fallback content if no concept features available -->
-                        <div class="concept-row">
-                            <div class="concept-text-section">
-                                <h3>@(!string.IsNullOrEmpty(Model.Concept) ? Model.Name : "โครงการคุณภาพ")</h3>
-                                <p>@(!string.IsNullOrEmpty(Model.Concept) ? Model.Concept : Model.Description)</p>
-                            </div>
-                            <div class="concept-image-section">
-                                @if (availableImages.Count > 0)
-                                {
-                                    <img src="@Url.Content($"~/images/projects/{Model.Id}/{availableImages[0]}")" alt="@Model.Name" />
-                                }
-                            </div>
-                        </div>
-                    }
-            </div>
-            </div>
-        </div>
-    </section>
-
-    <style>
-        /* Override all concept styling with simple clean design */
-        .concept-section {
-            background: var(--light-bg) !important;
-            padding: 60px 0 !important;
-            margin: 0 !important;
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 1.2s ease-out;
-        }
-
-        .concept-section.animate-in {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .concept-blocks {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .concept-row {
-            display: flex;
-            margin-bottom: 40px;
-            min-height: 350px;
-            align-items: stretch;
-            opacity: 0;
-            transform: translateX(-50px);
-            transition: all 0.8s ease-out;
-        }
-
-        .concept-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .concept-row:nth-child(even) {
-            transform: translateX(50px);
-        }
-
-        .concept-section.animate-in .concept-row {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .concept-section.animate-in .concept-row:nth-child(1) {
-            transition-delay: 0.3s;
-        }
-
-        .concept-section.animate-in .concept-row:nth-child(2) {
-            transition-delay: 0.6s;
-        }
-
-        .concept-text-section {
-            flex: 1;
-            padding: 50px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            background: transparent;
-        }
-
-        .concept-image-section {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .concept-image-section img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .concept-text-section h3 {
-            /* Font family inherited from typography.css */
-            font-size: 3.5rem;      /* 56px - matches .section-title in project details */
-            font-weight: 700;
-            color: #2d3436;
-            margin: 0 0 20px 0;
-            line-height: 1.2;
-        }
-
-        .concept-text-section p {
-            /* Font family inherited from typography.css */
-            font-size: 1.125rem;    /* 18px - consistent with text-large */
-            color: #636e72;
-            line-height: 1.6;
-            margin: 0;
-        }
-
-        /* Hide old card elements */
-        .concept-cards-grid,
-        .concept-card,
-        .concept-header,
-        .concept-main-title,
-        .concept-subtitle {
-            display: none !important;
-        }
-
-        /* Responsive Design */
-        @@media (max-width: 768px) {
-            .concept-row {
-                flex-direction: column;
-                min-height: auto;
-            }
-
-            .concept-text-section {
-                padding: 40px 30px;
-            }
-
-            .concept-image-section {
-                height: 250px;
-            }
-
-            .concept-text-section h3 {
-                font-size: 1.625rem;    /* 26px - tablet h3 */
-            }
-
-            .concept-text-section p {
-                font-size: 1rem;        /* 16px - tablet body */
-            }
-        }
-
-        @@media (max-width: 480px) {
-            .concept-text-section h3 {
-                font-size: 1.375rem;    /* 22px - mobile h3 */
-            }
-
-            .concept-text-section p {
-                font-size: 0.875rem;    /* 14px - mobile body */
-            }
-        }
-    </style>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const conceptSection = document.querySelector('.concept-section');
-
-            if (conceptSection) {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('animate-in');
-                            observer.unobserve(entry.target);
-                        }
-                    });
-                }, {
-                    threshold: 0.2,
-                    rootMargin: '0px 0px -10% 0px'
-                });
-
-                observer.observe(conceptSection);
-            }
-        });
-    </script>
-
-  <section class="project-section project-register" id="register">
+    <section class="project-section project-register" id="register">
         <div class="container">
             <div class="register-card">
                 <div class="register-card__header">
                     <h3>ลงทะเบียนรับสิทธิ์พิเศษ</h3>
-                    <p>กรอกข้อมูลเพื่อรับใบเสนอราคาและข้อมูลโปรโมชั่นพิเศษ</p>
-                    <div class="register-social">
+                     <div class="register-social">
                         @if (!(User?.Identity?.IsAuthenticated ?? false))
                         {
-                            <button type="button" class="social-btn social-btn--google" data-social-provider="Google" data-social-popup-url="@googlePopupUrl">GOOGLE</button>
+                            <button type="button" class="social-btn social-btn--google" data-social-provider="Google" data-social-popup-url="@googlePopupUrl" onclick="openSocialPopup('@googlePopupUrl')">GOOGLE</button>
                             <noscript>
                                 <a class="social-btn social-btn--google" asp-controller="Account" asp-action="Login" asp-route-provider="Google" asp-route-returnUrl="@loginReturnUrl">GOOGLE</a>
                             </noscript>
-                            <button type="button" class="social-btn social-btn--facebook" data-social-provider="Facebook" data-social-popup-url="@facebookPopupUrl">FACEBOOK</button>
+                            <button type="button" class="social-btn social-btn--facebook" data-social-provider="Facebook" data-social-popup-url="@facebookPopupUrl" style="display: none;">FACEBOOK</button>
                             <noscript>
-                                <a class="social-btn social-btn--facebook" asp-controller="Account" asp-action="Login" asp-route-provider="Facebook" asp-route-returnUrl="@loginReturnUrl">FACEBOOK</a>
+                                <a class="social-btn social-btn--facebook" asp-controller="Account" asp-action="Login" asp-route-provider="Facebook" asp-route-returnUrl="@loginReturnUrl" style="display: none;">FACEBOOK</a>
                             </noscript>
                         }
                         else
@@ -355,6 +175,7 @@
                                 <span class="social-authenticated__name">@User?.Identity?.Name</span>
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="social-authenticated__logout">
                                     @Html.AntiForgeryToken()
+                                    <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
                                     <button type="submit" class="social-btn @providerButtonClass social-btn--logout">ออกจากระบบ</button>
                                 </form>
                             </div>
@@ -373,7 +194,18 @@
                     <input type="hidden" name="UtmTerm" value="@registrationModel.UtmTerm" />
                     <input type="hidden" name="UtmContent" value="@registrationModel.UtmContent" />
 
-                    <div class="validation-summary">@Html.ValidationSummary(false)</div>
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="validation-summary-container alert alert-danger" role="alert">
+                            <div class="validation-summary-header">
+                                <i class="fa fa-exclamation-triangle"></i>
+                                <strong>กรุณาตรวจสอบข้อมูลต่อไปนี้:</strong>
+                            </div>
+                            <div class="validation-summary-content">
+                                @Html.ValidationSummary(false, "", new { @class = "validation-summary-list" })
+                            </div>
+                        </div>
+                    }
                     <fieldset class="form-fieldset">
                         <legend>ข้อมูลการติดต่อ</legend>
                         <div class="form-grid">
@@ -472,6 +304,16 @@
                             <input type="checkbox" name="ConsentMarketing" value="true" @(registrationModel.ConsentMarketing ? "checked" : null) />
                             <span>ยืนยันการยอมรับนโยบายความเป็นส่วนตัว</span>
                         </label>
+                        
+                        <!-- Minimalist Validation Panel -->
+                        <div id="validationPanel" class="validation-panel" style="display: none;">
+                            <div class="validation-panel-header">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span>ข้อผิดพลาดที่พบ:</span>
+                            </div>
+                            <ul id="validationErrors" class="validation-errors-list"></ul>
+                        </div>
+                        
                         <button type="submit" class="btn btn-primary" id="registrationSubmitBtn" disabled>
                             <span class="btn-text">ลงทะเบียน</span>
                             <span class="btn-spinner" style="display: none;">
@@ -516,7 +358,7 @@
                             </svg>
                             สอบถามผ่าน LINE
                         </a>
-                        <a href="https://facebook.com/ppsasset" class="btn-facebook" target="_blank">
+                        <a href="https://facebook.com/ppsasset" class="btn-facebook" target="_blank" style="display: none;">
                             <i class="social_facebook"></i> แชทผ่าน Facebook
                         </a>
                         <a href="tel:081-933-2888" class="btn-phone">
@@ -611,7 +453,7 @@
                             </div>
                             <div class="detail-content">
                                 <div class="detail-label">ราคา</div>
-                                <div class="detail-value">@Model.Details.PriceRange</div>
+                                <div class="detail-value">@Html.Raw(Model.Details.PriceRange)</div>
                             </div>
                         </div>
                     }
@@ -635,7 +477,493 @@
             </div>
         </section>
 
-    
+    <section class="project-section project-pillars" id="concept">
+        <div class="concept-section">
+            <div class="container">
+                <!-- Simple horizontal concept blocks like the reference image -->
+                <div class="concept-blocks">
+                    @{
+                        // Get gallery images for concept section
+                        var availableImages = new List<string>();
+                        if (Model.Images?.Gallery != null)
+                        {
+                            availableImages.AddRange(Model.Images.Gallery.Take(2));
+                        }
+
+                        // Ensure we have at least 2 images
+                        if (availableImages.Count == 1)
+                        {
+                            availableImages.Add(availableImages[0]);
+                        }
+                        else if (availableImages.Count == 0)
+                        {
+                            availableImages.Add("placeholder-concept.jpg");
+                            availableImages.Add("placeholder-concept.jpg");
+                        }
+                    }
+
+                    @{
+                        // Parse ProjectConcept HTML from database
+                        string title = string.Empty;
+                        string summary = string.Empty;
+                        string details = string.Empty;
+
+                        if (!string.IsNullOrEmpty(Model.Concept))
+                        {
+                            var conceptText = Model.Concept;
+
+                            // Extract h3 or h4 title
+                            var titleMatch = Regex.Match(conceptText, @"<h[34]>(.*?)</h[34]>", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+                            if (titleMatch.Success)
+                            {
+                                title = titleMatch.Groups[1].Value;
+                                conceptText = Regex.Replace(conceptText, @"<h[34]>.*?</h[34]>", "", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+                            }
+
+                            // Extract paragraphs
+                            var paragraphs = Regex.Matches(conceptText, @"<p[^>]*>(.*?)</p>", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+                            if (paragraphs.Count >= 2)
+                            {
+                                summary = paragraphs[0].Groups[1].Value.Trim();
+                                details = paragraphs[1].Groups[1].Value.Trim();
+                            }
+                            else if (paragraphs.Count == 1)
+                            {
+                                summary = paragraphs[0].Groups[1].Value.Trim();
+                            }
+
+                            if (string.IsNullOrEmpty(title))
+                            {
+                                title = Model.Name;
+                            }
+                        }
+                    }
+
+                    @if (!string.IsNullOrEmpty(title))
+                    {
+                        <!-- Row 1: Image on left, Title + Summary on right -->
+                        <div class="concept-row">
+                            <div class="concept-image-section">
+                                @if (availableImages.Count > 0)
+                                {
+                                    <img src="@Url.Content($"~/images/projects/{Model.Id}/galleries/{availableImages[0]}")" alt="@Model.Name" />
+                                }
+                            </div>
+                            <div class="concept-text-section">
+                                <h3>@Html.Raw(title)</h3>
+                                @if (!string.IsNullOrEmpty(summary))
+                                {
+                                    <p>@Html.Raw(summary)</p>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Details on left, Image on right (reversed) -->
+                        @if (!string.IsNullOrEmpty(details))
+                        {
+                            <div class="concept-row concept-row-reverse">
+                                <div class="concept-image-section">
+                                    @if (availableImages.Count > 1)
+                                    {
+                                        <img src="@Url.Content($"~/images/projects/{Model.Id}/galleries/{availableImages[1]}")" alt="@Model.Name - Details" />
+                                    }
+                                </div>
+                                <div class="concept-text-section">
+                                    <p>@Html.Raw(details)</p>
+                                </div>
+
+                            </div>
+                        }
+                    }
+            </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        /* Override all concept styling with simple clean design */
+        .concept-section {
+            background: var(--light-bg) !important;
+            padding: 80px 0 !important;      /* Increased vertical padding */
+            margin: 0 !important;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1.2s ease-out;
+        }
+
+        .concept-section.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .concept-blocks {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .concept-row {
+            display: flex;
+            margin-bottom: 70px;        /* Increased spacing between rows */
+            min-height: 420px;          /* Increased height for better proportions */
+            align-items: stretch;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s ease-out;
+        }
+
+        .concept-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .concept-row:nth-child(even),
+        .concept-row-reverse {
+            transform: translateX(50px);
+            flex-direction: row-reverse;   /* Reverse the order for alternating layout */
+        }
+
+        .concept-section.animate-in .concept-row {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .concept-section.animate-in .concept-row:nth-child(1) {
+            transition-delay: 0.3s;
+        }
+
+        .concept-section.animate-in .concept-row:nth-child(2) {
+            transition-delay: 0.6s;
+        }
+
+        .concept-text-section {
+            flex: 1;
+            padding: 60px 70px;         /* Increased padding for better breathing room */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: transparent;
+        }
+
+        .concept-image-section {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .concept-image-section img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .concept-text-section h3 {
+            /* Font family inherited from typography.css */
+            font-size: 3.5rem;      /* 56px - matches .section-title in project details */
+            font-weight: 700;
+            color: #2d3436;
+            margin: 0 0 40px 0;     /* Increased spacing after title */
+            line-height: 1.2;
+        }
+
+        .concept-subtitle {
+            /* Subtitle under project name */
+            font-size: 1.25rem;     /* 20px */
+            color: var(--primary-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin: 0 0 20px 0;     /* Space before intro text */
+        }
+
+        .concept-intro {
+            /* Summary/intro text in Block 1 */
+            font-size: 1.25rem;     /* 20px - slightly smaller than details for hierarchy */
+            color: #636e72;
+            line-height: 1.6;
+            margin: 0;
+            font-weight: 500;
+            padding-top: 15px;      /* Space between subtitle and intro */
+            border-top: 2px solid var(--primary-color);
+            border-top-opacity: 0.2;
+        }
+
+        .concept-text-section p {
+            /* Font family inherited from typography.css */
+            font-size: 1.5rem;      /* 24px - matches project details card size */
+            color: #636e72;
+            line-height: 1.7;
+            margin: 0;
+            font-weight: 500;       /* Slightly bolder for better readability */
+        }
+
+        .concept-text-section p:first-of-type {
+            /* First paragraph (details in Block 2) */
+            margin-top: 0;
+        }
+
+        /* Hide old card elements */
+        .concept-cards-grid,
+        .concept-card,
+        .concept-header,
+        .concept-main-title,
+        .concept-subtitle {
+            display: none !important;
+        }
+
+        /* Responsive Design */
+        @@media (max-width: 768px) {
+            .concept-section {
+                padding: 60px 0 !important;     /* Reduced from 80px on mobile */
+            }
+
+            .concept-row {
+                flex-direction: column;
+                min-height: auto;
+                margin-bottom: 50px;            /* Reduced from 70px on tablet */
+            }
+
+            .concept-text-section {
+                padding: 50px 40px;             /* Increased from 40px 30px */
+            }
+
+            .concept-image-section {
+                height: 300px;                  /* Increased from 250px */
+            }
+
+            .concept-text-section h3 {
+                font-size: 1.625rem;    /* 26px - tablet h3 */
+                margin: 0 0 25px 0;     /* Adjust spacing for smaller screens */
+            }
+
+            .concept-subtitle {
+                font-size: 1.0625rem;   /* 17px - scaled for tablet */
+                margin: 0 0 15px 0;
+            }
+
+            .concept-intro {
+                font-size: 1.0625rem;   /* 17px - tablet intro */
+                padding-top: 12px;
+                border-top-width: 1px;
+            }
+
+            .concept-text-section p {
+                font-size: 1.25rem;     /* 20px - tablet body, scaled down from 24px */
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .concept-section {
+                padding: 50px 0 !important;     /* Further reduced on mobile */
+            }
+
+            .concept-row {
+                margin-bottom: 40px;            /* Reduced further on mobile */
+            }
+
+            .concept-text-section {
+                padding: 40px 25px;             /* Reduced for mobile screen */
+            }
+
+            .concept-text-section h3 {
+                font-size: 1.375rem;    /* 22px - mobile h3 */
+                margin: 0 0 20px 0;     /* Reduced title spacing on mobile */
+            }
+
+            .concept-subtitle {
+                font-size: 1rem;        /* 16px - mobile subtitle */
+                margin: 0 0 12px 0;
+            }
+
+            .concept-intro {
+                font-size: 1rem;        /* 16px - mobile intro */
+                padding-top: 10px;
+                border-top-width: 1px;
+                line-height: 1.5;
+            }
+
+            .concept-text-section p {
+                font-size: 1rem;        /* 16px - mobile body, scaled down from 24px */
+            }
+
+            .concept-image-section {
+                height: 220px;                  /* Reduced on mobile */
+            }
+        }
+
+        /* House Description Styles */
+        .house-description {
+            font-size: 1rem;
+            color: #666;
+            margin: 8px 0 0 0;
+            line-height: 1.4;
+            font-weight: 400;
+        }
+
+        @@media (max-width: 768px) {
+            .house-description {
+                font-size: 1rem;
+            }
+        }
+
+        /* Authentication Loading Styles */
+        .auth-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(54, 85, 35, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(54, 85, 35, 0.1);
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(54, 85, 35, 0.2);
+            border-left: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @@keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .auth-loading span {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Minimalist Validation Panel */
+        .validation-panel {
+            background: #fff5f5;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .validation-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: #e53e3e;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .validation-panel-header i {
+            font-size: 1.1rem;
+        }
+
+        .validation-errors-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .validation-errors-list li {
+            background: #ffffff;
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            color: #c53030;
+            font-size: 1rem;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .validation-errors-list li:before {
+            content: '•';
+            color: #e53e3e;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .validation-errors-list li:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+
+    <script>
+        // Function to show validation errors in minimalist panel
+        function showValidationErrors(errors) {
+            const validationPanel = document.getElementById('validationPanel');
+            const validationErrors = document.getElementById('validationErrors');
+            
+            if (validationPanel && validationErrors && errors && errors.length > 0) {
+                // Clear previous errors
+                validationErrors.innerHTML = '';
+                
+                // Add each error as a list item
+                errors.forEach(error => {
+                    if (error) {
+                        const li = document.createElement('li');
+                        li.textContent = error;
+                        validationErrors.appendChild(li);
+                    }
+                });
+                
+                // Show the panel
+                validationPanel.style.display = 'block';
+                
+                // Scroll to the validation panel
+                validationPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+        
+        // Function to hide validation panel
+        function hideValidationErrors() {
+            const validationPanel = document.getElementById('validationPanel');
+            if (validationPanel) {
+                validationPanel.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const conceptSection = document.querySelector('.concept-section');
+            const locationGrid = document.querySelector('.location-grid');
+
+            if (conceptSection) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('animate-in');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.2,
+                    rootMargin: '0px 0px -10% 0px'
+                });
+
+                observer.observe(conceptSection);
+            }
+
+            // Animation for location cards
+            if (locationGrid) {
+                const locationObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('animate-in');
+                            locationObserver.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -5% 0px'
+                });
+
+                locationObserver.observe(locationGrid);
+            }
+        });
+    </script>
+
+
 
 
     @if (Model.HouseTypes?.Any() == true)
@@ -747,7 +1075,10 @@
                                         <!-- Header -->
                                         <div class="house-header">
                                             <h4 class="house-title">@house.DisplayName</h4>
-                                            
+                                            @if (!string.IsNullOrEmpty(house.Description))
+                                            {
+                                                <p class="house-description">@house.Description</p>
+                                            }
                                         </div>
 
                                         <!-- Specifications Grid -->
@@ -807,7 +1138,7 @@
                                         {
                                             <div class="house-price">
                                                 <span class="price-label">ราคาเริ่มต้น</span>
-                                                <span class="price-value">@house.PriceRange</span>
+                                                <span class="price-value">@Html.Raw(house.PriceRange)</span>
                                             </div>
                                         }
                                     </div>
@@ -902,7 +1233,7 @@
                 </div>
 
                 <!-- Map Type Filters -->
-                <div class="house-type-filters">
+                <div class="location-filters">
                     <div class="filter-buttons">
                         <button class="filter-btn active" data-filter="google-map">
                             <i class="fa fa-map"></i>
@@ -943,18 +1274,18 @@
 
                 <!-- Google Maps Container -->
                 <div class="map-container" id="google-map-container">
-                    @if (!string.IsNullOrWhiteSpace(mapSrc))
-                    {
-                        <div class="location-map">
+                    <div class="location-map">
+                        @if (!string.IsNullOrWhiteSpace(mapSrc))
+                        {
                             <iframe loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="@mapSrc"></iframe>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
 
                 <!-- Graphic Map Container -->
                 <div class="map-container" id="graphic-map-container" style="display: none;">
                     <div class="location-map">
-                        <img src="@Url.Content($"~/images/projects/{Model.Id}/{Model.Images.LocationMap}")" alt="แผนที่โครงการ" />
+                        <img src="@Url.Content($"~/images/projects/{Model.Id}/{Model.Images?.LocationMap ?? "map-placeholder.jpg"}")" alt="แผนที่โครงการ" />
                     </div>
                 </div>
 
@@ -973,9 +1304,9 @@
                                         <div class="category-icon">
                                             @{
                                                 var categoryName = group.Key.ToLower();
-                                                string iconPath = GetCategoryIconPath(categoryName);
+                                                string iconClass = GetCategoryIcon(categoryName);
                                             }
-                                            <img src="@iconPath" alt="@group.Key" class="category-icon-img" />
+                                            <i class="@iconClass"></i>
                                         </div>
                                         <h4>@group.Key</h4>
                                     </div>
@@ -1004,70 +1335,86 @@
 </div>
 
 @functions {
-    private string GetCategoryIconPath(string category)
+    private string GetCategoryIcon(string category)
     {
         return category switch
         {
             // Transportation
-            _ when category.Contains("การเดินทาง") || category.Contains("transport") =>
-                "~/images/icons/category-transportation.svg",
+            _ when category.Contains("การเดินทาง") || category.Contains("transport") || category.Contains("รถไฟฟ้า") || category.Contains("MRT") || category.Contains("BTS") =>
+                "fa fa-subway",
 
             // Shopping malls
-            _ when category.Contains("ห้างสรรพสินค้า") || category.Contains("shopping") || category.Contains("mall") =>
-                "~/images/icons/category-shopping.svg",
+            _ when category.Contains("ห้างสรรพสินค้า") || category.Contains("shopping") || category.Contains("mall") || category.Contains("ห้างสรรพ") =>
+                "fa fa-shopping-bag",
 
-            // Hospital
-            _ when category.Contains("สถานพยาบาล") || category.Contains("hospital") || category.Contains("medical") =>
-                "~/images/icons/category-hospital.svg",
+            // Hospital/Medical
+            _ when category.Contains("โรงพยาบาล") || category.Contains("hospital") || category.Contains("medical") || category.Contains("สถานพยาบาล") || category.Contains("รพ") =>
+                "fa fa-hospital-o",
+
+            // Community & Lifestyle
+            _ when category.Contains("คอมมูนิตี้") || category.Contains("ไลฟ์สไตล์") || category.Contains("community") || category.Contains("lifestyle") || category.Contains("คอมมูนิตี") =>
+                "fa fa-users",
 
             // Education/School
-            _ when category.Contains("สถานศึกษา") || category.Contains("school") || category.Contains("education") =>
-                "~/images/icons/category-school.svg",
+            _ when category.Contains("สถานศึกษา") || category.Contains("school") || category.Contains("education") || category.Contains("โรงเรียน") || category.Contains("มหาวิทยาลัย") =>
+                "fa fa-graduation-cap",
 
             // Park/Recreation
-            _ when category.Contains("สวน") || category.Contains("park") || category.Contains("tree") =>
-                "~/images/icons/category-park.svg",
+            _ when category.Contains("สวน") || category.Contains("park") || category.Contains("tree") || category.Contains("สวนสาธารณะ") =>
+                "fa fa-tree",
 
             // Default
-            _ => "~/images/icons/category-location.svg"
+            _ => "fa fa-map-marker"
         };
     }
 }
 
 @section Scripts {
     <script>
+        function openSocialPopup(url) {
+            console.log('Opening popup with URL:', url);
+            
+            // Calculate popup position to center it
+            const left = (screen.width / 2) - (600 / 2);
+            const top = (screen.height / 2) - (700 / 2);
+            
+            const popup = window.open(
+                url,
+                'SocialLoginPopup',
+                `width=600,height=700,left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes`
+            );
+
+            if (!popup || popup.closed) {
+                console.warn('Popup was blocked or failed to open, redirecting to URL');
+                window.location.href = url;
+                return false;
+            }
+            
+            popup.focus();
+            
+            // Monitor popup for manual close (fallback)
+            const checkClosed = setInterval(() => {
+                if (popup.closed) {
+                    clearInterval(checkClosed);
+                    console.log('Popup was closed manually, checking if login was successful');
+                    
+                    // Small delay to allow server processing, then update UI without reload
+                    setTimeout(() => {
+                        // Simple: just navigate to register section
+                        window.location.hash = '#register';
+                    }, 1000);
+                }
+            }, 500);
+            
+            return false; // Prevent default
+        }
+
         window.handleSocialLoginSuccess = function (provider, targetUrl) {
-            if (!targetUrl) {
-                return;
-            }
-            var urlWithHash = targetUrl.indexOf('#register') >= 0 ? targetUrl : targetUrl + '#register';
-            try {
-                window.sessionStorage.setItem('pps-last-provider', provider || '');
-            } catch (err) {
-                // Ignore storage failures
-            }
-            window.location.href = urlWithHash;
+            // Simple: just reload the page to show authenticated state
+            location.reload();
         };
 
         document.addEventListener('DOMContentLoaded', function () {
-            const socialPopupButtons = document.querySelectorAll('[data-social-popup-url]');
-            socialPopupButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const popupUrl = button.getAttribute('data-social-popup-url');
-                    if (!popupUrl) {
-                        return;
-                    }
-                    const popup = window.open(
-                        popupUrl,
-                        'GoogleLoginPopup',
-                        'width=600,height=700,menubar=no,toolbar=no,location=no,status=no'
-                    );
-
-                    if (!popup || popup.closed) {
-                        window.location.href = popupUrl;
-                    }
-                });
-            });
 
             if (window.location.hash === '#register') {
                 const registerSection = document.getElementById('register');
@@ -1407,7 +1754,7 @@
             }
 
             // Location Map Filter functionality with smooth transitions
-            const locationMapFilterButtons = document.querySelectorAll('.project-location .house-type-filters .filter-btn');
+            const locationMapFilterButtons = document.querySelectorAll('.project-location .location-filters .filter-btn');
             const mapContainers = document.querySelectorAll('.map-container');
             const locationInfo = document.querySelector('.project-location__info');
 
@@ -1573,12 +1920,15 @@
 
                     // Check if reCAPTCHA is verified
                     if (!recaptchaVerified || !recaptchaToken.value) {
-                        alert('กรุณารอให้ Google reCAPTCHA ตรวจสอบเสร็จสิ้น');
+                        showValidationErrors(['กรุณารอให้ Google reCAPTCHA ตรวจสอบเสร็จสิ้น']);
                         return;
                     }
 
                     // Check if form validation passes
                     if (this.checkValidity()) {
+                        // Hide any previous validation errors
+                        hideValidationErrors();
+                        
                         // Show loading state on submit button
                         const submitButton = document.getElementById('registrationSubmitBtn');
                         const btnText = submitButton ? submitButton.querySelector('.btn-text') : null;
@@ -1594,6 +1944,7 @@
                         const formData = new FormData(this);
 
                         // Submit form via AJAX
+                        console.log('Submitting form via AJAX to:', this.action);
                         fetch(this.action, {
                             method: 'POST',
                             body: formData,
@@ -1601,8 +1952,12 @@
                                 'X-Requested-With': 'XMLHttpRequest'
                             }
                         })
-                        .then(response => response.json())
+                        .then(response => {
+                            console.log('Response received:', response.status);
+                            return response.json();
+                        })
                         .then(data => {
+                            console.log('JSON data received:', data);
                             if (data.success) {
                                 // Update modal project name
                                 const modalProjectName = document.getElementById('modalProjectName');
@@ -1658,12 +2013,13 @@
                                     });
                                 }
 
-                                alert(data.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+                                // Show validation errors in minimalist panel
+                                showValidationErrors(data.errors || [data.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง']);
                             }
                         })
                         .catch(error => {
                             console.error('Registration error:', error);
-                            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
+                            showValidationErrors(['เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง']);
                         })
                         .finally(() => {
                             // Restore submit button
@@ -1677,6 +2033,7 @@
                 });
             }
         });
+
     </script>
 
     <style>
@@ -2086,7 +2443,7 @@
         }
 
         .detail-label {
-            font-size: 14px;
+            font-size: 16px;
             color: rgba(255, 255, 255, 0.8) !important;
             margin-bottom: 5px;
             font-weight: 400;
@@ -2369,11 +2726,11 @@
             }
 
             .detail-label {
-                font-size: 13px;
+                font-size: 15px;
             }
 
             .detail-value {
-                font-size: 15px;
+                font-size: 16px;
             }
         }
 

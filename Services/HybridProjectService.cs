@@ -27,17 +27,18 @@ namespace PPSAsset.Services
         {
             try
             {
-                _logger.LogDebug("Attempting to retrieve project {ProjectId} from database", id);
+                _logger.LogInformation("Attempting to retrieve project {ProjectId} from database", id);
 
                 var project = _databaseService.GetProject(id);
 
                 if (project != null)
                 {
-                    _logger.LogDebug("Successfully retrieved project {ProjectId} from database", id);
+                    _logger.LogInformation("Successfully retrieved project {ProjectId} from database. Facilities: {FacilitiesCount}", 
+                        id, project.Facilities?.Count ?? 0);
                     return EnhanceProjectWithGallery(project);
                 }
 
-                _logger.LogInformation("Project {ProjectId} not found in database, falling back to static data", id);
+                _logger.LogWarning("Project {ProjectId} not found in database, falling back to static data", id);
             }
             catch (Exception ex)
             {
@@ -50,7 +51,8 @@ namespace PPSAsset.Services
                 var staticProject = _staticService.GetProject(id);
                 if (staticProject != null)
                 {
-                    _logger.LogInformation("Successfully retrieved project {ProjectId} from static fallback", id);
+                    _logger.LogInformation("Successfully retrieved project {ProjectId} from static fallback. Facilities: {FacilitiesCount}", 
+                        id, staticProject.Facilities?.Count ?? 0);
                     return EnhanceProjectWithGallery(staticProject);
                 }
             }
@@ -289,16 +291,18 @@ namespace PPSAsset.Services
         {
             var galleryImages = new List<string>();
             var projectDir = Path.Combine("wwwroot", "images", "projects", projectId);
+            var galleriesDir = Path.Combine(projectDir, "galleries");
 
-            if (Directory.Exists(projectDir))
+            if (Directory.Exists(galleriesDir))
             {
                 var imageExtensions = new[] { "*.jpg", "*.jpeg", "*.png", "*.gif", "*.webp" };
                 foreach (var extension in imageExtensions)
                 {
-                    var files = Directory.GetFiles(projectDir, extension, SearchOption.AllDirectories);
+                    var files = Directory.GetFiles(galleriesDir, extension, SearchOption.AllDirectories);
                     foreach (var file in files)
                     {
-                        var relativePath = file.Replace("wwwroot", "").Replace(Path.DirectorySeparatorChar, '/');
+                        // Get relative path from galleries folder
+                        var relativePath = Path.GetRelativePath(galleriesDir, file).Replace(Path.DirectorySeparatorChar, '/');
                         galleryImages.Add(relativePath);
                     }
                 }
