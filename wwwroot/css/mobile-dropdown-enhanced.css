@@ -1,0 +1,157 @@
+/*------------------------------------------------------------------
+  PPS Asset - Enhanced Mobile Dropdown Menu
+  Global mobile navigation improvements
+-------------------------------------------------------------------*/
+
+@media (max-width: 768px) {
+    .navigation.nav-btn-only .right .navigation-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.95);
+        transition: right 0.3s ease;
+        flex-direction: column;
+        padding: 80px 20px 20px;
+        z-index: 1000;
+        text-align: right !important;
+        overflow-y: auto;
+        font-size: 14px !important;
+    }
+    
+    /* Mobile dropdown menu font sizes - only project names reduced */
+    .dropdown-menu .house-type-title {
+        font-size: 14px !important;
+        font-weight: 600 !important;
+    }
+    
+    .dropdown-menu .projects-list li a {
+        font-size: 5px !important;
+        line-height: 1.2 !important;
+        padding: 4px 6px !important;
+        word-wrap: break-word !important;
+        white-space: normal !important;
+        max-width: 220px !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    .dropdown-menu .main-status-title {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Make dropdown menu scrollable - override existing styles */
+    .dropdown-menu,
+    .dropdown-menu.dropdown-menu-columns,
+    .navigation .dropdown-menu {
+        max-height: 70vh !important;
+        height: auto !important;
+        overflow-y: scroll !important;
+        overflow-x: hidden !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: #365523 transparent !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* Custom scrollbar for webkit browsers */
+    .dropdown-menu::-webkit-scrollbar,
+    .navigation .dropdown-menu::-webkit-scrollbar {
+        width: 8px !important;
+    }
+    
+    .dropdown-menu::-webkit-scrollbar-track,
+    .navigation .dropdown-menu::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.2) !important;
+        border-radius: 4px !important;
+    }
+    
+    .dropdown-menu::-webkit-scrollbar-thumb,
+    .navigation .dropdown-menu::-webkit-scrollbar-thumb {
+        background: #365523 !important;
+        border-radius: 4px !important;
+    }
+    
+    .dropdown-menu::-webkit-scrollbar-thumb:hover,
+    .navigation .dropdown-menu::-webkit-scrollbar-thumb:hover {
+        background: #1e7e34 !important;
+    }
+    
+    /* Custom layout: Single house 2 columns, Townhouse+Twinhouse 1 column */
+    .dropdown-menu .status-section-content {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+        margin-top: 15px !important;
+        width: 100% !important;
+    }
+    
+    /* Single house section takes more width and has internal 2-column layout */
+    .dropdown-menu .house-type-subsection {
+        flex: 1 1 30% !important;
+        min-width: 200px !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Make Single house (first subsection) take more space and use 2 columns */
+    .dropdown-menu .house-type-subsection:first-child {
+        flex: 2 1 60% !important;
+        min-width: 300px !important;
+    }
+    
+    .dropdown-menu .house-type-subsection:first-child .projects-list {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        grid-gap: 2px !important;
+        column-gap: 4px !important;
+    }
+    
+    /* Townhouse and Twinhouse in single columns */
+    .dropdown-menu .house-type-subsection:nth-child(2),
+    .dropdown-menu .house-type-subsection:nth-child(3) {
+        flex: 1 1 30% !important;
+        min-width: 180px !important;
+    }
+    
+    /* Reduce gaps between all project names by 50% */
+    .dropdown-menu .projects-list li {
+        margin-bottom: 1px !important;
+    }
+    
+    .dropdown-menu .projects-list li a {
+        padding: 1px 2px !important;
+        font-size: 5px !important;
+        line-height: 1.0 !important;
+        margin-bottom: 1px !important;
+    }
+    
+    /* Specific adjustments for single house 2-column layout */
+    .dropdown-menu .house-type-subsection:first-child .projects-list li {
+        margin-bottom: 1px !important;
+    }
+    
+    .dropdown-menu .house-type-subsection:first-child .projects-list li a {
+        padding: 1px 2px !important;
+        font-size: 5px !important;
+        line-height: 1.0 !important;
+    }
+    
+    .navigation.nav-btn-only.show-navigation .right .navigation-links,
+    .page-wrapper.show-navigation .navigation.nav-btn-only .right .navigation-links {
+        right: 0;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    
+    /* Ensure logo is visible on mobile */
+    .navigation .left .brand {
+        display: block !important;
+        z-index: 1002;
+        position: relative;
+    }
+    
+    .navigation .left .brand img {
+        height: 35px !important;
+    }
+}

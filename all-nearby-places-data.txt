@@ -1,0 +1,142 @@
+PlaceName	Category	Distance	TravelTime	SortOrder	ProjectID
+ทางด่วนรามอินทรา-อาจณรงค์ (ด่านจตุโชติ)	การเดินทาง	3.1 กม.	NULL	1	ricco-residence-chatuchot
+วงแหวนกาญจนาภิเษก	การเดินทาง	7.4 กม.	NULL	2	ricco-residence-chatuchot
+รถไฟฟ้า MRT สายสีเขียว สถานีคูคต	การเดินทาง	9 กม.	NULL	3	ricco-residence-chatuchot
+รถไฟฟ้า MRT สายสีชมพู สถานีคู้บอน	การเดินทาง	11.4 กม.	NULL	4	ricco-residence-chatuchot
+สนามบินดอนเมือง	การเดินทาง	20.3 กม.	NULL	5	ricco-residence-chatuchot
+Fashion Island / The Promenade	ห้างสรรสินค้า	10.5 กม.	NULL	6	ricco-residence-chatuchot
+The Walk เกษตร-นวมินทร์	ห้างสรรสินค้า	16 กม.	NULL	7	ricco-residence-chatuchot
+Central รามอินทรา	ห้างสรรสินค้า	16.5 กม.	NULL	8	ricco-residence-chatuchot
+Crystal Design Center (CDC)	ห้างสรรสินค้า	18.1 กม.	NULL	9	ricco-residence-chatuchot
+Central EastVille	ห้างสรรสินค้า	18.9 กม.	NULL	10	ricco-residence-chatuchot
+Saimai Avenue	คอมมูนิตี้มอลล์และไลฟ์สไตล์	4.1 กม.	NULL	11	ricco-residence-chatuchot
+Big C สายไหม	คอมมูนิตี้มอลล์และไลฟ์สไตล์	5.7 กม.	NULL	12	ricco-residence-chatuchot
+Jas Green Village คู้บอน	คอมมูนิตี้มอลล์และไลฟ์สไตล์	8 กม.	NULL	13	ricco-residence-chatuchot
+ตลาดมารวย	คอมมูนิตี้มอลล์และไลฟ์สไตล์	-	NULL	14	ricco-residence-chatuchot
+รพ.ซีจีเอช สายไหม	โรงพยาบาล	4 กม.	NULL	15	ricco-residence-chatuchot
+รพ.สินแพทย์ ลำลูกกา	โรงพยาบาล	7.4 กม.	NULL	16	ricco-residence-chatuchot
+รพ.อินทรารัตน์	โรงพยาบาล	10 กม.	NULL	17	ricco-residence-chatuchot
+รพ.พญาไท นวมินทร์	โรงพยาบาล	11.5 กม.	NULL	18	ricco-residence-chatuchot
+รพ.สินแพทย์ รามอินทรา	โรงพยาบาล	12.7 กม.	NULL	19	ricco-residence-chatuchot
+รพ.ภูมิพลอดุลยเดชฯ	โรงพยาบาล	14 กม.	NULL	20	ricco-residence-chatuchot
+รพ.เซ็นทรัลเยนเนอรัล	โรงพยาบาล	14.2 กม.	NULL	21	ricco-residence-chatuchot
+รพ. บี.แคร์ เมดิคอลเซ็นเตอร์	โรงพยาบาล	14.5 กม.	NULL	22	ricco-residence-chatuchot
+รร.นวมินทราชินูทิศ เบญจมราชาลัย	โรงเรียน	2.2 กม.	NULL	23	ricco-residence-chatuchot
+ม.เวสเทิร์น (วิทยาเขตกรุงเทพ-วัชรพล)	โรงเรียน	3.5 กม.	NULL	24	ricco-residence-chatuchot
+รร.สารสาสน์วิเทศสายไหม	โรงเรียน	4.3 กม.	NULL	25	ricco-residence-chatuchot
+รร.สาธิตพัฒนา	โรงเรียน	5.3 กม.	NULL	26	ricco-residence-chatuchot
+รร.โชคชัย หทัยราษฎร์	โรงเรียน	9.5 กม.	NULL	27	ricco-residence-chatuchot
+รร.สายอักษร	โรงเรียน	11 กม.	NULL	28	ricco-residence-chatuchot
+มหาวิทยาลัยเกริก	โรงเรียน	16.4 กม.	NULL	29	ricco-residence-chatuchot
+มหาวิทยาลัยศรีปทุม	โรงเรียน	20.5 กม.	NULL	30	ricco-residence-chatuchot
+ทางด่วนรามอินทรา-อาจณรงค์ (ด่านจตุโชติ)	การเดินทาง	6.7 กม.	NULL	1	ricco-residence-hathairat
+วงแหวนกาญจนาภิเษก	การเดินทาง	10 กม.	NULL	2	ricco-residence-hathairat
+รถไฟฟ้า MRT สายสีเขียว สถานีคูคต	การเดินทาง	10 กม.	NULL	3	ricco-residence-hathairat
+รถไฟฟ้า MRT สายสีชมพู สถานีคู้บอน	การเดินทาง	13.8 กม.	NULL	4	ricco-residence-hathairat
+สนามบินดอนเมือง	การเดินทาง	19.1 กม.	NULL	5	ricco-residence-hathairat
+Fashion Island / The Promenade	ห้างสรรพสินค้า	12.9 กม.	NULL	6	ricco-residence-hathairat
+The Walk เกษตร-นวมินทร์	ห้างสรรพสินค้า	19.5 กม.	NULL	7	ricco-residence-hathairat
+Central รามอินทรา	ห้างสรรพสินค้า	18.9 กม.	NULL	8	ricco-residence-hathairat
+Crystal Design Center (CDC)	ห้างสรรพสินค้า	21.6 กม.	NULL	9	ricco-residence-hathairat
+Central EastVille	ห้างสรรพสินค้า	22.5 กม.	NULL	10	ricco-residence-hathairat
+Saimai Avenue	คอมมูนิตี้มอลล์และไลฟ์สไตล์	5.1 กม.	NULL	11	ricco-residence-hathairat
+Big C สายไหม	คอมมูนิตี้มอลล์และไลฟ์สไตล์	6.7 กม.	NULL	12	ricco-residence-hathairat
+Jas Green Village คู้บอน	คอมมูนิตี้มอลล์และไลฟ์สไตล์	10.2 กม.	NULL	13	ricco-residence-hathairat
+ตลาดมารวย หทัยราษฎร์	คอมมูนิตี้มอลล์และไลฟ์สไตล์	2.1 กม.	NULL	14	ricco-residence-hathairat
+รพ.ซีจีเอช สายไหม	โรงพยาบาล	5 กม.	NULL	15	ricco-residence-hathairat
+รพ.สินแพทย์ ลำลูกกา	โรงพยาบาล	8.4 กม.	NULL	16	ricco-residence-hathairat
+รพ.อินทรารัตน์	โรงพยาบาล	12.6 กม.	NULL	17	ricco-residence-hathairat
+รพ.พญาไท นวมินทร์	โรงพยาบาล	13.8 กม.	NULL	18	ricco-residence-hathairat
+รพ.สินแพทย์ รามอินทรา	โรงพยาบาล	15.2 กม.	NULL	19	ricco-residence-hathairat
+รพ.ภูมิพลอดุลยเดชฯ	โรงพยาบาล	16.6 กม.	NULL	20	ricco-residence-hathairat
+รพ.เซ็นทรัลเยนเนอรัล	โรงพยาบาล	16.6 กม.	NULL	21	ricco-residence-hathairat
+รพ. บี.แคร์ เมดิคอลเซ็นเตอร์	โรงพยาบาล	14.2 กม.	NULL	22	ricco-residence-hathairat
+รร.นวมินทราชินูทิศ เบญจมราชาลัย	โรงเรียน	4.6 กม.	NULL	23	ricco-residence-hathairat
+ม.เวสเทิร์น	โรงเรียน	4.7 กม.	NULL	24	ricco-residence-hathairat
+รร.สารสาสน์วิเทศ สายไหม	โรงเรียน	5.2 กม.	NULL	25	ricco-residence-hathairat
+รร.สาธิตพัฒนา	โรงเรียน	5.4 กม.	NULL	26	ricco-residence-hathairat
+รร.โชคชัย หทัยราษฎร์	โรงเรียน	7.2 กม.	NULL	27	ricco-residence-hathairat
+ทางด่วนรามอินทรา-อาจณรงค์ (ด่านจตุโชติ)	การเดินทาง	1.7 กม.	NULL	1	ricco-residence-prime-chatuchot
+วงแหวนกาญจนาภิเษก	การเดินทาง	4.6 กม.	NULL	2	ricco-residence-prime-chatuchot
+รถไฟฟ้า MRT สายสีชมพู สถานีคู้บอน	การเดินทาง	8.4 กม.	NULL	3	ricco-residence-prime-chatuchot
+สนามบินดอนเมือง	การเดินทาง	18.8 กม.	NULL	4	ricco-residence-prime-chatuchot
+Jas Green Village คู้บอน	ห้างสรรสินค้า	5.3 กม.	NULL	5	ricco-residence-prime-chatuchot
+Fashion Island / The Promenade	ห้างสรรสินค้า	7.5 กม.	NULL	6	ricco-residence-prime-chatuchot
+Central EastVille	ห้างสรรสินค้า	17.4 กม.	NULL	7	ricco-residence-prime-chatuchot
+แม็กซ์แวลู คู้บอน	คอมมูนิตี้มอลล์และไลฟ์สไตล์	5.5 กม.	NULL	8	ricco-residence-prime-chatuchot
+โลตัส เลียบคลองสอง	คอมมูนิตี้มอลล์และไลฟ์สไตล์	6.6 กม.	NULL	9	ricco-residence-prime-chatuchot
+รพ.อินทรารัตน์	โรงพยาบาล	7.2 กม.	NULL	10	ricco-residence-prime-chatuchot
+รพ.พญาไท นวมินทร์	โรงพยาบาล	8.4 กม.	NULL	11	ricco-residence-prime-chatuchot
+รพ.สินแพทย์ รามอินทรา	โรงพยาบาล	8.9 กม.	NULL	12	ricco-residence-prime-chatuchot
+รร.ร่วมฤดีวิเทศศึกษา (RIS) Early Years	โรงเรียน	4.3 กม.	NULL	13	ricco-residence-prime-chatuchot
+รร.นวมินทราชินูทิศ เบญจมราชาลัย	โรงเรียน	2.3 กม.	NULL	14	ricco-residence-prime-chatuchot
+รร.สาธิตพัฒนา	โรงเรียน	6.6 กม.	NULL	15	ricco-residence-prime-chatuchot
+ทางด่วนรามอินทรา-อาจณรงค์ (ด่านจตุโชติ)	การเดินทาง	4.9 กม.	NULL	1	ricco-residence-prime-hathairat
+วงแหวนกาญจนาภิเษก	การเดินทาง	8.2 กม.	NULL	2	ricco-residence-prime-hathairat
+รถไฟฟ้าสายสีเขียว สถานีคูคต	การเดินทาง	11.9 กม.	NULL	3	ricco-residence-prime-hathairat
+รถไฟฟ้า MRT สายสีชมพู สถานีคู้บอน	การเดินทาง	12 กม.	NULL	4	ricco-residence-prime-hathairat
+สนามบินดอนเมือง	การเดินทาง	20.9 กม.	NULL	5	ricco-residence-prime-hathairat
+Jas Green Village คู้บอน	ห้างสรรสินค้า	8.5 กม.	NULL	6	ricco-residence-prime-hathairat
+Fashion Island / The Promenade	ห้างสรรสินค้า	11 กม.	NULL	7	ricco-residence-prime-hathairat
+Central EastVille	ห้างสรรสินค้า	19.3 กม.	NULL	8	ricco-residence-prime-hathairat
+แม็กซ์แวลู คู้บอน	คอมมูนิตี้มอลล์และไลฟ์สไตล์	8.6 กม.	NULL	9	ricco-residence-prime-hathairat
+โลตัส เลียบคลองสอง	คอมมูนิตี้มอลล์และไลฟ์สไตล์	7.6 กม.	NULL	10	ricco-residence-prime-hathairat
+รพ.ซีจีเอช สายไหม	โรงพยาบาล	6.8 กม.	NULL	11	ricco-residence-prime-hathairat
+รพ.อินทรารัตน์	โรงพยาบาล	10.8 กม.	NULL	12	ricco-residence-prime-hathairat
+รพ.พญาไท นวมินทร์	โรงพยาบาล	12 กม.	NULL	13	ricco-residence-prime-hathairat
+รพ.สินแพทย์ รามอินทรา	โรงพยาบาล	13.2 กม.	NULL	14	ricco-residence-prime-hathairat
+รร.นวมินทราชินูทิศ เบญจมราชาลัย	โรงเรียน	2.7 กม.	NULL	15	ricco-residence-prime-hathairat
+รร.สาธิตพัฒนา	โรงเรียน	4 กม.	NULL	16	ricco-residence-prime-hathairat
+รร.ร่วมฤดีวิเทศศึกษา (RIS) Early Years	โรงเรียน	6 กม.	NULL	17	ricco-residence-prime-hathairat
+รร.สารสาสน์วิเทศสายไหม	โรงเรียน	7 กม.	NULL	18	ricco-residence-prime-hathairat
+รร.โชคชัย หทัยราษฎร์	โรงเรียน	-	NULL	19	ricco-residence-prime-hathairat
+ทางด่วนรามอินทรา-อาจณรงค์ (ด่านสุขาภิบาล 5)	การเดินทาง	7.4 กม.	NULL	1	ricco-town-phahonyothin-saimai53
+รถไฟฟ้า MRT สายสีเขียว สถานีคูคต	การเดินทาง	17.1 กม.	NULL	2	ricco-town-phahonyothin-saimai53
+ทางด่วนโทลล์เวย์ดอนเมือง	การเดินทาง	17.6 กม.	NULL	3	ricco-town-phahonyothin-saimai53
+Central รามอินทรา	ห้างสรรสินค้า	11.9 กม.	NULL	4	ricco-town-phahonyothin-saimai53
+Fashion Island / The Promenade	ห้างสรรสินค้า	15.7 กม.	NULL	5	ricco-town-phahonyothin-saimai53
+Major Cineplex รัชโยธิน	ห้างสรรสินค้า	17.5 กม.	NULL	6	ricco-town-phahonyothin-saimai53
+Central ลาดพร้าว	ห้างสรรสินค้า	22.7 กม.	NULL	7	ricco-town-phahonyothin-saimai53
+Big C สายไหม	คอมมูนิตี้มอลล์และไลฟ์สไตล์	1 กม.	NULL	8	ricco-town-phahonyothin-saimai53
+Saimai Avenue	คอมมูนิตี้มอลล์และไลฟ์สไตล์	1.4 กม.	NULL	9	ricco-town-phahonyothin-saimai53
+Foodland 24 ชม.	คอมมูนิตี้มอลล์และไลฟ์สไตล์	1.9 กม.	NULL	10	ricco-town-phahonyothin-saimai53
+Icon 56	คอมมูนิตี้มอลล์และไลฟ์สไตล์	1.8 กม.	NULL	11	ricco-town-phahonyothin-saimai53
+MaxValu	คอมมูนิตี้มอลล์และไลฟ์สไตล์	3 กม.	NULL	12	ricco-town-phahonyothin-saimai53
+รพ.ซีจีเอช สายไหม	โรงพยาบาล	2 กม.	NULL	13	ricco-town-phahonyothin-saimai53
+รพ.สินแพทย์ ลำลูกกา	โรงพยาบาล	5.4 กม.	NULL	14	ricco-town-phahonyothin-saimai53
+รพ.ภูมิพลอดุลยเดช	โรงพยาบาล	7.4 กม.	NULL	15	ricco-town-phahonyothin-saimai53
+รพ.เซ็นทรัลเยนเนอรัล	โรงพยาบาล	10.1 กม.	NULL	16	ricco-town-phahonyothin-saimai53
+รร.สารสาสน์วิเทศสายไหม	โรงเรียน	1.4 กม.	NULL	17	ricco-town-phahonyothin-saimai53
+รร.ฤทธิยะวรรณาลัย 1,2	โรงเรียน	3 กม.	NULL	18	ricco-town-phahonyothin-saimai53
+รร.ผ่องสุวรรณวิทยา	โรงเรียน	4.4 กม.	NULL	19	ricco-town-phahonyothin-saimai53
+มหาวิทยาลัยศรีปทุม	โรงเรียน	14.2 กม.	NULL	20	ricco-town-phahonyothin-saimai53
+มหาวิทยาลัยเกษตรศาสตร์	โรงเรียน	17.1 กม.	NULL	21	ricco-town-phahonyothin-saimai53
+ทางด่วนรามอินทรา-อาจณรงค์	การเดินทาง	-	NULL	1	ricco-town-wongwaen-lamlukka
+รถไฟฟ้า MRT สายสีเขียว สถานีคูคต	การเดินทาง	7 กม.	NULL	2	ricco-town-wongwaen-lamlukka
+ทางด่วนโทลล์เวย์ดอนเมือง	การเดินทาง	-	NULL	3	ricco-town-wongwaen-lamlukka
+Major รังสิต	ห้างสรรสินค้า	13.2 กม.	NULL	4	ricco-town-wongwaen-lamlukka
+Future Park / Zpell รังสิต	ห้างสรรสินค้า	12.8 กม.	NULL	5	ricco-town-wongwaen-lamlukka
+เซียร์ รังสิต	ห้างสรรสินค้า	11.7 กม.	NULL	6	ricco-town-wongwaen-lamlukka
+Fashion Island / The Promenade	ห้างสรรสินค้า	19.3 กม.	NULL	7	ricco-town-wongwaen-lamlukka
+ตลาดกลางลาดสวาย	คอมมูนิตี้มอลล์และไลฟ์สไตล์	5.4 กม.	NULL	8	ricco-town-wongwaen-lamlukka
+ตลาด เอ.ซี.	คอมมูนิตี้มอลล์และไลฟ์สไตล์	1.6 กม.	NULL	9	ricco-town-wongwaen-lamlukka
+Big C คลอง 4	คอมมูนิตี้มอลล์และไลฟ์สไตล์	2.7 กม.	NULL	10	ricco-town-wongwaen-lamlukka
+HomePro คลอง 5	คอมมูนิตี้มอลล์และไลฟ์สไตล์	6.4 กม.	NULL	11	ricco-town-wongwaen-lamlukka
+Tesco Lotus คลอง 5	คอมมูนิตี้มอลล์และไลฟ์สไตล์	5.9 กม.	NULL	12	ricco-town-wongwaen-lamlukka
+รพ.สายไหม	โรงพยาบาล	3.8 กม.	NULL	13	ricco-town-wongwaen-lamlukka
+รพ.สินแพทย์	โรงพยาบาล	5.3 กม.	NULL	14	ricco-town-wongwaen-lamlukka
+รพ.บี.แคร์	โรงพยาบาล	11 กม.	NULL	15	ricco-town-wongwaen-lamlukka
+รพ.เปาโล รังสิต	โรงพยาบาล	13.4 กม.	NULL	16	ricco-town-wongwaen-lamlukka
+รพ.ภูมิพลอดุลยเดช	โรงพยาบาล	11.4 กม.	NULL	17	ricco-town-wongwaen-lamlukka
+รพ.เอกปทุม	โรงพยาบาล	11.1 กม.	NULL	18	ricco-town-wongwaen-lamlukka
+รร.บีคอนเฮาส์แย้มสอาด รังสิต	โรงเรียน	3.1 กม.	NULL	19	ricco-town-wongwaen-lamlukka
+รร.นานาชาติสยาม	โรงเรียน	6.3 กม.	NULL	20	ricco-town-wongwaen-lamlukka
+รร.โชคชัยรังสิต	โรงเรียน	6.8 กม.	NULL	21	ricco-town-wongwaen-lamlukka
+รร.สารสาสน์วิเทศสายไหม	โรงเรียน	4.4 กม.	NULL	22	ricco-town-wongwaen-lamlukka
+รร.สวนกุหลาบ รังสิต	โรงเรียน	9.3 กม.	NULL	23	ricco-town-wongwaen-lamlukka
+รร.เปรมฤทัย ลำลูกกา	โรงเรียน	9.1 กม.	NULL	24	ricco-town-wongwaen-lamlukka
+วิทยาลัยการปกครอง	โรงเรียน	10 กม.	NULL	25	ricco-town-wongwaen-lamlukka
+รร.นวมินทราชินูทิศ เบญจมราชาลัย	โรงเรียน	9.3 กม.	NULL	26	ricco-town-wongwaen-lamlukka
+รร.เตรียมพัฒน์ ลำลูกกา	โรงเรียน	11.7 กม.	NULL	27	ricco-town-wongwaen-lamlukka
+มหาวิทยาลัยเทคโนโลยีราชมงคลธัญบุรี	โรงเรียน	14.9 กม.	NULL	28	ricco-town-wongwaen-lamlukka
+มหาวิทยาลัยรังสิต	โรงเรียน	18.7 กม.	NULL	29	ricco-town-wongwaen-lamlukka

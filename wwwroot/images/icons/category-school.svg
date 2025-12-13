@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Magenta circle background -->
+  <circle cx="50" cy="50" r="50" fill="#C2185B"/>
+  <!-- White graduation cap icon -->
+  <g stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Cap base (diamond/square rotated) -->
+    <path d="M 50 32 L 70 42 L 50 52 L 30 42 Z"/>
+    <!-- Cap top board -->
+    <path d="M 30 42 L 30 48 Q 30 54 50 58 Q 70 54 70 48 L 70 42"/>
+    <!-- Tassel -->
+    <line x1="50" y1="32" x2="50" y2="26"/>
+    <circle cx="50" cy="24" r="2" fill="white"/>
+  </g>
+</svg>

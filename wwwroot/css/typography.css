@@ -1,0 +1,531 @@
+/* =========================================
+   COMPREHENSIVE TYPOGRAPHY SYSTEM
+   PPS Asset - Consistent Font Sizing & Weights
+   ========================================= */
+
+/* =========================================
+   1. FONT IMPORTS
+   ========================================= */
+@import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700');
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+
+/* =========================================
+   2. BASE TYPOGRAPHY SETTINGS
+   ========================================= */
+
+:root {
+    /* Font Family Stack - Thai First, then English fallbacks */
+    --font-primary: 'Kanit', 'Prompt', 'Sarabun', 'Montserrat', sans-serif;
+    --font-secondary: 'Prompt', 'Sarabun', 'Montserrat', sans-serif;
+    --font-tertiary: 'Sarabun', 'Prompt', 'Montserrat', sans-serif;
+
+    /* Font Weights */
+    --fw-light: 300;
+    --fw-normal: 400;
+    --fw-medium: 500;
+    --fw-semibold: 600;
+    --fw-bold: 700;
+
+    /* Line Heights */
+    --lh-tight: 1.2;
+    --lh-normal: 1.6;
+    --lh-relaxed: 1.8;
+
+    /* Letter Spacing */
+    --ls-tight: -0.5px;
+    --ls-normal: 0;
+    --ls-wide: 0.5px;
+}
+
+/* =========================================
+   3. HTML & BODY BASE STYLES
+   ========================================= */
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-primary);
+    font-size: 16px;
+    font-weight: var(--fw-normal);
+    line-height: var(--lh-normal);
+    color: #333333;
+    margin: 0;
+    padding: 0;
+}
+
+/* =========================================
+   4. HEADING STYLES
+   ========================================= */
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-primary);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-tight);
+    margin: 0;
+    color: #2d3436;
+}
+
+/* Heading 1 - Page Title */
+h1 {
+    font-size: 3.5rem;
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--ls-tight);
+    margin-bottom: 1.5rem;
+}
+
+/* Heading 2 - Section Title */
+h2 {
+    font-size: 2.75rem;
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--ls-tight);
+    margin-bottom: 1.25rem;
+}
+
+/* Heading 3 - Subsection Title */
+h3 {
+    font-size: 2rem;
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--ls-normal);
+    margin-bottom: 1rem;
+}
+
+/* Heading 4 - Card Title / Feature Title */
+h4 {
+    font-size: 1.5rem;
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-normal);
+    margin-bottom: 0.75rem;
+}
+
+/* Heading 5 - Small Title */
+h5 {
+    font-size: 1.25rem;
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-normal);
+    margin-bottom: 0.75rem;
+}
+
+/* Heading 6 - Mini Title */
+h6 {
+    font-size: 1rem;
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-normal);
+    margin-bottom: 0.5rem;
+}
+
+/* =========================================
+   5. PARAGRAPH & TEXT STYLES
+   ========================================= */
+
+p {
+    font-family: var(--font-primary);
+    font-size: 1rem;
+    font-weight: var(--fw-normal);
+    line-height: var(--lh-normal);
+    margin: 0 0 1rem 0;
+    color: #555555;
+}
+
+/* Large paragraph - Hero/Feature text */
+p.text-large,
+.text-large {
+    font-size: 1.125rem;
+    font-weight: var(--fw-normal);
+    line-height: var(--lh-relaxed);
+    color: #555555;
+}
+
+/* Small paragraph - Helper/Meta text */
+p.text-small,
+.text-small {
+    font-size: 0.875rem;
+    font-weight: var(--fw-normal);
+    line-height: var(--lh-normal);
+    color: #777777;
+}
+
+/* Extra small text - Labels/Captions */
+p.text-xs,
+.text-xs {
+    font-size: 0.75rem;
+    font-weight: var(--fw-normal);
+    line-height: var(--lh-tight);
+    color: #999999;
+}
+
+/* =========================================
+   6. TEXT UTILITY CLASSES
+   ========================================= */
+
+/* Font Weights */
+.fw-light {
+    font-weight: var(--fw-light);
+}
+
+.fw-normal {
+    font-weight: var(--fw-normal);
+}
+
+.fw-medium {
+    font-weight: var(--fw-medium);
+}
+
+.fw-semibold,
+.font-semibold,
+strong,
+b {
+    font-weight: var(--fw-semibold);
+}
+
+.fw-bold {
+    font-weight: var(--fw-bold);
+}
+
+/* Line Height Classes */
+.lh-tight {
+    line-height: var(--lh-tight);
+}
+
+.lh-normal {
+    line-height: var(--lh-normal);
+}
+
+.lh-relaxed {
+    line-height: var(--lh-relaxed);
+}
+
+/* Font Size Classes */
+.text-xl {
+    font-size: 2rem;
+    font-weight: var(--fw-semibold);
+}
+
+.text-lg {
+    font-size: 1.5rem;
+    font-weight: var(--fw-semibold);
+}
+
+.text-base,
+.text-md {
+    font-size: 1rem;
+    font-weight: var(--fw-normal);
+}
+
+.text-sm {
+    font-size: 0.875rem;
+    font-weight: var(--fw-normal);
+}
+
+.text-xs {
+    font-size: 0.75rem;
+    font-weight: var(--fw-normal);
+}
+
+/* =========================================
+   7. HEADING UTILITY CLASSES
+   ========================================= */
+
+.heading-xl {
+    font-size: 3.5rem;
+    font-weight: var(--fw-bold);
+}
+
+.heading-lg {
+    font-size: 2.75rem;
+    font-weight: var(--fw-bold);
+}
+
+.heading-md {
+    font-size: 2rem;
+    font-weight: var(--fw-bold);
+}
+
+.heading-sm {
+    font-size: 1.5rem;
+    font-weight: var(--fw-semibold);
+}
+
+.heading-xs {
+    font-size: 1.25rem;
+    font-weight: var(--fw-semibold);
+}
+
+/* =========================================
+   8. SEMANTIC TEXT ELEMENTS
+   ========================================= */
+
+a {
+    font-family: var(--font-primary);
+    font-weight: var(--fw-normal);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+em, i {
+    font-style: italic;
+}
+
+del {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+mark {
+    background-color: #fff3cd;
+    padding: 2px 4px;
+}
+
+code {
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.875rem;
+    background-color: #f4f4f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+pre {
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.875rem;
+    background-color: #f4f4f4;
+    padding: 12px;
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+/* =========================================
+   9. LIST STYLES
+   ========================================= */
+
+ul, ol {
+    font-family: var(--font-primary);
+    font-size: 1rem;
+    line-height: var(--lh-normal);
+    margin: 0 0 1rem 2rem;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 0.5rem;
+}
+
+ul.unstyled {
+    list-style: none;
+    margin-left: 0;
+}
+
+/* =========================================
+   10. FORM ELEMENTS
+   ========================================= */
+
+input,
+textarea,
+select,
+button {
+    font-family: var(--font-primary);
+    font-size: 1rem;
+    font-weight: var(--fw-normal);
+}
+
+label {
+    font-family: var(--font-primary);
+    font-size: 0.875rem;
+    font-weight: var(--fw-medium);
+    color: #333333;
+}
+
+/* =========================================
+   11. BLOCK QUOTE & CITATIONS
+   ========================================= */
+
+blockquote {
+    font-family: var(--font-secondary);
+    font-size: 1.125rem;
+    font-style: italic;
+    font-weight: var(--fw-normal);
+    line-height: var(--lh-relaxed);
+    border-left: 4px solid #365523;
+    padding: 1rem 0 1rem 1.5rem;
+    margin: 1.5rem 0;
+    color: #555555;
+}
+
+cite {
+    font-style: italic;
+    font-weight: var(--fw-normal);
+}
+
+/* =========================================
+   12. TABLE STYLES
+   ========================================= */
+
+table {
+    font-family: var(--font-primary);
+    font-size: 0.875rem;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: #f8f9fa;
+}
+
+th {
+    font-weight: var(--fw-semibold);
+    text-align: left;
+    padding: 0.75rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* =========================================
+   13. RESPONSIVE TYPOGRAPHY
+   ========================================= */
+
+@media (max-width: 768px) {
+    html {
+        font-size: 15px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    h2 {
+        font-size: 2rem;
+    }
+
+    h3 {
+        font-size: 1.625rem;
+    }
+
+    h4 {
+        font-size: 1.25rem;
+    }
+
+    h5 {
+        font-size: 1.125rem;
+    }
+
+    h6 {
+        font-size: 1rem;
+    }
+
+    p {
+        font-size: 0.9375rem;
+    }
+
+    p.text-large {
+        font-size: 1rem;
+    }
+
+    p.text-small {
+        font-size: 0.8125rem;
+    }
+
+    blockquote {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    html {
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.625rem;
+    }
+
+    h3 {
+        font-size: 1.375rem;
+    }
+
+    h4 {
+        font-size: 1.125rem;
+    }
+
+    h5 {
+        font-size: 1rem;
+    }
+
+    h6 {
+        font-size: 0.875rem;
+    }
+
+    p {
+        font-size: 0.875rem;
+    }
+
+    p.text-large {
+        font-size: 0.9375rem;
+    }
+
+    p.text-small {
+        font-size: 0.75rem;
+    }
+
+    blockquote {
+        font-size: 0.9375rem;
+        padding-left: 1rem;
+    }
+}
+
+/* =========================================
+   14. ACCESSIBILITY ENHANCEMENTS
+   ========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@media (prefers-contrast: more) {
+    body {
+        color: #000000;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        color: #000000;
+    }
+
+    p {
+        color: #111111;
+    }
+}
+
+@media print {
+    body {
+        font-size: 12pt;
+        line-height: 1.5;
+        color: #000000;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        page-break-after: avoid;
+    }
+
+    p {
+        widow: 3;
+        orphan: 3;
+    }
+}

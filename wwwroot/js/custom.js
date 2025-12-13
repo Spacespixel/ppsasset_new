@@ -4,20 +4,9 @@
 var resizeId;
 
 function bindMobileDropdown() {
-    var isMobile = $(window).width() <= 768;
+    // Remove conflicting jQuery handlers - let the vanilla JS in _Layout.cshtml handle dropdowns
     $(".dropdown-toggle").off("click.mobile");
-
-    if (isMobile) {
-        $(".dropdown-toggle").on("click.mobile", function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var $menu = $(this).siblings('.dropdown-menu');
-            $menu.slideToggle();
-            $('.dropdown-menu').not($menu).slideUp();
-        });
-    } else {
-        $('.dropdown-menu').removeAttr('style');
-    }
+    $('.dropdown-menu').removeAttr('style');
 }
 
 $(document).ready(function($) {
@@ -48,15 +37,17 @@ $(document).ready(function($) {
 
 //  Smooth Scroll
 
-    $('.main-nav a[href^="#"], a[href^="#"].scroll').on('click',function (e) {
+    $('.main-nav a[href^="#"], a[href^="#"].scroll').not('a[href*="Index"]').on('click',function (e) {
         e.preventDefault();
         var target = this.hash,
             $target = $(target);
-        $('html, body').stop().animate({
-            'scrollTop': $target.offset().top
-        }, 2000, 'swing', function () {
-            window.location.hash = target;
-        });
+        if ($target.length) {
+            $('html, body').stop().animate({
+                'scrollTop': $target.offset().top
+            }, 2000, 'swing', function () {
+                window.location.hash = target;
+            });
+        }
     });
 
     function toggleMobileMenu(forceClose) {
@@ -67,13 +58,13 @@ $(document).ready(function($) {
         if (shouldClose) {
             $pageWrapper.removeClass("show-navigation");
             $navigation.removeClass("nav-open show-navigation");
-            console.log("Mobile menu closed");
+        //    console.log("Mobile menu closed");
         } else {
             var isOpen = $pageWrapper.toggleClass("show-navigation").hasClass("show-navigation");
             $navigation.toggleClass("nav-open", isOpen);
             $navigation.toggleClass("show-navigation", isOpen);
             var navRect = $(".navigation-links").get(0) ? $(".navigation-links").get(0).getBoundingClientRect() : null;
-            console.log("Mobile menu toggled", { isOpen: isOpen, navRect: navRect });
+       //     console.log("Mobile menu toggled", { isOpen: isOpen, navRect: navRect });
         }
     }
 
@@ -85,8 +76,12 @@ $(document).ready(function($) {
     });
 
     // Close menu when clicking on navigation links (excluding dropdown toggles)
-    $(document).on("click", ".navigation-links a:not(.dropdown-toggle)", function(){
-        toggleMobileMenu(true);
+    $(document).on("click", ".navigation-links a:not(.dropdown-toggle)", function(e){
+        // Don't prevent default - let the link work normally
+        // Just close the mobile menu
+        setTimeout(function() {
+            toggleMobileMenu(true);
+        }, 50);
     });
 
     // Close menu when tapping outside the navigation
@@ -108,8 +103,7 @@ $(document).ready(function($) {
         e.stopPropagation();
     });
 
-    bindMobileDropdown();
-    $(window).on('resize', bindMobileDropdown);
+    // Dropdown handling removed - now handled by vanilla JS in _Layout.cshtml
 
     $(window).scroll(function () {
         if ($(window).scrollTop() > 1 ) {
@@ -275,7 +269,7 @@ function doneResizing(){
     //bigGalleryWidth();
     sliderHeight();
     centerVerticalNavigation();
-    bindMobileDropdown();
+    // bindMobileDropdown removed - handled by vanilla JS
 }
 
 function centerVerticalNavigation(){
@@ -383,7 +377,7 @@ function initializeOwl(){
 }
 
 
-function simpleMap(latitude, longitude, markerImage, mapTheme){
+function simpleMap(latitude, longitude, markerImage, mapTheme, projectData){
     var element = "map";
     if ( mapTheme == "light" ){
         var mapStyles = [{"featureType":"water","elementType":"geometry.fill","stylers":[{"color":"#d3d3d3"}]},{"featureType":"transit","stylers":[{"color":"#808080"},{"visibility":"off"}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"visibility":"on"},{"color":"#b3b3b3"}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"road.local","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"color":"#ffffff"},{"weight":1.8}]},{"featureType":"road.local","elementType":"geometry.stroke","stylers":[{"color":"#d7d7d7"}]},{"featureType":"poi","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"color":"#ebebeb"}]},{"featureType":"administrative","elementType":"geometry","stylers":[{"color":"#a7a7a7"}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"landscape","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"color":"#efefef"}]},{"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#696969"}]},{"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"visibility":"on"},{"color":"#737373"}]},{"featureType":"poi","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"color":"#d6d6d6"}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{},{"featureType":"poi","elementType":"geometry.fill","stylers":[{"color":"#dadada"}]}];
@@ -406,6 +400,64 @@ function simpleMap(latitude, longitude, markerImage, mapTheme){
         map: map,
         icon: markerImage
     });
+
+    // Create custom InfoWindow with project details
+    if (projectData) {
+        var infoWindowContent = createProjectInfoWindow(projectData);
+        var infoWindow = new google.maps.InfoWindow({
+            content: infoWindowContent,
+            maxWidth: 350
+        });
+
+        // Open info window by default
+        infoWindow.open(map, marker);
+
+        // Close when clicking the marker again
+        marker.addListener('click', function() {
+            infoWindow.close();
+        });
+    }
+}
+
+function createProjectInfoWindow(projectData) {
+    var html = '<div class="gmap-info-window" style="font-family: Sarabun, sans-serif;">';
+
+    if (projectData.image) {
+        html += '<div class="gmap-info-image" style="width: 100%; height: auto; margin-bottom: 10px; border-radius: 4px; overflow: hidden;">';
+        html += '<img src="' + projectData.image + '" style="width: 100%; height: auto; object-fit: cover;" />';
+        html += '</div>';
+    }
+
+    html += '<div class="gmap-info-content" style="padding: 0;">';
+
+    if (projectData.name) {
+        html += '<h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #2c3e50; line-height: 1.3;">' + projectData.name + '</h3>';
+    }
+
+    if (projectData.address) {
+        html += '<p style="margin: 0 0 10px 0; font-size: 13px; color: #555; line-height: 1.4;">' + projectData.address + '</p>';
+    }
+
+    if (projectData.rating) {
+        var stars = '';
+        for (var i = 0; i < 5; i++) {
+            stars += '<span style="color: ' + (i < projectData.rating ? '#FFC107' : '#ddd') + ';">★</span>';
+        }
+        html += '<div style="margin-bottom: 8px;">';
+        html += '<span style="font-size: 13px;">' + stars + ' </span>';
+        html += '<span style="font-size: 12px; color: #666;">' + projectData.rating + '/5 (' + (projectData.reviews || 0) + ' รีวิว)</span>';
+        html += '</div>';
+    }
+
+    if (projectData.description) {
+        html += '<p style="margin: 8px 0; font-size: 13px; color: #666; line-height: 1.4;">' + projectData.description + '</p>';
+    }
+
+    html += '<a href="' + (projectData.url || '#') + '" style="display: inline-block; margin-top: 8px; padding: 6px 12px; background-color: #FF6B35; color: white; text-decoration: none; border-radius: 3px; font-size: 12px; font-weight: 500;">ดูแผนที่ยาวได้โหลย</a>';
+
+    html += '</div></div>';
+
+    return html;
 }
 
 function equalHeight(container){

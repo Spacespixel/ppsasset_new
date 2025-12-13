@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Main location pin (center) - larger and more prominent -->
+  <path d="M12 2C9.243 2 7 4.243 7 7c0 2.5 5 9 5 9s5-6.5 5-9c0-2.757-2.243-5-5-5z" fill="currentColor"/>
+  <circle cx="12" cy="7" r="1.5" fill="white"/>
+
+  <!-- Top-left nearby pin -->
+  <path d="M5 6c0-1.1.9-2 2-2s2 .9 2 2c0 1-2 3-2 3s-2-2-2-3z" fill="currentColor" opacity="0.6"/>
+
+  <!-- Top-right nearby pin -->
+  <path d="M17 6c0-1.1.9-2 2-2s2 .9 2 2c0 1-2 3-2 3s-2-2-2-3z" fill="currentColor" opacity="0.6"/>
+
+  <!-- Bottom-left nearby indicator -->
+  <circle cx="8" cy="14" r="1.5" fill="currentColor" opacity="0.4"/>
+
+  <!-- Bottom-right nearby indicator -->
+  <circle cx="16" cy="14" r="1.5" fill="currentColor" opacity="0.4"/>
+</svg>

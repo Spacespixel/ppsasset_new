@@ -18,6 +18,54 @@ namespace PPSAsset.Services
             _projectMappingService = projectMappingService;
         }
 
+
+        public async Task<List<string>> CheckDuplicatesAsync(RegistrationInputModel input)
+        {
+            var errors = new List<string>();
+            
+            try
+            {
+                using var connection = new MySqlConnection(_connectionString);
+                await connection.OpenAsync();
+                
+                // Check duplicate name only if both first and last name are provided
+                if (!string.IsNullOrWhiteSpace(input.FirstName) && !string.IsNullOrWhiteSpace(input.LastName))
+                {
+                    var nameCheckSql = "SELECT COUNT(*) FROM tr_transaction WHERE FirstName = @FirstName AND LastName = @LastName";
+                    var nameCount = await connection.QuerySingleAsync<int>(nameCheckSql, new { 
+                        FirstName = input.FirstName.Trim(), 
+                        LastName = input.LastName.Trim() 
+                    });
+                    
+                    if (nameCount > 0)
+                    {
+                        errors.Add($"พบข้อมูลชื่อ {input.FirstName} {input.LastName} ในระบบแล้ว");
+                    }
+                }
+                
+                // Check duplicate phone number if provided
+                if (!string.IsNullOrWhiteSpace(input.TelNo))
+                {
+                    var phoneCheckSql = "SELECT COUNT(*) FROM tr_transaction WHERE TelNo = @TelNo";
+                    var phoneCount = await connection.QuerySingleAsync<int>(phoneCheckSql, new { 
+                        TelNo = input.TelNo.Trim() 
+                    });
+                    
+                    if (phoneCount > 0)
+                    {
+                        errors.Add($"พบหมายเลขโทรศัพท์ {input.TelNo} ในระบบแล้ว");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking duplicates for {FirstName} {LastName}", input.FirstName, input.LastName);
+                // Return empty list on error - don't block registration for database issues
+            }
+            
+            return errors;
+        }
+
         public async Task SaveAsync(RegistrationInputModel input, HttpRequest request)
         {
             var transactionId = DateTime.UtcNow.ToString("yyMMddHHmmssfff");
