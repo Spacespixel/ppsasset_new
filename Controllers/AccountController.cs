@@ -56,10 +56,72 @@ namespace PPSAsset.Controllers
             return isPopup ? ClosePopup(returnUrl, resolvedProvider) : Redirect(returnUrl);
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult CheckAuthStatus()
+        {
+            var isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
+            var provider = DetectProvider(User);
+            var userName = User?.Identity?.Name;
+
+            var response = new
+            {
+                isAuthenticated,
+                provider,
+                userName
+            };
+
+            if (Request.Headers.ContainsKey("X-Requested-With") && 
+                Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(response);
+            }
+
+            return Ok(response);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Logout()
+        public IActionResult Logout(string returnUrl = null)
         {
+            // First try the explicit returnUrl parameter
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return SignOut(new AuthenticationProperties
+                {
+                    RedirectUri = returnUrl
+                }, CookieAuthenticationDefaults.AuthenticationScheme);
+            }
+            
+            // Get the current URL from the referer header to preserve the project URL pattern
+            var refererUrl = Request.Headers["Referer"].ToString();
+            
+            // Check if referer is a valid local URL
+            if (!string.IsNullOrEmpty(refererUrl))
+            {
+                var uri = new Uri(refererUrl, UriKind.RelativeOrAbsolute);
+                if (uri.IsAbsoluteUri)
+                {
+                    // Extract just the path and query from the absolute URL
+                    var localPath = uri.PathAndQuery;
+                    if (Url.IsLocalUrl(localPath))
+                    {
+                        return SignOut(new AuthenticationProperties
+                        {
+                            RedirectUri = localPath
+                        }, CookieAuthenticationDefaults.AuthenticationScheme);
+                    }
+                }
+                else if (Url.IsLocalUrl(refererUrl))
+                {
+                    return SignOut(new AuthenticationProperties
+                    {
+                        RedirectUri = refererUrl
+                    }, CookieAuthenticationDefaults.AuthenticationScheme);
+                }
+            }
+            
+            // Fallback to generic Project action
             return SignOut(new AuthenticationProperties
             {
                 RedirectUri = Url.Action("Project", "Home")

@@ -1,0 +1,31 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    },
+    "Console": {
+      "LogLevel": {
+        "Default": "Warning"
+      }
+    },
+    "File": {
+      "Path": "C:\\Production\\logs\\ppsasset\\ppsasset-{Date}.log",
+      "LogLevel": {
+        "Default": "Information"
+      }
+    }
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=103.13.231.222:3306;Database=ppsasset_production_db;Uid=root;Pwd=Hor$1z0n#25;CharSet=utf8mb4;SslMode=Preferred;"
+  },
+  "Kestrel": {
+    "Endpoints": {
+      "Http": {
+        "Url": "http://localhost:8081"
+      }
+    }
+  },
+  "Environment": "Production"
+}

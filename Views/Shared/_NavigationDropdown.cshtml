@@ -1,0 +1,149 @@
+@model List<PPSAsset.Models.ProjectViewModel>
+
+<li class="dropdown" id="project-dropdown">
+    <a href="#" class="dropdown-toggle" onclick="toggleDropdown(event)">โครงการ <span class="caret">▼</span></a>
+    <div class="dropdown-menu dropdown-menu-columns">
+        
+        @{
+            // Group projects by status: Active (Available, NewProject, ComingSoon, UnderConstruction, Completed) vs SoldOut
+            var activeProjects = Model?.Where(p => p.Status != PPSAsset.Models.ProjectStatus.SoldOut).ToList() ?? new List<PPSAsset.Models.ProjectViewModel>();
+            var soldOutProjects = Model?.Where(p => p.Status == PPSAsset.Models.ProjectStatus.SoldOut).ToList() ?? new List<PPSAsset.Models.ProjectViewModel>();
+            
+            // Group active projects by type
+            var activeSingleHouse = activeProjects.Where(p => p.Type == PPSAsset.Models.ProjectType.SingleHouse).OrderBy(p => p.SortOrder).ThenBy(p => p.NameTh);
+            var activeTownhouse = activeProjects.Where(p => p.Type == PPSAsset.Models.ProjectType.Townhouse).OrderBy(p => p.SortOrder).ThenBy(p => p.NameTh);
+            var activeTwinHouse = activeProjects.Where(p => p.Type == PPSAsset.Models.ProjectType.TwinHouse).OrderBy(p => p.SortOrder).ThenBy(p => p.NameTh);
+            
+            // Group sold out projects by type
+            var soldOutSingleHouse = soldOutProjects.Where(p => p.Type == PPSAsset.Models.ProjectType.SingleHouse).OrderBy(p => p.SortOrder).ThenBy(p => p.NameTh);
+            var soldOutTownhouse = soldOutProjects.Where(p => p.Type == PPSAsset.Models.ProjectType.Townhouse).OrderBy(p => p.SortOrder).ThenBy(p => p.NameTh);
+            var soldOutTwinHouse = soldOutProjects.Where(p => p.Type == PPSAsset.Models.ProjectType.TwinHouse).OrderBy(p => p.SortOrder).ThenBy(p => p.NameTh);
+            
+            // Helper function to generate project URL
+            string GetProjectUrl(PPSAsset.Models.ProjectViewModel project)
+            {
+                var projectType = project.Type switch
+                {
+                    PPSAsset.Models.ProjectType.SingleHouse => "singlehouse",
+                    PPSAsset.Models.ProjectType.Townhouse => "townhome",
+                    PPSAsset.Models.ProjectType.TwinHouse => "twinhouse",
+                    _ => "singlehouse"
+                };
+                
+                // Map project IDs to PPS URL format or fallback to project action
+                var projectUrl = project.Id switch
+                {
+                    "ricco-residence-hathairat" => "singlehouse/thericcoresidence/ramindrahathairat",
+                    "ricco-residence-chatuchot" => "singlehouse/thericcoresidence/ramindrachatuchot",
+                    "ricco-residence-prime-hathairat" => "singlehouse/thericcoresidenceprime/wongwaenhathairat",
+                    "ricco-residence-prime-chatuchot" => "singlehouse/thericcoresidenceprime/wongwaenchatuchot",
+                    "ricco-town-phahonyothin-saimai53" => "townhome/thericcotown/phahonyothin_saimai53",
+                    "ricco-town-wongwaen-lamlukka" => "townhome/thericcotown/wongwaen_lumlukka",
+                    _ => null
+                };
+                
+                return projectUrl != null ? $"/{projectUrl}" : Url.Action("Project", "Home", new { id = project.Id });
+            }
+        }
+        
+        
+        <!-- ACTIVE PROJECTS SECTION -->
+        <div class="status-section">
+            <div class="main-status-title">Active</div>
+            <div class="status-section-content">
+                @if (activeSingleHouse.Any())
+                {
+                    <!-- Single House subsection -->
+                    <div class="house-type-subsection">
+                        <div class="house-type-title">บ้านเดี่ยว</div>
+                        <ul class="projects-list">
+                            @foreach (var project in activeSingleHouse)
+                            {
+                                <li><a href="@GetProjectUrl(project)">@project.NameTh</a></li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                @if (activeTownhouse.Any())
+                {
+                    <!-- Townhome subsection -->
+                    <div class="house-type-subsection">
+                        <div class="house-type-title">ทาวน์โฮม</div>
+                        <ul class="projects-list">
+                            @foreach (var project in activeTownhouse)
+                            {
+                                <li><a href="@GetProjectUrl(project)">@project.NameTh</a></li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                @if (activeTwinHouse.Any())
+                {
+                    <!-- Twin House subsection -->
+                    <div class="house-type-subsection">
+                        <div class="house-type-title">บ้านแฝด</div>
+                        <ul class="projects-list">
+                            @foreach (var project in activeTwinHouse)
+                            {
+                                <li><a href="@GetProjectUrl(project)">@project.NameTh</a></li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (soldOutProjects.Any())
+        {
+            <!-- SOLD OUT PROJECTS SECTION -->
+            <div class="status-section sold-out">
+                <div class="main-status-title">Sold Out</div>
+                <div class="status-section-content">
+                    @if (soldOutSingleHouse.Any())
+                    {
+                        <!-- Single House subsection -->
+                        <div class="house-type-subsection">
+                            <div class="house-type-title">บ้านเดี่ยว</div>
+                            <ul class="projects-list">
+                                @foreach (var project in soldOutSingleHouse)
+                                {
+                                    <li><a href="@GetProjectUrl(project)">@project.NameTh</a></li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    @if (soldOutTownhouse.Any())
+                    {
+                        <!-- Townhome subsection -->
+                        <div class="house-type-subsection">
+                            <div class="house-type-title">ทาวน์โฮม</div>
+                            <ul class="projects-list">
+                                @foreach (var project in soldOutTownhouse)
+                                {
+                                    <li><a href="@GetProjectUrl(project)">@project.NameTh</a></li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    @if (soldOutTwinHouse.Any())
+                    {
+                        <!-- Twin House subsection -->
+                        <div class="house-type-subsection">
+                            <div class="house-type-title">บ้านแฝด</div>
+                            <ul class="projects-list">
+                                @foreach (var project in soldOutTwinHouse)
+                                {
+                                    <li><a href="@GetProjectUrl(project)">@project.NameTh</a></li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</li>
