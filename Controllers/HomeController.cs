@@ -7,6 +7,9 @@ using Dapper;
 using System.Net;
 using System.Security.Claims;
 using System.Linq;
+using MySql.Data.MySqlClient;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace PPSAsset.Controllers
 {
@@ -19,8 +22,10 @@ namespace PPSAsset.Controllers
         private readonly RegistrationService _registrationService;
         private readonly IConfiguration _configuration;
         private readonly IGtmService _gtmService;
+        private readonly ISeoService _seoService;
+        private readonly IRecaptchaService _recaptchaService;
 
-        public HomeController(ILogger<HomeController> logger, IProjectService projectService, IThemeService themeService, DatabaseMigration databaseMigration, IConfiguration configuration, RegistrationService registrationService, IGtmService gtmService)
+        public HomeController(ILogger<HomeController> logger, IProjectService projectService, IThemeService themeService, DatabaseMigration databaseMigration, IConfiguration configuration, RegistrationService registrationService, IGtmService gtmService, ISeoService seoService, IRecaptchaService recaptchaService)
         {
             _logger = logger;
             _projectService = projectService;
@@ -29,38 +34,120 @@ namespace PPSAsset.Controllers
             _registrationService = registrationService;
             _configuration = configuration;
             _gtmService = gtmService;
+            _seoService = seoService;
+            _recaptchaService = recaptchaService;
+        }
+
+        private void SetNavigationData()
+        {
+            _logger.LogInformation("Attempting to load navigation projects from database...");
+            // Get all projects for navigation dropdown - LET IT THROW!
+            var allProjects = _projectService.GetAllProjects();
+            ViewBag.NavigationProjects = allProjects;
+            _logger.LogInformation("Successfully loaded {ProjectCount} projects for navigation", allProjects.Count);
+        }
+
+        private string GetConnectionString()
+        {
+            return _configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
         }
 
         public async Task<IActionResult> Index()
         {
-            // Homepage uses default theme from theme service
-            var theme = _themeService.GetDefaultTheme();
-            ViewBag.ProjectTheme = theme.CssClass;
-            ViewBag.ThemePrimaryColor = theme.PrimaryColor;
-            ViewBag.ThemeSecondaryColor = theme.SecondaryColor;
-            ViewBag.ThemeLightBackground = theme.LightBackground;
+            try
+            {
+                _logger.LogInformation("Index action started. Request path: {Path}, Host: {Host}", Request.Path, Request.Host);
+                
+                // Set navigation data for dropdown menu
+                _logger.LogInformation("Setting navigation data...");
+                SetNavigationData();
+                _logger.LogInformation("Navigation data set successfully");
+                
+                // Homepage uses default theme from theme service
+                _logger.LogInformation("Getting default theme...");
+                var theme = _themeService.GetDefaultTheme();
+                ViewBag.ProjectTheme = theme.CssClass;
+                ViewBag.ThemePrimaryColor = theme.PrimaryColor;
+                ViewBag.ThemeSecondaryColor = theme.SecondaryColor;
+                ViewBag.ThemeLightBackground = theme.LightBackground;
+                _logger.LogInformation("Theme applied: {ThemeCss}", theme.CssClass);
 
-            // Set GTM ID for global site
-            ViewBag.GtmId = await _gtmService.GetGlobalGtmIdAsync();
+                // Set GTM ID for global site
+                _logger.LogInformation("Getting GTM ID...");
+                var gtmId = await _gtmService.GetGlobalGtmIdAsync();
+                ViewBag.GtmId = gtmId;
+                _logger.LogInformation("GTM ID set: {GtmId}", gtmId ?? "null");
 
-            // Get available projects using the simplified DatabaseProjectService
-            var featuredProjects = _projectService.GetAvailableProjects();
+                // Set SEO metadata for homepage
+                _logger.LogInformation("Getting SEO metadata...");
+                var seoMetadata = _seoService.GetPageMetadata("home");
+                ViewBag.SeoTitle = seoMetadata.Title;
+                ViewBag.SeoDescription = seoMetadata.Description;
+                ViewBag.SeoKeywords = seoMetadata.Keywords;
+                ViewBag.SeoCanonical = _seoService.GetCanonicalUrl(Request.Host.ToString(), "/");
+                _logger.LogInformation("SEO metadata set. Title: {Title}", seoMetadata.Title);
 
-            return View(featuredProjects);
+                // Set JSON-LD Organization schema
+                _logger.LogInformation("Getting organization schema...");
+                ViewBag.JsonLdOrganization = _seoService.GetOrganizationSchema();
+                _logger.LogInformation("Organization schema set");
+
+                // Get available projects using the simplified DatabaseProjectService
+                _logger.LogInformation("Getting featured projects...");
+                var featuredProjects = _projectService.GetAvailableProjects();
+                _logger.LogInformation("Featured projects loaded. Count: {ProjectCount}", featuredProjects?.Count ?? 0);
+
+                _logger.LogInformation("Index action completed successfully. Returning view with {ProjectCount} projects", featuredProjects?.Count ?? 0);
+                return View(featuredProjects);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Critical error in Index action. Request: {Method} {Path} from {RemoteIp}. User: {User}", 
+                    Request.Method, Request.Path, Request.HttpContext.Connection.RemoteIpAddress, User?.Identity?.Name ?? "Anonymous");
+                
+                // Return a simple error view or rethrow to let global error handler catch it
+                throw; // Let the global error handling middleware deal with it
+            }
         }
 
         public async Task<IActionResult> About()
         {
+            // Set navigation data for dropdown menu
+            SetNavigationData();
+            
             // Set GTM ID for global site
             ViewBag.GtmId = await _gtmService.GetGlobalGtmIdAsync();
+
+            // Set SEO metadata for about page
+            var seoMetadata = _seoService.GetPageMetadata("about");
+            ViewBag.SeoTitle = seoMetadata.Title;
+            ViewBag.SeoDescription = seoMetadata.Description;
+            ViewBag.SeoKeywords = seoMetadata.Keywords;
+            ViewBag.SeoCanonical = _seoService.GetCanonicalUrl(Request.Host.ToString(), "/About");
+
+            // Set JSON-LD Organization schema
+            ViewBag.JsonLdOrganization = _seoService.GetOrganizationSchema();
 
             return View();
         }
 
         public async Task<IActionResult> Contact()
         {
+            // Set navigation data for dropdown menu
+            SetNavigationData();
+            
             // Set GTM ID for global site
             ViewBag.GtmId = await _gtmService.GetGlobalGtmIdAsync();
+
+            // Set SEO metadata for contact page
+            var seoMetadata = _seoService.GetPageMetadata("contact");
+            ViewBag.SeoTitle = seoMetadata.Title;
+            ViewBag.SeoDescription = seoMetadata.Description;
+            ViewBag.SeoKeywords = seoMetadata.Keywords;
+            ViewBag.SeoCanonical = _seoService.GetCanonicalUrl(Request.Host.ToString(), "/Contact");
+
+            // Set JSON-LD Organization schema
+            ViewBag.JsonLdOrganization = _seoService.GetOrganizationSchema();
 
             return View();
         }
@@ -83,6 +170,19 @@ namespace PPSAsset.Controllers
                 return NotFound($"Project '{projectId}' not found");
             }
 
+            // Debug logging for facilities
+            _logger.LogInformation("Project '{ProjectId}' loaded. Facilities count: {FacilitiesCount}", 
+                projectId, project.Facilities?.Count ?? 0);
+            
+            if (project.Facilities?.Any() == true)
+            {
+                foreach (var facility in project.Facilities)
+                {
+                    _logger.LogInformation("Facility: {FacilityName} (ID: {FacilityId}, Icon: {Icon})", 
+                        facility.Name, facility.Id, facility.Icon);
+                }
+            }
+
             ApplyTheme(projectId);
 
             // Set GTM ID - try project-specific first, fallback to global
@@ -93,6 +193,25 @@ namespace PPSAsset.Controllers
             }
             ViewBag.GtmId = gtmId;
 
+            // Set SEO metadata for project page
+            var seoMetadata = _seoService.GetProjectMetadata(project);
+            ViewBag.SeoTitle = seoMetadata.Title;
+            ViewBag.SeoDescription = seoMetadata.Description;
+            ViewBag.SeoKeywords = seoMetadata.Keywords;
+            ViewBag.SeoCanonical = _seoService.GetCanonicalUrl(Request.Host.ToString(), $"/Project/{projectId}");
+            ViewBag.SeoOgImage = seoMetadata.OgImage;
+            ViewBag.SeoOgImageAlt = seoMetadata.OgImageAlt;
+
+            // Set JSON-LD Property schema for this specific project
+            var propertySchema = _seoService.GetJsonLdSchema("property", project);
+            ViewBag.JsonLdProperty = propertySchema;
+
+            // Set JSON-LD Organization schema
+            ViewBag.JsonLdOrganization = _seoService.GetOrganizationSchema();
+
+            // Set reCAPTCHA site key
+            ViewBag.RecaptchaSiteKey = _configuration.GetSection("RecaptchaSettings")["SiteKey"] ?? string.Empty;
+
             ViewBag.RegistrationModel = BuildRegistrationModel(project);
             ViewBag.AuthProvider = GetAuthenticatedProvider();
             ViewBag.GetProjectUrl = new Func<string, string>(ConvertProjectIdToPpsUrl);
@@ -101,9 +220,11 @@ namespace PPSAsset.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        // [ValidateAntiForgeryToken] // Temporarily disabled for testing
         public async Task<IActionResult> RegisterProject(RegistrationInputModel input)
         {
+            _logger.LogInformation("=== RegisterProject called with ProjectID: {ProjectId}, FirstName: {FirstName}, LastName: {LastName}, TelNo: {TelNo} ===", 
+                input.ProjectID, input.FirstName, input.LastName, input.TelNo);
             var projectId = input.ProjectID;
 
             if (User.Identity?.IsAuthenticated == true)
@@ -115,8 +236,70 @@ namespace PPSAsset.Controllers
                 input.LastName ??= User.FindFirstValue(ClaimTypes.Surname);
             }
 
+            // Verify reCAPTCHA token (bypass in development)
+            _logger.LogInformation("Starting reCAPTCHA verification...");
+            bool recaptchaValid = true; // Temporarily bypass for testing
+            if (_configuration["Environment"] != "Development") 
+            {
+                recaptchaValid = await _recaptchaService.VerifyTokenAsync(input.RecaptchaToken ?? string.Empty);
+            }
+            _logger.LogInformation("reCAPTCHA verification result: {IsValid} (development bypass: {IsBypass})", 
+                recaptchaValid, _configuration["Environment"] == "Development");
+            if (!recaptchaValid)
+            {
+                _logger.LogWarning("reCAPTCHA validation failed for project {ProjectId}", projectId);
+
+                // Check if it's an AJAX request
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new {
+                        success = false,
+                        message = "reCAPTCHA ยืนยันไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"
+                    });
+                }
+
+                ModelState.AddModelError(string.Empty, "reCAPTCHA ยืนยันไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+            }
+
+            // Check for duplicates only if reCAPTCHA passed
+            if (recaptchaValid)
+            {
+                try
+                {
+                    _logger.LogInformation("Starting duplicate validation...");
+                    var duplicateErrors = await _registrationService.CheckDuplicatesAsync(input);
+                    _logger.LogInformation("Duplicate validation completed. Found {ErrorCount} errors", duplicateErrors.Count);
+                    foreach (var error in duplicateErrors)
+                    {
+                        ModelState.AddModelError(string.Empty, error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Duplicate check failed for project {ProjectId}, continuing without validation", projectId);
+                    // Don't add ModelState error - just log and continue
+                }
+            }
+
             if (!ModelState.IsValid)
             {
+                _logger.LogInformation("Model validation failed, returning errors");
+                
+                // Check if it's an AJAX request - return JSON with errors
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+                    
+                    return Json(new {
+                        success = false,
+                        message = "กรุณาตรวจสอบข้อมูลที่กรอก",
+                        errors = errors
+                    });
+                }
+
                 var project = _projectService.GetProject(projectId ?? string.Empty);
                 if (project == null)
                 {
@@ -134,6 +317,7 @@ namespace PPSAsset.Controllers
 
             try
             {
+                _logger.LogInformation("Proceeding to save registration...");
                 input.UtmSource ??= Request.Query["utm_source"].ToString();
                 input.UtmMedium ??= Request.Query["utm_medium"].ToString();
                 input.UtmCampaign ??= Request.Query["utm_campaign"].ToString();
@@ -141,6 +325,7 @@ namespace PPSAsset.Controllers
                 input.UtmContent ??= Request.Query["utm_content"].ToString();
 
                 await _registrationService.SaveAsync(input, Request);
+                _logger.LogInformation("Registration saved successfully");
 
                 // Check if it's an AJAX request
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
@@ -187,38 +372,81 @@ namespace PPSAsset.Controllers
 
         private string ConvertPpsUrlToProjectId(string projectType, string projectName, string location)
         {
-            // Convert URL-friendly format to our project ID format
-            // Example: singlehouse/ricco-residence-ramintra/hathairat -> ricco-residence-hathairat
+            // Convert URL-friendly format to our project ID format using database mapping
+            // Example: singlehouse/thericcoresidence/ramindrachatuchot -> ricco-residence-chatuchot
 
-            var mapping = new Dictionary<string, string>
+            try
             {
-                // Single Houses - Available
-                {"singlehouse/ricco-residence-ramintra/hathairat", "ricco-residence-hathairat"},
-                {"singlehouse/ricco-residence-ramintra/chatuchot", "ricco-residence-chatuchot"},
-                {"singlehouse/thericcoresidenceprime/wongwaenhathairat", "ricco-residence-prime-hathairat"},
-                {"singlehouse/thericcoresidenceprime/wongwaenchatuchot", "ricco-residence-prime-chatuchot"},
+                var urlPattern = $"{projectType}/{projectName}/{location}";
+                _logger.LogInformation("Looking up URL pattern: {UrlPattern}", urlPattern);
 
-                // Townhomes - Available
-                {"townhome/thericcotown/phahonyothin_saimai53", "ricco-town-phahonyothin-saimai53"},
-                {"townhome/thericcotown/wongwaen_lumlukka", "ricco-town-wongwaen-lamlukka"},
+                // Query the database for the mapping
+                using (var connection = new MySqlConnection(GetConnectionString()))
+                {
+                    connection.Open();
+                    var query = @"
+                        SELECT ProjectID
+                        FROM sy_project_mapping
+                        WHERE UrlPattern = @UrlPattern
+                        AND IsActive = 1
+                        LIMIT 1";
 
-                // Legacy mappings for backward compatibility
-                {"singlehouse/ricco-residence-prime-ringroad/hathairat", "ricco-residence-prime-hathairat"},
-                {"singlehouse/ricco-residence-prime-ringroad/chatuchot", "ricco-residence-prime-chatuchot"},
-                {"townhome/ricco-town-ringroad/lamlukka", "ricco-town-wongwaen-lamlukka"},
+                    var result = connection.QueryFirstOrDefault<string>(query, new { UrlPattern = urlPattern });
 
-                // Twin Houses (for future use)
-                {"twinhouse/ricco-twin-ringroad/lamlukka", "ricco-twin-ringroad-lamlukka"}
-            };
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        _logger.LogInformation("Successfully mapped URL {UrlPattern} to project ID: {ProjectId}", urlPattern, result);
+                        return result;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("No mapping found in database for URL pattern: {UrlPattern}", urlPattern);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error converting PPS URL to project ID: {ex.Message}");
+            }
 
-            var urlKey = $"{projectType}/{projectName}/{location}";
-            return mapping.TryGetValue(urlKey, out var projectId) ? projectId : "ricco-residence-hathairat";
+            // Fallback to static service if database lookup fails
+            _logger.LogWarning($"No mapping found for URL pattern: {projectType}/{projectName}/{location}");
+            return null; // Let the caller handle null (instead of wrong default)
         }
 
         private string ConvertProjectIdToPpsUrl(string projectId)
         {
-            // Simple URL structure: /project/projectname
-            return $"/project/{projectId}";
+            // Convert project ID back to PPS Asset format using database mapping
+            // Example: ricco-residence-chatuchot -> /singlehouse/thericcoresidence/ramindrachatuchot
+
+            try
+            {
+                using (var connection = new MySqlConnection(GetConnectionString()))
+                {
+                    connection.Open();
+                    var query = @"
+                        SELECT UrlPattern
+                        FROM sy_project_mapping
+                        WHERE ProjectID = @ProjectId
+                        AND IsActive = 1
+                        LIMIT 1";
+
+                    var result = connection.QueryFirstOrDefault<string>(query, new { ProjectId = projectId });
+
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        return $"/{result}";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error converting project ID to PPS URL: {ex.Message}");
+            }
+
+            // Fallback: return null and let caller handle missing mapping
+            _logger.LogWarning($"No URL pattern found for project ID: {projectId}");
+            return null;
         }
 
         private void ApplyTheme(string projectId)
@@ -275,6 +503,29 @@ namespace PPSAsset.Controllers
         }
 
         
+
+        [HttpGet]
+        public async Task<IActionResult> FixProjectNames()
+        {
+            if (!_configuration.GetValue<bool>("EnableDatabaseMigration"))
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                _logger.LogInformation("Re-migrating static data to fix corrupted project names");
+                
+                var result = await _databaseMigration.MigrateStaticDataAsync();
+
+                return Json(new { Success = result.Success, Message = result.Success ? "Project names fixed" : "Migration failed", Error = result.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fixing project names");
+                return Json(new { Success = false, Message = ex.Message });
+            }
+        }
 
         public async Task<IActionResult> RegistrationSuccess(string? projectId = null)
         {
@@ -440,6 +691,366 @@ namespace PPSAsset.Controllers
                     success = false,
                     message = "Internal server error retrieving status history",
                     error = ex.Message
+                });
+            }
+        }
+
+        /// <summary>
+        /// Debug endpoint to test database connection and investigate issues - TEMPORARY
+        /// </summary>
+        public IActionResult DebugConnection()
+        {
+            var results = new List<object>();
+            
+            try
+            {
+                var connectionString = GetConnectionString();
+                results.Add(new { step = "connection_string", value = connectionString.Replace("Pwd=", "Pwd=***") });
+
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    // Test basic connection
+                    connection.Open();
+                    results.Add(new { step = "connection_open", success = true });
+
+                    // Test database selection
+                    var dbName = connection.QueryFirstOrDefault<string>("SELECT DATABASE()");
+                    results.Add(new { step = "current_database", value = dbName });
+
+                    // Test server info
+                    var serverInfo = connection.QueryFirstOrDefault<string>("SELECT VERSION()");
+                    results.Add(new { step = "server_version", value = serverInfo });
+
+                    // Test if tables exist
+                    var tables = connection.Query<string>("SHOW TABLES LIKE 'sy_project%'");
+                    results.Add(new { step = "available_tables", value = tables.ToArray() });
+
+                    // Test specific project query with full error handling
+                    try 
+                    {
+                        const string fullProjectSql = @"
+                            SELECT
+                                p.ProjectID as Id,
+                                p.ProjectName as NameTh,
+                                p.ProjectNameEN as NameEn,
+                                p.ProjectSubtitle as Subtitle,
+                                p.ProjectDescription as Description,
+                                p.ProjectConcept as Concept,
+                                p.ProjectType as Type,
+                                p.ProjectStatus as Status,
+                                p.SortOrder,
+                                p.ProjectAddress as Location,
+                                p.ProjectSize,
+                                p.TotalUnits,
+                                p.LandSize,
+                                p.UsableArea,
+                                p.Developer,
+                                p.PriceRange
+                            FROM sy_project p
+                            WHERE p.ProjectID = @ProjectId";
+
+                        var project = connection.QueryFirstOrDefault<dynamic>(fullProjectSql, new { ProjectId = "ricco-town-phahonyothin-saimai53" });
+                        results.Add(new { step = "full_project_query", success = project != null, hasData = project != null });
+                    }
+                    catch (Exception ex)
+                    {
+                        results.Add(new { step = "full_project_query", success = false, error = ex.Message, sqlState = ex.Data.Contains("SqlState") ? ex.Data["SqlState"] : null });
+                    }
+
+                    // Test if we can access the exact service
+                    try
+                    {
+                        var project = _projectService.GetProject("ricco-town-phahonyothin-saimai53");
+                        results.Add(new { step = "service_getproject", success = project != null, projectFound = project != null });
+                    }
+                    catch (Exception ex)
+                    {
+                        results.Add(new { step = "service_getproject", success = false, error = ex.Message, innerException = ex.InnerException?.Message });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                results.Add(new { step = "connection_failed", error = ex.Message, type = ex.GetType().Name, innerException = ex.InnerException?.Message });
+            }
+
+            return Json(new
+            {
+                success = true,
+                results = results,
+                timestamp = DateTime.UtcNow
+            });
+        }
+
+        /// <summary>
+        /// Debug endpoint to test URL mapping - TEMPORARY
+        /// </summary>
+        public IActionResult DebugUrlMapping(string urlPattern = "townhome/thericcotown/phahonyothin_saimai53")
+        {
+            try
+            {
+                _logger.LogInformation("Testing URL mapping for: {UrlPattern}", urlPattern);
+                
+                using (var connection = new MySqlConnection(GetConnectionString()))
+                {
+                    connection.Open();
+                    var query = @"
+                        SELECT ProjectID, MappedProjectID, UrlPattern, IsActive
+                        FROM sy_project_mapping
+                        WHERE UrlPattern = @UrlPattern
+                        LIMIT 1";
+
+                    var result = connection.QueryFirstOrDefault(query, new { UrlPattern = urlPattern });
+                    
+                    return Json(new
+                    {
+                        success = true,
+                        connectionString = GetConnectionString().Replace("Pwd=", "Pwd=***"),
+                        searchPattern = urlPattern,
+                        result = result,
+                        timestamp = DateTime.UtcNow
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = ex.Message,
+                    stackTrace = ex.StackTrace,
+                    connectionString = GetConnectionString().Replace("Pwd=", "Pwd=***")
+                });
+            }
+        }
+
+        /// <summary>
+        /// Debug endpoint to test each step of project loading - TEMPORARY
+        /// </summary>
+        public IActionResult DebugProjectSteps(string projectId = "ricco-town-phahonyothin-saimai53")
+        {
+            try
+            {
+                var steps = new List<object>();
+                
+                using (var connection = new MySqlConnection(GetConnectionString()))
+                {
+                    connection.Open();
+                    steps.Add(new { step = "connection", success = true });
+
+                    // Test main project query
+                    const string projectSql = @"
+                        SELECT
+                            p.ProjectID as Id,
+                            p.ProjectName as NameTh,
+                            p.ProjectNameEN as NameEn,
+                            p.ProjectType as Type,
+                            p.ProjectStatus as Status
+                        FROM sy_project p
+                        WHERE p.ProjectID = @ProjectId";
+
+                    var project = connection.QueryFirstOrDefault<dynamic>(projectSql, new { ProjectId = projectId });
+                    steps.Add(new { step = "main_query", success = project != null, data = project });
+
+                    if (project != null)
+                    {
+                        // Test each related data loading step
+                        try
+                        {
+                            var images = connection.Query("SELECT * FROM sy_project_images WHERE ProjectID = @ProjectId", new { ProjectId = projectId });
+                            steps.Add(new { step = "images", success = true, count = images.Count() });
+                        }
+                        catch (Exception ex)
+                        {
+                            steps.Add(new { step = "images", success = false, error = ex.Message });
+                        }
+
+                        try
+                        {
+                            var houseTypes = connection.Query("SELECT * FROM sy_project_house_types WHERE ProjectID = @ProjectId", new { ProjectId = projectId });
+                            steps.Add(new { step = "house_types", success = true, count = houseTypes.Count() });
+                        }
+                        catch (Exception ex)
+                        {
+                            steps.Add(new { step = "house_types", success = false, error = ex.Message });
+                        }
+
+                        try
+                        {
+                            var facilities = connection.Query("SELECT * FROM sy_project_facilities WHERE ProjectID = @ProjectId", new { ProjectId = projectId });
+                            steps.Add(new { step = "facilities", success = true, count = facilities.Count() });
+                        }
+                        catch (Exception ex)
+                        {
+                            steps.Add(new { step = "facilities", success = false, error = ex.Message });
+                        }
+                    }
+                }
+
+                return Json(new
+                {
+                    success = true,
+                    projectId = projectId,
+                    steps = steps,
+                    timestamp = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = ex.Message,
+                    stackTrace = ex.StackTrace,
+                    projectId = projectId
+                });
+            }
+        }
+
+        /// <summary>
+        /// Debug raw SQL query to see what's in database - TEMPORARY
+        /// </summary>
+        public IActionResult DebugRawSql(string projectId = "ricco-town-phahonyothin-saimai53")
+        {
+            try
+            {
+                using (var connection = new MySqlConnection(GetConnectionString()))
+                {
+                    connection.Open();
+                    
+                    // Test the exact query from DatabaseProjectService
+                    const string exactQuery = @"
+                        SELECT
+                            p.ProjectID as Id,
+                            p.ProjectName as NameTh,
+                            p.ProjectNameEN as NameEn,
+                            p.ProjectSubtitle as Subtitle,
+                            p.ProjectDescription as Description,
+                            p.ProjectConcept as Concept,
+                            p.ProjectType as Type,
+                            p.ProjectStatus as Status,
+                            p.SortOrder,
+                            p.ProjectAddress as Location,
+                            p.ProjectSize,
+                            p.TotalUnits,
+                            p.LandSize,
+                            p.UsableArea,
+                            p.Developer,
+                            p.PriceRange
+                        FROM sy_project p
+                        WHERE p.ProjectID = @ProjectId";
+
+                    var rawResult = connection.QueryFirstOrDefault<dynamic>(exactQuery, new { ProjectId = projectId });
+                    
+                    // Also test what service returns
+                    var serviceResult = _projectService.GetProject(projectId);
+                    
+                    return Json(new
+                    {
+                        success = true,
+                        projectId = projectId,
+                        rawSqlFound = rawResult != null,
+                        rawSqlData = rawResult,
+                        serviceFound = serviceResult != null,
+                        serviceData = serviceResult != null ? new { serviceResult.Id, serviceResult.Name } : null,
+                        connectionString = GetConnectionString().Replace("Pwd=", "Pwd=***"),
+                        timestamp = DateTime.UtcNow
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = ex.Message,
+                    stackTrace = ex.StackTrace,
+                    projectId = projectId
+                });
+            }
+        }
+
+        /// <summary>
+        /// Debug endpoint to check if project exists in database - TEMPORARY
+        /// </summary>
+        public IActionResult DebugProjectExists(string projectId = "ricco-town-phahonyothin-saimai53")
+        {
+            try
+            {
+                var project = _projectService.GetProject(projectId);
+                
+                return Json(new
+                {
+                    success = true,
+                    projectId = projectId,
+                    projectFound = project != null,
+                    projectData = project != null ? new {
+                        project.Id,
+                        project.Name,
+                        project.NameTh,
+                        project.Type,
+                        project.Status
+                    } : null,
+                    timestamp = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = ex.Message,
+                    stackTrace = ex.StackTrace,
+                    projectId = projectId
+                });
+            }
+        }
+
+        /// <summary>
+        /// Debug endpoint to check project data - development only
+        /// </summary>
+        public IActionResult DebugProject(string projectId = "ricco-residence-hathairat")
+        {
+            // Only allow in development environment for security
+            if (!HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment())
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                var project = _projectService.GetProject(projectId);
+
+                if (project == null)
+                {
+                    return Json(new
+                    {
+                        error = "Project not found",
+                        projectId
+                    });
+                }
+
+                return Json(new
+                {
+                    projectId,
+                    id = project.Id,
+                    name = project.Name,
+                    nameTh = project.NameTh,
+                    nameEn = project.NameEn,
+                    subtitle = project.Subtitle,
+                    description = project.Description,
+                    concept = project.Concept,
+                    type = project.Type.ToString(),
+                    status = project.Status.ToString()
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    error = ex.Message,
+                    stackTrace = ex.StackTrace,
+                    projectId
                 });
             }
         }

@@ -1,0 +1,53 @@
+# robots.txt for PPS Asset website
+# Controls crawling behavior for search engines
+
+# Allow all bots to crawl the website
+User-agent: *
+Allow: /
+
+# Disallow admin and sensitive paths
+Disallow: /Admin/
+Disallow: /api/admin/
+Disallow: /admin/
+Disallow: /.env
+Disallow: /appsettings.json
+
+# Disallow temporary/test pages
+Disallow: /test/
+Disallow: /temp/
+Disallow: /tmp/
+
+# Sitemaps - helps search engines discover all URLs
+Sitemap: https://www.ppsasset.com/sitemap.xml
+
+# Crawl delay to prevent server overload (in seconds)
+# This is a suggestion - most major search engines ignore this in favor of robots meta tags
+Crawl-delay: 1
+
+# Request-rate - pages per second
+Request-rate: 1/1s
+
+# Specific rules for Google bot
+User-agent: Googlebot
+Allow: /
+Disallow: /Admin/
+Crawl-delay: 0
+
+# Specific rules for Bing bot
+User-agent: Bingbot
+Allow: /
+Disallow: /Admin/
+Crawl-delay: 1
+
+# Block bad bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
