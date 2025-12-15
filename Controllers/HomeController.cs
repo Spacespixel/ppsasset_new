@@ -215,6 +215,7 @@ namespace PPSAsset.Controllers
             ViewBag.RegistrationModel = BuildRegistrationModel(project);
             ViewBag.AuthProvider = GetAuthenticatedProvider();
             ViewBag.GetProjectUrl = new Func<string, string>(ConvertProjectIdToPpsUrl);
+            ViewBag.HideGlobalNavigation = true;
 
             return View(project);
         }

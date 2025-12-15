@@ -68,6 +68,7 @@
     <link rel="stylesheet" href="~/css/dropdown-menu.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/mobile-dropdown-enhanced.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/mobile-responsive-fixes.css" asp-append-version="true" />
     
     <!-- ULTIMATE OVERRIDE FOR STYLE-CUSTOM.CSS CONFLICTS -->
     <style>
@@ -360,28 +361,31 @@
 }
 
 <div class="page-wrapper" id="page-top">
- <nav class="navigation nav-btn-only background-is-dark">
-        <div class="container">
-            <div class="wrapper">
-                <div class="left">
-                    <a href="@Url.Action("Index", "Home")" class="brand"><img src="~/images/pps-logo.png" alt="PPS Asset" style="height: 40px;"></a>
-                </div>
-                <div class="right">
-                    <ul class="nav navigation-links animate">
-                        <li><a href="@Url.Action("Index","Home")">Home</a></li>
-                        @await Html.PartialAsync("_NavigationDropdown", (List<PPSAsset.Models.ProjectViewModel>)ViewBag.NavigationProjects)
-                        <li><a href="@Url.Action("About","Home")" class="scroll">เกี่ยวกับเรา</a></li>
-                        <li><a href="@Url.Action("Contact","Home")" class="scroll">ติดต่อเรา</a></li>
-                      </ul>
-                    <div class="nav-btn">
-                        <figure></figure>
-                        <figure></figure>
-                        <figure></figure>
+    @if (ViewBag.HideGlobalNavigation != true)
+    {
+        <nav class="navigation nav-btn-only background-is-dark">
+            <div class="container">
+                <div class="wrapper">
+                    <div class="left">
+                        <a href="@Url.Action("Index", "Home")" class="brand"><img src="~/images/pps-logo.png" alt="PPS Asset" style="height: 40px;"></a>
+                    </div>
+                    <div class="right">
+                        <ul class="nav navigation-links animate">
+                            <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                            @await Html.PartialAsync("_NavigationDropdown", (List<PPSAsset.Models.ProjectViewModel>)ViewBag.NavigationProjects)
+                            <li><a href="@Url.Action("About","Home")" class="scroll">เกี่ยวกับเรา</a></li>
+                            <li><a href="@Url.Action("Contact","Home")" class="scroll">ติดต่อเรา</a></li>
+                          </ul>
+                        <div class="nav-btn">
+                            <figure></figure>
+                            <figure></figure>
+                            <figure></figure>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </nav>  
+        </nav>
+    }
     @RenderBody()
     
     <footer id="page-footer" class="block background-is-dark" style="background-color: #61676d !important; background-image: none !important;">
