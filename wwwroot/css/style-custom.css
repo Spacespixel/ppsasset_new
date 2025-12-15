@@ -6076,7 +6076,7 @@ form .status i {
     }
 
     .project-hamburger {
-        display: none !important;
+        display: flex !important;
     }
 
     .project-nav__logo {
@@ -6171,7 +6171,7 @@ form .status i {
 .project-location__address {
     margin: 18px 0 24px 0;
     color: rgba(0,0,0,0.68);
-    font-size: 1.25rem;
+    font-size: 16px;
 }
 
 .location-list {
@@ -6877,8 +6877,8 @@ form .status i {
     display: flex;
     justify-content: center;
     margin: 0 auto 48px;
-    padding: 18px 24px;
-    max-width: 860px;
+    padding: 8px 18px;
+    width: fit-content;
     border-radius: 0 32px 0 0;
     background: #ffffff;
     box-shadow: 0 20px 45px rgba(47, 64, 32, 0.12);
@@ -6889,8 +6889,8 @@ form .status i {
     display: flex;
     justify-content: center;
     margin: 0 auto 48px;
-    padding: 18px 24px;
-    max-width: 600px;
+    padding: 8px 18px;
+    width: fit-content;
     border-radius: 0 32px 0 0;
     background: #ffffff;
     box-shadow: 0 20px 45px rgba(47, 64, 32, 0.12);
@@ -6906,14 +6906,14 @@ form .status i {
 .filter-btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 9px 19px;
+    gap: 6px;
+    padding: 8px 16px;
     border-radius: 999px;
     border: 1px solid #d6dccf;
     background: #ffffff;
-    font-family: "Sarabun", sans-serif;
+    font-family: "Prompt", sans-serif;
     font-weight: 600;
-    font-size: 1.02rem;
+    font-size: 14px;
     color: #7b8274;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -7186,11 +7186,11 @@ form .status i {
     display: flex;
     justify-content: center;
     margin: 0 auto 48px;
-    padding: 18px 24px;
-    max-width: 860px;
+    padding: 8px 18px;
+    width: fit-content;
     background: #ffffff;
-    border-radius: 0 28px 0 0;
-    border: 1px solid #e8e8e8;
+    border-radius: 0 32px 0 0;
+    box-shadow: 0 20px 45px rgba(47, 64, 32, 0.12);
 }
 
 .gallery-filters .filter-buttons {
