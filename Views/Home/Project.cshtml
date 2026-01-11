@@ -101,7 +101,11 @@
 <script src="https://www.google.com/recaptcha/api.js?render=@ViewBag.RecaptchaSiteKey"></script>
 
 <div class="project-minisite @themeClass" style="--primary-color: @primaryColor; --secondary-color: @secondaryColor; --light-bg: @lightBackground;">
-    <div class="project-mobile-overlay" id="projectMobileOverlay"></div>
+    <div class="project-mobile-overlay" id="projectMobileOverlay">
+        <button class="project-mobile-close" id="projectMobileClose" aria-label="Close menu">
+            <span>&times;</span>
+        </button>
+    </div>
 
     <header class="project-top-bar">
         <div class="container project-top-bar__inner">
@@ -118,18 +122,17 @@
                 <img src="@logoImage" alt="@Model.Name" />
                 
             </a>
-            <button class="project-hamburger" id="projectHamburger" type="button" aria-label="Toggle navigation" aria-expanded="false">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+            <div class="nav-btn" id="projectHamburger">
+                <figure></figure>
+                <figure></figure>
+                <figure></figure>
+            </div>
             <ul class="project-nav__menu" id="projectNavMenu">
-                <li><a class="project-nav__link" href="#details">รายละเอียดโครงการ</a></li>
-                <li><a class="project-nav__link" href="#concept">คอนเซปต์โครงการ</a></li>
-                <li><a class="project-nav__link" href="#masterplans">แบบบ้าน</a></li>
-                <li><a class="project-nav__link" href="#gallery">แกลเลอรี</a></li>
-                <li><a class="project-nav__link" href="#location">ทำเล</a></li>
-                <li><a class="project-nav__link project-nav__cta" href="#register">ลงทะเบียนรับสิทธิ์พิเศษ</a></li>
+                <li><a class="project-nav__link" href="#details">Project Information</a></li>
+                 <li><a class="project-nav__link" href="#masterplans">Plan & Layout</a></li>
+                <li><a class="project-nav__link" href="#gallery">Gallery</a></li>
+                <li><a class="project-nav__link" href="#location">Location</a></li>
+                <li><a class="project-nav__link project-nav__cta" href="#register">Register Now</a></li>
             </ul>
         </div>
     </nav>
@@ -138,15 +141,7 @@
         <div class="project-hero__overlay"></div>
         <div class="container">
             <div class="project-hero__content">
-                <h1 class="project-hero__title">@(!string.IsNullOrEmpty(Model.NameTh) ? Model.NameTh : Model.Name)</h1>
-                @if (!string.IsNullOrEmpty(Model.Subtitle))
-                {
-                    <p class="project-hero__subtitle">@Model.Subtitle</p>
-                }
-                else if (!string.IsNullOrEmpty(Model.Description))
-                {
-                    <p class="project-hero__subtitle">@Model.Description</p>
-                }
+                <!-- Title and subtitle removed -->
             </div>
         </div>
     </section>
@@ -155,7 +150,7 @@
         <div class="container">
             <div class="register-card">
                 <div class="register-card__header">
-                    <h3>ลงทะเบียนรับสิทธิ์พิเศษ</h3>
+                    <h3>Register Now</h3>
                      <div class="register-social">
                         @if (!(User?.Identity?.IsAuthenticated ?? false))
                         {
@@ -374,7 +369,7 @@
         <section class="project-section project-details" id="details">
             <div class="container">
                 <div class="section-header">
-                    <h3 class="section-title">รายละเอียดโครงการ</h3>
+                    <h3 class="section-title">Project Information</h3>
                 </div>
             </div>
 
@@ -473,6 +468,15 @@
                             </div>
                         }
                     }
+
+                    <!-- Terms and Conditions Link -->
+                    <div style="grid-column: 1 / -1; text-align: center; margin-top: 20px;">
+                        <a href="@(ViewBag.GetProjectUrl != null ? ViewBag.GetProjectUrl(Model.Id) + "/terms-and-conditions" : "/Project/" + Model.Id + "/terms-and-conditions")" 
+                           target="_blank" 
+                           style="color: #007bff; text-decoration: underline; font-size: 16px;">
+                            ดูข้อกำหนดและเงื่อนไข <i class="fa fa-external-link" style="font-size: 12px; margin-left: 5px;"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>
@@ -541,7 +545,7 @@
 
                     @if (!string.IsNullOrEmpty(title))
                     {
-                        <!-- Row 1: Image on left, Title + Summary on right -->
+                        <!-- Single Row: Image on left, Title + Summary + Details on right -->
                         <div class="concept-row">
                             <div class="concept-image-section">
                                 @if (availableImages.Count > 0)
@@ -555,25 +559,12 @@
                                 {
                                     <p>@Html.Raw(summary)</p>
                                 }
+                                @if (!string.IsNullOrEmpty(details))
+                                {
+                                    <p>@Html.Raw(details)</p>
+                                }
                             </div>
                         </div>
-
-                        <!-- Row 2: Details on left, Image on right (reversed) -->
-                        @if (!string.IsNullOrEmpty(details))
-                        {
-                            <div class="concept-row concept-row-reverse">
-                                <div class="concept-image-section">
-                                    @if (availableImages.Count > 1)
-                                    {
-                                        <img src="@Url.Content($"~/images/projects/{Model.Id}/galleries/{availableImages[1]}")" alt="@Model.Name - Details" />
-                                    }
-                                </div>
-                                <div class="concept-text-section">
-                                    <p>@Html.Raw(details)</p>
-                                </div>
-
-                            </div>
-                        }
                     }
             </div>
             </div>
@@ -604,40 +595,31 @@
 
         .concept-row {
             display: flex;
-            margin-bottom: 70px;        /* Increased spacing between rows */
-            min-height: 420px;          /* Increased height for better proportions */
             align-items: stretch;
+            min-height: 420px;
             opacity: 0;
-            transform: translateX(-50px);
+            transform: translateY(50px);
             transition: all 0.8s ease-out;
+        }
+
+        .concept-section.animate-in .concept-row {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .concept-row:last-child {
             margin-bottom: 0;
         }
 
+        /* Keep all items in same direction - no alternating */
         .concept-row:nth-child(even),
         .concept-row-reverse {
-            transform: translateX(50px);
-            flex-direction: row-reverse;   /* Reverse the order for alternating layout */
-        }
-
-        .concept-section.animate-in .concept-row {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .concept-section.animate-in .concept-row:nth-child(1) {
-            transition-delay: 0.3s;
-        }
-
-        .concept-section.animate-in .concept-row:nth-child(2) {
-            transition-delay: 0.6s;
+            flex-direction: row;            /* Keep same direction, no reverse */
         }
 
         .concept-text-section {
             flex: 1;
-            padding: 60px 70px;         /* Increased padding for better breathing room */
+            padding: 60px 70px;         /* Restored padding for single image layout */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -718,7 +700,7 @@
             .concept-row {
                 flex-direction: column;
                 min-height: auto;
-                margin-bottom: 50px;            /* Reduced from 70px on tablet */
+                margin-bottom: 50px;            /* Add spacing between concept items on mobile */
             }
 
             .concept-text-section {
@@ -971,7 +953,7 @@
         <section class="project-section project-plans" id="masterplans">
             <div class="container">
                 <div class="section-header">
-                    <h3 class="section-title">แบบบ้าน</h3>
+                    <h3 class="section-title">Plan & Layout</h3>
                 </div>
 
                 <!-- Filter Buttons -->
@@ -1158,7 +1140,7 @@
         <section class="project-section project-gallery" id="gallery">
             <div class="container">
                 <div class="section-header">
-                     <h3 class="section-title">แกลเลอรี</h3>
+                     <h3 class="section-title">Gallery</h3>
                 </div>
 
                 <!-- Gallery Filters -->
@@ -1225,7 +1207,7 @@
             <div class="container">
                 <div class="section-header">
 
-                    <h3 class="section-title">ทำเล</h3>
+                    <h3 class="section-title">Location</h3>
                     @if (!string.IsNullOrWhiteSpace(Model.Details.Location))
                     {
                         <p class="project-location__address">ที่ตั้งโครงการ : @Model.Details.Location</p>
@@ -1445,23 +1427,68 @@
 
             hamburger?.addEventListener('click', toggleMenu);
             overlay?.addEventListener('click', closeMenu);
+            
+            // Close button functionality
+            const closeButton = document.getElementById('projectMobileClose');
+            closeButton?.addEventListener('click', closeMenu);
 
             navMenu?.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', function(e) {
-                    closeMenu();
-
-                    // Add smooth scroll for anchor links
                     const href = this.getAttribute('href');
+                    
                     if (href && href.startsWith('#')) {
                         e.preventDefault();
+                        
                         const targetId = href.substring(1);
                         const targetElement = document.getElementById(targetId);
+                        
                         if (targetElement) {
-                            targetElement.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'start'
-                            });
+                            // Check if mobile menu is open
+                            const isMobileMenuOpen = navMenu?.classList.contains('is-open');
+                            
+                            // Close menu first
+                            closeMenu();
+                            
+                            // Wait longer for mobile menu close animation
+                            const delay = isMobileMenuOpen ? 600 : 300;
+                            setTimeout(() => {
+                                // Get current nav height more accurately
+                                const nav = document.querySelector('.project-nav');
+                                const navHeight = nav ? nav.getBoundingClientRect().height : 80;
+                                
+                                // Get the element's position relative to the document
+                                const rect = targetElement.getBoundingClientRect();
+                                const targetPosition = rect.top + window.pageYOffset - navHeight - 20;
+                                
+                                // Try scrollTo first
+                                window.scrollTo({
+                                    top: Math.max(0, targetPosition), // Ensure we don't scroll past top
+                                    behavior: 'smooth'
+                                });
+                                
+                                // Fallback for mobile devices that might have issues with scrollTo
+                                if (isMobileMenuOpen) {
+                                    setTimeout(() => {
+                                        targetElement.scrollIntoView({ 
+                                            behavior: 'smooth', 
+                                            block: 'start' 
+                                        });
+                                        // Adjust for navbar
+                                        setTimeout(() => {
+                                            const adjustedPosition = window.scrollY - navHeight - 20;
+                                            if (adjustedPosition >= 0) {
+                                                window.scrollTo({
+                                                    top: adjustedPosition,
+                                                    behavior: 'auto' // Use auto for final adjustment on mobile
+                                                });
+                                            }
+                                        }, 200);
+                                    }, 100);
+                                }
+                            }, delay);
                         }
+                    } else {
+                        closeMenu();
                     }
                 });
             });
@@ -2927,7 +2954,7 @@
         /* Location Grid Styles */
         .location-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 24px;
             margin-top: 32px;
         }

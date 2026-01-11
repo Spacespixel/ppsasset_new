@@ -8,6 +8,146 @@
 <link href="~/css/style-custom.css?v=@DateTime.Now.Ticks" rel="stylesheet">
 
 <style>
+/* Contact Hero Banner Styles */
+#contact-hero {
+    background: url('/images/Rico-Residence-Hathairath-Facility-1.png') center/cover no-repeat;
+    height: 60vh;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background-attachment: fixed;
+}
+
+#contact-hero .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+#contact-hero .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+#contact-hero .hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    font-family: 'Kanit', sans-serif;
+}
+
+#contact-hero .hero-subtitle {
+    font-size: 1.3rem;
+    font-weight: 400;
+    margin-bottom: 30px;
+    opacity: 0.95;
+    line-height: 1.6;
+    font-family: 'Sarabun', sans-serif;
+}
+
+#contact-hero .hero-scroll-indicator {
+    margin-top: 50px;
+}
+
+#contact-hero .hero-scroll-indicator a {
+    color: white;
+    font-size: 1.5rem;
+    text-decoration: none;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+    display: inline-block;
+    animation: bounce 2s infinite;
+}
+
+#contact-hero .hero-scroll-indicator a:hover {
+    opacity: 1;
+    transform: translateY(-5px);
+}
+
+@@keyframes bounce {
+    0%%, 20%%, 50%%, 80%%, 100%% { transform: translateY(0); }
+    40%% { transform: translateY(-10px); }
+    60%% { transform: translateY(-5px); }
+}
+
+@@media (max-width: 768px) {
+    #contact-hero {
+        height: 50vh;
+        min-height: 300px;
+    }
+    
+    #contact-hero .hero-title {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+    
+    #contact-hero .hero-subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+}
+
+/* Continue with existing styles... */
+
+/* Contact Section Layout */
+#contact .container {
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+
+#contact .row {
+    margin-top: 20px;
+}
+
+#contact .col-md-6 {
+    margin-bottom: 30px;
+}
+
+/* Contact Form Styling */
+.contact-form {
+    background: #f8f9fa;
+    padding: 40px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+}
+
+.contact-form h3 {
+    color: #365523;
+    margin-bottom: 25px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.contact-form .form-group {
+    margin-bottom: 20px;
+}
+
+.contact-form .form-control {
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 12px 15px;
+    font-size: 15px;
+    transition: border-color 0.3s ease;
+}
+
+.contact-form .form-control:focus {
+    border-color: #365523;
+    box-shadow: 0 0 0 0.2rem rgba(54, 85, 35, 0.25);
+}
+
 /* Contact Page Specific Styles */
 .btn-submit-form {
     background: #365523;
@@ -161,14 +301,25 @@
 }
 </style>
 
+<!-- Hero Banner Section -->
+<div class="hero-banner" id="contact-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title lazy-text-reveal">ติดต่อเรา</h1>
+          
+         
+    </div>
+</div>
+
 <div id="page-content">
     <div class="block" id="contact">
         <div class="container">
-            <h2>ติดต่อเรา</h2>
+            <h2 class="lazy-fade" style="text-align: center; margin-bottom: 50px;">ข้อมูลติดต่อ</h2>
             <div class="row">
+                <!-- Left Column - Company Info & Addresses -->
                 <div class="col-md-6 col-sm-6">
-                    <div class="contact-info" data-scroll-reveal="enter left and move 20px">
-                        <h3>สำนักงานใหญ่</h3>
+                    <div class="contact-info lazy-slide-left" data-scroll-reveal="enter left and move 20px">
+                        <h3 style="color: #365523; margin-bottom: 30px; font-weight: 600;">สำนักงานใหญ่</h3>
                         <div class="office-info">
                             <div class="company-name">
                                 <h4>บริษัท พูลผลทรัพย์ จำกัด</h4>
@@ -193,18 +344,6 @@
                             <div class="contact-item">
                                 <div class="contact-icon">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M6.62 10.79C8.06 13.62 10.38 15.94 13.21 17.38L15.41 15.18C15.69 14.9 16.08 14.82 16.43 14.93C17.55 15.3 18.75 15.5 20 15.5C20.55 15.5 21 15.95 21 16.5V20C21 20.55 20.55 21 20 21C10.61 21 3 13.39 3 4C3 3.45 3.45 3 4 3H7.5C8.05 3 8.5 3.45 8.5 4C8.5 5.25 8.7 6.45 9.07 7.57C9.18 7.92 9.1 8.31 8.82 8.59L6.62 10.79Z" fill="#365523"/>
-                                    </svg>
-                                </div>
-                                <div class="contact-details">
-                                    <div class="contact-label">โทรศัพท์</div>
-                                    <div class="contact-text">081-847-8461</div>
-                                </div>
-                            </div>
-
-                            <div class="contact-item">
-                                <div class="contact-icon">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" fill="#365523"/>
                                     </svg>
                                 </div>
@@ -216,101 +355,92 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="contact-item">
-                                <div class="contact-icon">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M6.62 10.79C8.06 13.62 10.38 15.94 13.21 17.38L15.41 15.18C15.69 14.9 16.08 14.82 16.43 14.93C17.55 15.3 18.75 15.5 20 15.5C20.55 15.5 21 15.95 21 16.5V20C21 20.55 20.55 21 20 21C10.61 21 3 13.39 3 4C3 3.45 3.45 3 4 3H7.5C8.05 3 8.5 3.45 8.5 4C8.5 5.25 8.7 6.45 9.07 7.57C9.18 7.92 9.1 8.31 8.82 8.59L6.62 10.79Z" fill="#365523"/>
-                                    </svg>
-                                </div>
-                                <div class="contact-details">
-                                    <div class="contact-label">โทรศัพท์</div>
-                                    <div class="contact-text">02-381-3500</div>
-                                </div>
-                            </div>
-                           
-                            <div class="contact-item">
-                                <div class="contact-icon">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z" fill="#365523"/>
-                                    </svg>
-                                </div>
-                                <div class="contact-details">
-                                    <div class="contact-label">อีเมล</div>
-                                    <div class="contact-text">info@ppsasset.com</div>
-                                </div>
-                            </div>
-
-                            <div class="contact-item">
-                                <div class="contact-icon">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM11 7H13V12.27L15.73 13.64L14.73 15.36L11 13.5V7Z" fill="#365523"/>
-                                    </svg>
-                                </div>
-                                <div class="contact-details">
-                                    <div class="contact-label">เปิดทำการ</div>
-                                    <div class="contact-text">จันทร์-อาทิตย์ 9:00-18:00 น.</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="social-links">
-                            <h4>ติดตามเราได้ที่</h4>
-                            <a href="https://facebook.com/ppsasset" target="_blank" class="social-link">
-                                <svg width="20" height="20" viewBox="0 0 24 24" style="margin-right: 10px; vertical-align: middle;">
-                                    <path fill="#365523" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                                </svg>
-                                Facebook
-                            </a>
-                            <a href="https://www.instagram.com/ppsasset/" target="_blank" class="social-link">
-                                <svg width="20" height="20" viewBox="0 0 24 24" style="margin-right: 10px; vertical-align: middle;">
-                                    <path fill="#365523" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                                </svg>
-                                Instagram
-                            </a>
-                            <a href="https://www.youtube.com/@@PPSASSET-i3i" target="_blank" class="social-link">
-                                <svg width="20" height="20" viewBox="0 0 24 24" style="margin-right: 10px; vertical-align: middle;">
-                                    <path fill="#365523" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                                </svg>
-                                YouTube
-                            </a>
-                            <a href="https://www.tiktok.com/@@ppsasset" target="_blank" class="social-link">
-                                <svg width="20" height="20" viewBox="0 0 24 24" style="margin-right: 10px; vertical-align: middle;">
-                                    <path fill="#365523" d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.74v13.67a2.89 2.89 0 1 1-2.89-2.89 2.88 2.88 0 0 1 .44.05v-3.8a6.67 6.67 0 0 0-.44 0 6.75 6.75 0 1 0 6.75 6.75V7.72a8.39 8.39 0 0 0 4.91 1.6V6.69a4.83 4.83 0 0 1-1.06-.4z"/>
-                                </svg>
-                                TikTok
-                            </a>
                         </div>
                     </div>
                 </div>
+                
+                <!-- Right Column - Contact Details & Social Media -->
                 <div class="col-md-6 col-sm-6">
-                    <div class="contact-form" data-scroll-reveal="enter right and move 20px">
-                        <h3>ส่งข้อความถึงเรา</h3>
-                        <form id="contact-form" method="post" class="clearfix">
-                            <div class="row">
-                                <div class="col-md-6 col-sm-6">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" name="name" placeholder="ชื่อ-นามสกุล" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-sm-6">
-                                    <div class="form-group">
-                                        <input type="email" class="form-control" name="email" placeholder="อีเมล" required>
-                                    </div>
-                                </div>
+                    <div class="contact-info lazy-slide-right" data-scroll-reveal="enter right and move 20px">
+                        <h3 style="color: #365523; margin-bottom: 30px; font-weight: 600;">ข้อมูลการติดต่อ</h3>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6.62 10.79C8.06 13.62 10.38 15.94 13.21 17.38L15.41 15.18C15.69 14.9 16.08 14.82 16.43 14.93C17.55 15.3 18.75 15.5 20 15.5C20.55 15.5 21 15.95 21 16.5V20C21 20.55 20.55 21 20 21C10.61 21 3 13.39 3 4C3 3.45 3.45 3 4 3H7.5C8.05 3 8.5 3.45 8.5 4C8.5 5.25 8.7 6.45 9.07 7.57C9.18 7.92 9.1 8.31 8.82 8.59L6.62 10.79Z" fill="#365523"/>
+                                </svg>
                             </div>
-                            <div class="form-group">
-                                <input type="text" class="form-control" name="subject" placeholder="หัวข้อ">
+                            <div class="contact-details">
+                                <div class="contact-label">โทรศัพท์มือถือ</div>
+                                <div class="contact-text">081-847-8461</div>
                             </div>
-                            <div class="form-group">
-                                <textarea class="form-control" name="message" rows="6" placeholder="ข้อความ" required></textarea>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6.62 10.79C8.06 13.62 10.38 15.94 13.21 17.38L15.41 15.18C15.69 14.9 16.08 14.82 16.43 14.93C17.55 15.3 18.75 15.5 20 15.5C20.55 15.5 21 15.95 21 16.5V20C21 20.55 20.55 21 20 21C10.61 21 3 13.39 3 4C3 3.45 3.45 3 4 3H7.5C8.05 3 8.5 3.45 8.5 4C8.5 5.25 8.7 6.45 9.07 7.57C9.18 7.92 9.1 8.31 8.82 8.59L6.62 10.79Z" fill="#365523"/>
+                                </svg>
                             </div>
-                            <div class="form-group clearfix">
-                                <button type="submit" class="btn-submit-form">ส่งข้อความ</button>
+                            <div class="contact-details">
+                                <div class="contact-label">โทรศัพท์สำนักงาน</div>
+                                <div class="contact-text">02-381-3500</div>
                             </div>
-                        </form>
+                        </div>
+                       
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z" fill="#365523"/>
+                                </svg>
+                            </div>
+                            <div class="contact-details">
+                                <div class="contact-label">อีเมล</div>
+                                <div class="contact-text">info@ppsasset.com</div>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM11 7H13V12.27L15.73 13.64L14.73 15.36L11 13.5V7Z" fill="#365523"/>
+                            </svg>
+                        </div>
+                        <div class="contact-details">
+                            <div class="contact-label">เปิดทำการ</div>
+                            <div class="contact-text">จันทร์-อาทิตย์ 9:00-18:00 น.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="social-links" style="margin-top: 30px;">
+                        <h4 style="color: #365523; margin-bottom: 20px;">ติดตามเราได้ที่</h4>
+                        <a href="https://facebook.com/ppsasset" target="_blank" class="social-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" style="margin-right: 10px; vertical-align: middle;">
+                                <path fill="#365523" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                            Facebook
+                        </a>
+                        <a href="https://www.instagram.com/ppsasset/" target="_blank" class="social-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" style="margin-right: 10px; vertical-align: middle;">
+                                <path fill="#365523" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                            Instagram
+                        </a>
+                        <a href="https://www.youtube.com/@@PPSASSET-i3i" target="_blank" class="social-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" style="margin-right: 10px; vertical-align: middle;">
+                                <path fill="#365523" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                            </svg>
+                            YouTube
+                        </a>
+                        <a href="https://www.tiktok.com/@@ppsasset" target="_blank" class="social-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" style="margin-right: 10px; vertical-align: middle;">
+                                <path fill="#365523" d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.74v13.67a2.89 2.89 0 1 1-2.89-2.89 2.88 2.88 0 0 1 .44.05v-3.8a6.67 6.67 0 0 0-.44 0 6.75 6.75 0 1 0 6.75 6.75V7.72a8.39 8.39 0 0 0 4.91 1.6V6.69a4.83 4.83 0 0 1-1.06-.4z"/>
+                            </svg>
+                            TikTok
+                        </a>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     </div>

@@ -152,6 +152,46 @@ namespace PPSAsset.Controllers
             return View();
         }
 
+        public async Task<IActionResult> CookiePolicy()
+        {
+            // Set navigation data for dropdown menu
+            SetNavigationData();
+            
+            // Set GTM ID for global site
+            ViewBag.GtmId = await _gtmService.GetGlobalGtmIdAsync();
+
+            // Set SEO metadata for cookie policy page
+            // We can reuse a generic one or just set title manually if no specific metadata exists
+            ViewBag.SeoTitle = "นโยบายคุกกี้ (Cookie Policy) | PPS Asset";
+            ViewBag.SeoDescription = "นโยบายคุกกี้ของ PPS Asset";
+            ViewBag.SeoCanonical = _seoService.GetCanonicalUrl(Request.Host.ToString(), "/CookiePolicy");
+
+            // Set JSON-LD Organization schema
+            ViewBag.JsonLdOrganization = _seoService.GetOrganizationSchema();
+
+            return View();
+        }
+
+        [Route("privacy-policy")]
+        public async Task<IActionResult> PrivacyPolicy()
+        {
+            // Set navigation data for dropdown menu
+            SetNavigationData();
+            
+            // Set GTM ID for global site
+            ViewBag.GtmId = await _gtmService.GetGlobalGtmIdAsync();
+
+            // Set SEO metadata for privacy policy page
+            ViewBag.SeoTitle = "นโยบายความเป็นส่วนตัว (Privacy Policy) | PPS Asset";
+            ViewBag.SeoDescription = "นโยบายความเป็นส่วนตัวของ PPS Asset";
+            ViewBag.SeoCanonical = _seoService.GetCanonicalUrl(Request.Host.ToString(), "/PrivacyPolicy");
+
+            // Set JSON-LD Organization schema
+            ViewBag.JsonLdOrganization = _seoService.GetOrganizationSchema();
+
+            return View();
+        }
+
         public async Task<IActionResult> Project(string id = "ricco-residence-hathairat", string projectType = null, string projectName = null, string location = null)
         {
             string projectId = id;
@@ -1110,6 +1150,217 @@ namespace PPSAsset.Controllers
                     projectId
                 });
             }
+        }
+
+        public async Task<IActionResult> Terms(string id = null, string projectType = null, string projectName = null, string location = null)
+        {
+            string? projectId = id;
+
+            // Handle PPS URL format conversion
+            if (!string.IsNullOrEmpty(projectType) && !string.IsNullOrEmpty(projectName) && !string.IsNullOrEmpty(location))
+            {
+                projectId = ConvertPpsUrlToProjectId(projectType, projectName, location);
+                _logger.LogInformation("Converted PPS URL to project ID for terms: {ProjectType}/{ProjectName}/{Location} -> {ProjectId}", 
+                    projectType, projectName, location, projectId);
+            }
+
+            // Set navigation data for dropdown menu
+            SetNavigationData();
+
+            // Set GTM ID for global site
+            ViewBag.GtmId = await _gtmService.GetGlobalGtmIdAsync();
+
+            // Set default SEO metadata for terms page
+            var seoMetadata = _seoService.GetPageMetadata("terms");
+            ViewBag.SeoTitle = seoMetadata.Title;
+            ViewBag.SeoDescription = seoMetadata.Description;
+            ViewBag.SeoKeywords = seoMetadata.Keywords;
+            ViewBag.SeoCanonical = _seoService.GetCanonicalUrl(Request.Host.ToString(), "/terms-and-conditions");
+
+            // Set JSON-LD Organization schema
+            ViewBag.JsonLdOrganization = _seoService.GetOrganizationSchema();
+
+            // Create default general terms if no project specified
+            if (string.IsNullOrEmpty(projectId))
+            {
+                ViewBag.SeoTitle = "ข้อกำหนดและเงื่อนไข โครงการที่อยู่อาศัย | PPS Asset";
+                
+                // Create general terms model
+                var generalTerms = new TermsAndConditions
+                {
+                    ProjectTitle = "ข้อกำหนดและเงื่อนไข โครงการที่อยู่อาศัย",
+                    Company = new CompanyInfo(), // Uses default values from model
+                    DisclaimerText = "ภาพทั้งหมดเป็นภาพและบรรยากาศจำลองใช้เพื่อการโฆษณาเท่านั้น",
+                    ReservationTerms = "บริษัทฯ ขอสงวนสิทธิ์ในการเปลี่ยนแปลงข้อมูลรายละเอียดและข้อความต่างๆ โดยไม่ต้องแจ้งให้ทราบล่วงหน้า"
+                };
+                
+                ViewBag.Project = null;
+                return View(generalTerms);
+            }
+
+            // Get specific project for terms
+            var project = _projectService.GetProject(projectId);
+            if (project == null)
+            {
+                _logger.LogWarning("Project with ID '{ProjectId}' not found for terms page", projectId);
+                
+                // Return general terms if project not found
+                ViewBag.SeoTitle = "ข้อกำหนดและเงื่อนไข โครงการที่อยู่อาศัย | PPS Asset";
+                
+                var generalTerms = new TermsAndConditions
+                {
+                    ProjectTitle = "ข้อกำหนดและเงื่อนไข โครงการที่อยู่อาศัย",
+                    Company = new CompanyInfo(),
+                    DisclaimerText = "ภาพทั้งหมดเป็นภาพและบรรยากาศจำลองใช้เพื่อการโฆษณาเท่านั้น",
+                    ReservationTerms = "บริษัทฯ ขอสงวนสิทธิ์ในการเปลี่ยนแปลงข้อมูลรายละเอียดและข้อความต่างๆ โดยไม่ต้องแจ้งให้ทราบล่วงหน้า"
+                };
+                
+                ViewBag.Project = null;
+                return View(generalTerms);
+            }
+
+            // Apply project theme
+            ApplyTheme(projectId);
+
+            // Get project-specific terms and conditions
+            var termsData = GetProjectTermsAndConditions(projectId, project);
+            
+            // Update SEO metadata for specific project terms
+            ViewBag.SeoTitle = $"ข้อกำหนดและเงื่อนไข {project.NameTh ?? project.Name} | PPS Asset";
+            ViewBag.SeoDescription = $"ข้อกำหนดและเงื่อนไขสำหรับโครงการ {project.NameTh ?? project.Name} โดยบริษัท พูลผลทรัพย์ จำกัด";
+
+            ViewBag.Project = project;
+            ViewBag.ProjectId = projectId; // Set the ProjectId for conditional rendering
+
+            return View(termsData);
+        }
+
+        private TermsAndConditions GetProjectTermsAndConditions(string projectId, ProjectViewModel project)
+        {
+            // This method will retrieve project-specific terms from the database or static data
+            // For now, we'll use the extracted data from the HTML file and make it dynamic based on project
+            
+            var terms = new TermsAndConditions
+            {
+                ProjectTitle = $"ข้อกำหนดและเงื่อนไข โครงการ {project.NameTh ?? project.Name}",
+                Company = new CompanyInfo(), // Uses default values
+                DisclaimerText = "ภาพทั้งหมดเป็นภาพและบรรยากาศจำลองใช้เพื่อการโฆษณาเท่านั้น"
+            };
+
+            // Set project-specific data based on projectId
+            switch (projectId?.ToLower())
+            {
+                case "ricco-town-wongwaen-lumlukka":
+                    terms.ProjectLocation = new ProjectLocationDetails
+                    {
+                        LandTitleNumbers = new List<string> { "399", "9593", "9601", "9605", "9606", "151433", "151435" },
+                        Address = "ตำบลลาดสวาย อำเภอลำลูกกา จังหวัดปทุมธานี"
+                    };
+                    terms.ProjectArea = "43 ไร่ 0 งาน 15.43 ตารางวา";
+                    terms.CommonAreaDetails = "โฉนดเลขที่ 399, 92373, 192374, 192375, 192376, 192377 ถือเป็นทรัพย์ส่วนกลางร่วม";
+                    terms.ProjectDetails = "ที่พักอาศัย บ้านเดี่ยว 2 ชั้น 3 ยูนิต, บ้านแฝด 2 ชั้น 154 ยูนิต, ทาวน์โฮม 2 ชั้น 174 ยูนิต รวมทั้งหมด 331 ยูนิต";
+                    terms.ConstructionStart = new DateTime(2021, 1, 1);
+                    terms.ExpectedCompletion = new DateTime(2025, 12, 31);
+                    terms.BankObligation = new BankObligationInfo { BankName = "ธนาคาร เกียรตินาคินภัทร จำกัด" };
+                    terms.PromotionalPrice = "ราคาเริ่มต้น 2,490,000 บาท";
+                    terms.PromotionalDetails = "เป็นราคาหลังหักโปรโมชั่นแล้ว บ้านแบบ 4 ห้องนอน พื้นที่ใช้สอย 119 ตร.ม. มีเพียง 2 ยูนิต คือ แปลง M9, M10";
+                    break;
+
+                case "ricco-residence-ramintra-hathairat":
+                    terms.ProjectLocation = new ProjectLocationDetails
+                    {
+                        LandTitleNumbers = new List<string> { "84056", "120363", "120364" },
+                        Address = "ถนนหทัยราษฏร์ แขวงสามวาตะวันตก เขตคลองสามวา กรุงเทพมหานคร"
+                    };
+                    terms.ProjectArea = "13 ไร่ 2 งาน 58.5 ตารางวา";
+                    terms.CommonAreaDetails = "โฉนดเลขที่ 124205, 124206, 124207, 124208, 124146 ถือเป็นทรัพย์ส่วนกลางร่วม";
+                    terms.ProjectDetails = "ที่พักอาศัย บ้านเดี่ยว 2 ชั้น ทั้งหมด 58 ยูนิต";
+                    terms.ConstructionStart = new DateTime(2021, 8, 1);
+                    terms.ExpectedCompletion = new DateTime(2025, 12, 31);
+                    terms.BankObligation = new BankObligationInfo { BankName = "ธนาคาร ทหารไทยธนชาต จำกัด" };
+                    terms.PromotionalPrice = "ราคาเริ่มต้น 5,790,000 บาท";
+                    terms.PromotionalDetails = "เป็นราคาหลังหักโปรโมชั่นแล้ว บ้านแบบ 3-4 ห้องนอน พื้นที่ใช้สอย 152 ตร.ม. มีเพียง 1 ยูนิต คือ แปลง D4";
+                    break;
+
+                case "ricco-residence-prime-wongwaen-chatuchot":
+                    terms.ProjectLocation = new ProjectLocationDetails
+                    {
+                        LandTitleNumbers = new List<string> { "48916", "48918", "48919", "48920" },
+                        Address = "ถนนคู่ขนานเลียบวงแหวนฯกาญจนาภิเษก แขวงออเงิน เขตสายไหม กรุงเทพมหานคร"
+                    };
+                    terms.ProjectArea = "37 ไร่ 1 งาน 92.3 ตารางวา";
+                    terms.CommonAreaDetails = "โฉนดเลขที่ 53789, 53880, 53881, 53882, 53722 ถือเป็นทรัพย์ส่วนกลางร่วม";
+                    terms.ProjectDetails = "ที่พักอาศัย บ้านเดี่ยว 2 ชั้น ทั้งหมด 156 ยูนิต";
+                    terms.ConstructionStart = new DateTime(2022, 5, 1);
+                    terms.ExpectedCompletion = new DateTime(2026, 12, 31);
+                    terms.BankObligation = new BankObligationInfo { BankName = "ธนาคาร ทหารไทยธนชาติ จำกัด" };
+                    terms.PromotionalPrice = "ราคาเริ่มต้น 6,590,000 บาท";
+                    terms.PromotionalDetails = "เป็นราคาหลังหักโปรโมชั่นแล้ว บ้านแบบ 4 ห้องนอน พื้นที่ใช้สอย 162 ตร.ม. มีเพียง 1 ยูนิต คือ แปลง H1";
+                    break;
+
+                case "ricco-town-phahonyothin-saimai53":
+                    terms.ProjectLocation = new ProjectLocationDetails
+                    {
+                        LandTitleNumbers = new List<string> { "27404", "44213", "44214", "44215", "44244", "44245", "44246" },
+                        Address = "ถนนสายไหม แขวงสายไหม เขตบางเขน กรุงเทพมหานคร"
+                    };
+                    terms.ProjectArea = "22 ไร่ 1 งาน 68.40 ตารางวา";
+                    terms.CommonAreaDetails = "โฉนดเลขที่ 49451, 49452, 49453, 49454, 49217 ถือเป็นทรัพย์ส่วนกลางร่วม";
+                    terms.ProjectDetails = "ที่พักอาศัย ทาวน์เฮ้าส์ 2 ชั้น ทั้งหมด 233 ยูนิต";
+                    terms.ConstructionStart = new DateTime(2021, 3, 1);
+                    terms.ExpectedCompletion = new DateTime(2025, 12, 31);
+                    terms.BankObligation = new BankObligationInfo { BankName = "ธนาคาร กสิกรไทย จำกัด" };
+                    terms.PromotionalPrice = "ราคาเริ่มต้น 2,990,000 บาท";
+                    terms.PromotionalDetails = "เป็นราคาหลังหักโปรโมชั่นแล้ว บ้าน 1 แบบ พื้นที่ใช้สอย 113 ตร.ม. มีเพียง 2 ยูนิต คือ แปลง N04, N05";
+                    break;
+
+                case "ricco-residence-ramintra-chatuchot":
+                    terms.ProjectLocation = new ProjectLocationDetails
+                    {
+                        LandTitleNumbers = new List<string> { "107567", "120411", "120412", "120413", "120414", "120415", "120416", "120417", "120177", "120178", "120188" },
+                        Address = "ถนนหนองระแหง แขวงสามวาตะวันตก เขตคลองสามวา กรุงเทพมหานคร"
+                    };
+                    terms.ProjectArea = "35 ไร่ 1 งาน 74.6 ตารางวา";
+                    terms.CommonAreaDetails = "โฉนดเลขที่ 123461, 123462, 123463, 123464, 123465, 123317 ถือเป็นทรัพย์ส่วนกลางร่วม";
+                    terms.ProjectDetails = "ที่พักอาศัย บ้านเดี่ยว 2 ชั้น ทั้งหมด 143 ยูนิต";
+                    terms.ConstructionStart = new DateTime(2023, 2, 1);
+                    terms.ExpectedCompletion = new DateTime(2025, 12, 31);
+                    terms.BankObligation = new BankObligationInfo { BankName = "ธนาคาร เกียรตินาคินภัทร จำกัด" };
+                    terms.PromotionalPrice = "ราคาเริ่มต้น 5,590,000 บาท";
+                    terms.PromotionalDetails = "เป็นราคาหลังหักโปรโมชั่นแล้ว บ้าน 1 แบบ พื้นที่ใช้สอย 145 ตร.ม. มีเพียง 2 ยูนิต คือ แปลง E01, M06";
+                    break;
+
+                case "ricco-residence-prime-wongwaen-hathairat":
+                    terms.ProjectLocation = new ProjectLocationDetails
+                    {
+                        LandTitleNumbers = new List<string> { "112437", "117324", "117325", "117326", "117327", "117328", "117329", "117330", "117331" },
+                        Address = "ถนนไทยรามัญ แขวงสามวาตะวันตก เขตคลองสามวา กรุงเทพมหานคร"
+                    };
+                    terms.ProjectArea = "24 ไร่ 2 งาน 38.4 ตารางวา";
+                    terms.CommonAreaDetails = "โฉนดเลขที่ 119158, 119159, 119160, 119161, 119054 ถือเป็นทรัพย์ส่วนกลางร่วม";
+                    terms.ProjectDetails = "ที่พักอาศัย บ้านเดี่ยว 2 ชั้น ทั้งหมด 103 ยูนิต";
+                    terms.ConstructionStart = new DateTime(2022, 9, 1);
+                    terms.ExpectedCompletion = new DateTime(2026, 5, 31);
+                    terms.BankObligation = new BankObligationInfo { BankName = "ธนาคาร ทหารไทยธนชาต จำกัด" };
+                    terms.PromotionalPrice = "ราคาเริ่มต้น 6,190,000 บาท";
+                    terms.PromotionalDetails = "เป็นราคาหลังหักโปรโมชั่นแล้ว บ้าน 1 แบบ พื้นที่ใช้สอย 180 ตร.ม. มีเพียง 2 ยูนิต คือ แปลง K05, L06";
+                    break;
+
+                default:
+                    // Default terms for projects not specifically defined
+                    terms.ProjectLocation = new ProjectLocationDetails
+                    {
+                        Address = project.Location?.Address ?? "กรุงเทพมหานคร"
+                    };
+                    terms.ProjectDetails = $"โครงการ{project.NameTh ?? project.Name}";
+                    terms.BankObligation = new BankObligationInfo { BankName = "ธนาคารพันธมิตร" };
+                    break;
+            }
+
+            // Add common reservation terms
+            terms.ReservationTerms = "บริษัทฯ ขอสงวนสิทธิ์ในการเปลี่ยนแปลงข้อมูลรายละเอียดและข้อความต่างๆ โดยไม่ต้องแจ้งให้ทราบล่วงหน้า และโปรโมชั่นดังกล่าว ไม่สามารถรวมกับโปรโมชั่นส่งเสริมการขายอื่นๆได้อีก";
+
+            return terms;
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

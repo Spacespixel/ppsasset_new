@@ -23,3 +23,4 @@ temp_patch.diff
 
 # Application specific
 *.sqlappsettings.Production.json
+publish/

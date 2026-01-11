@@ -488,3 +488,128 @@ function equalHeight(container){
         }
     });
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// LAZY LOADING ANIMATIONS
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Initialize Intersection Observer for lazy loading animations
+function initLazyLoading() {
+    // Add class to body to enable animations
+    document.body.classList.add('lazy-animations-enabled');
+    
+    // Check if Intersection Observer is supported
+    if ('IntersectionObserver' in window) {
+        
+        const observerOptions = {
+            root: null,
+            rootMargin: '50px 0px -50px 0px', // Trigger 50px before entering viewport
+            threshold: [0, 0.1, 0.25, 0.5, 0.75, 1.0] // Multiple thresholds for smooth animations
+        };
+
+        // Create intersection observer
+        const lazyObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const element = entry.target;
+                
+                // Check if element is intersecting and visible enough
+                if (entry.isIntersecting && entry.intersectionRatio > 0.1) {
+                    
+                    // Add loaded class to trigger animation
+                    element.classList.add('loaded');
+                    
+                    // Stop observing this element
+                    lazyObserver.unobserve(element);
+                    
+                    // Dispatch custom event for additional tracking
+                    element.dispatchEvent(new CustomEvent('lazyLoaded', {
+                        detail: { element: element, ratio: entry.intersectionRatio }
+                    }));
+                }
+            });
+        }, observerOptions);
+
+        // Observe all elements with lazy loading classes
+        const lazyElements = document.querySelectorAll(`
+            .lazy-load, 
+            .lazy-fade, 
+            .lazy-slide-left, 
+            .lazy-slide-right, 
+            .lazy-scale, 
+            .lazy-stagger, 
+            .lazy-text-reveal, 
+            .section-animate
+        `);
+
+        lazyElements.forEach(element => {
+            // Only observe elements that don't already have the 'loaded' class
+            if (!element.classList.contains('loaded')) {
+                lazyObserver.observe(element);
+            }
+        });
+
+        // Add special handling for stagger animations
+        const staggerGroups = document.querySelectorAll('.lazy-stagger-group');
+        staggerGroups.forEach(group => {
+            const staggerElements = group.querySelectorAll('.lazy-stagger');
+            if (staggerElements.length > 0) {
+                // Create a separate observer for stagger groups
+                const staggerObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && entry.intersectionRatio > 0.1) {
+                            // Trigger stagger animation with delay
+                            staggerElements.forEach((element, index) => {
+                                setTimeout(() => {
+                                    element.classList.add('loaded');
+                                }, index * 100); // 100ms delay between each element
+                            });
+                            staggerObserver.unobserve(entry.target);
+                        }
+                    });
+                }, observerOptions);
+                
+                staggerObserver.observe(group);
+            }
+        });
+
+        console.log(`Lazy loading initialized: ${lazyElements.length} elements`);
+
+    } else {
+        // Fallback for browsers without Intersection Observer
+        console.warn('Intersection Observer not supported, using fallback');
+        
+        // Add loaded class to all elements immediately
+        const fallbackElements = document.querySelectorAll(`
+            .lazy-load, 
+            .lazy-fade, 
+            .lazy-slide-left, 
+            .lazy-slide-right, 
+            .lazy-scale, 
+            .lazy-stagger, 
+            .lazy-text-reveal, 
+            .section-animate
+        `);
+        
+        fallbackElements.forEach(element => {
+            element.classList.add('loaded');
+        });
+    }
+}
+
+// Utility function to manually trigger animations for dynamically added content
+function triggerLazyAnimation(selector) {
+    const elements = document.querySelectorAll(selector);
+    elements.forEach(element => {
+        element.classList.add('loaded');
+    });
+}
+
+// Initialize lazy loading when document is ready
+document.addEventListener('DOMContentLoaded', function() {
+    initLazyLoading();
+});
+
+// Re-initialize if content is dynamically added (for AJAX content)
+$(document).on('contentUpdated', function() {
+    setTimeout(initLazyLoading, 100);
+});

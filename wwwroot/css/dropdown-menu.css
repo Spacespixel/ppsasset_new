@@ -21,7 +21,7 @@ li.dropdown {
   position: relative;
 }
 
-li.dropdown > a {
+li.dropdown>a {
   cursor: pointer;
   user-select: none;
 }
@@ -159,12 +159,12 @@ li.dropdown.active .dropdown-menu,
 
 /* Sold Out status section styling */
 .status-section.sold-out .main-status-title {
-  color: #FF6B6B;
+  color: #999999 !important;
   font-weight: 700;
 }
 
 .status-section.sold-out .main-status-title:hover {
-  color: #FF9999;
+  color: #BBBBBB;
 }
 
 .status-section.sold-out .main-status-title::after {
@@ -198,7 +198,7 @@ li.dropdown.active .dropdown-menu,
 }
 
 .status-section.sold-out .house-type-subsection::before {
-  background-color: #dc3545;
+  background-color: #999999 !important;
 }
 
 .house-type-subsection:last-of-type {
@@ -235,12 +235,12 @@ li.dropdown.active .dropdown-menu,
 
 /* Sold Out status house types */
 .status-section.sold-out .house-type-title {
-  color: #FF9999;
+  color: #999999 !important;
   font-weight: 600;
 }
 
 .status-section.sold-out .house-type-title:hover {
-  color: #FFFFFF;
+  color: #BBBBBB;
 }
 
 /* ========================================
@@ -290,13 +290,42 @@ li.dropdown.active .dropdown-menu,
 
 /* Sold out projects styling */
 .status-section.sold-out .projects-list li a {
-  color: #999999;
+  color: #999999 !important;
   opacity: 0.8;
 }
 
 .dropdown-menu .status-section.sold-out .projects-list li a:hover {
-  color: #FF6B6B !important;
-  text-shadow: 0 0 4px rgba(255, 107, 107, 0.5);
+  color: #BBBBBB !important;
+  text-shadow: none !important;
+}
+
+/* Disabled sold out project styling - Maximum specificity to match active projects */
+html body .page-wrapper .dropdown-menu.dropdown-menu-columns .status-section.sold-out .projects-list li span.sold-out-project.disabled,
+html body .page-wrapper li.dropdown .dropdown-menu .status-section.sold-out .projects-list li span.sold-out-project.disabled,
+html body .page-wrapper .navigation .dropdown .dropdown-menu .status-section.sold-out .projects-list li span.sold-out-project.disabled,
+html body .page-wrapper .nav .dropdown .dropdown-menu .status-section.sold-out .projects-list li span.sold-out-project.disabled,
+html body .dropdown-menu .status-section.sold-out .projects-list li span.sold-out-project.disabled,
+html body .dropdown-menu .status-section.sold-out .house-type-subsection .projects-list li span.sold-out-project.disabled,
+.status-section.sold-out .projects-list li span.sold-out-project.disabled {
+  font-family: 'Prompt', 'Sarabun', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+  color: #666666 !important;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  padding: 6px 8px !important;
+  margin: 2px 0 !important;
+  display: block !important;
+  transition: none !important;
+  border-radius: 3px !important;
+  text-decoration: none !important;
+}
+
+.status-section.sold-out .projects-list li span.sold-out-project.disabled:hover {
+  color: #666666;
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .dropdown-menu .projects-list li a:hover {
@@ -355,6 +384,7 @@ li.dropdown.active .dropdown-menu,
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -403,15 +433,15 @@ li.dropdown.active .dropdown-menu,
     right: 20px;
     font-size: 36px;
   }
-  
+
   .dropdown-menu {
     padding: 20px 3% 30px 3% !important;
   }
-  
+
   .main-status-title {
     font-size: 20px;
   }
-  
+
   .house-type-title {
     font-size: 14px;
   }
@@ -427,6 +457,7 @@ li.dropdown.active .dropdown-menu,
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   li.dropdown .dropdown-menu,
   .projects-list li a,
   li.dropdown .caret {
@@ -480,7 +511,7 @@ li.dropdown.active .dropdown-menu,
 }
 
 /* Ensure each grid column can scroll naturally */
-.dropdown-menu > .status-section {
+.dropdown-menu>.status-section {
   min-height: fit-content !important;
   height: fit-content !important;
 }
@@ -508,4 +539,3 @@ html body .dropdown-menu .house-type-subsection .projects-list li a {
   color: #CCCCCC !important;
   font-weight: 400 !important;
 }
- 
