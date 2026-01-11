@@ -109,7 +109,7 @@
                             <ul class="projects-list">
                                 @foreach (var project in soldOutSingleHouse)
                                 {
-                                    <li><a href="@GetProjectUrl(project)">@project.NameTh</a></li>
+                                    <li><span class="sold-out-project disabled">@project.NameTh</span></li>
                                 }
                             </ul>
                         </div>
@@ -123,7 +123,7 @@
                             <ul class="projects-list">
                                 @foreach (var project in soldOutTownhouse)
                                 {
-                                    <li><a href="@GetProjectUrl(project)">@project.NameTh</a></li>
+                                    <li><span class="sold-out-project disabled">@project.NameTh</span></li>
                                 }
                             </ul>
                         </div>
@@ -137,7 +137,7 @@
                             <ul class="projects-list">
                                 @foreach (var project in soldOutTwinHouse)
                                 {
-                                    <li><a href="@GetProjectUrl(project)">@project.NameTh</a></li>
+                                    <li><span class="sold-out-project disabled">@project.NameTh</span></li>
                                 }
                             </ul>
                         </div>

@@ -5,27 +5,27 @@
     .hero-section {
         min-height: 70vh;
     }
-    
+
     .hero-title {
         padding: 30px 0;
     }
-    
+
     .hero-title .container {
         padding: 0 20px;
     }
-    
+
     #hero-main-title {
         font-size: 1.8rem;
         line-height: 1.3;
         margin-bottom: 15px;
     }
-    
+
     .hero-subtitle {
         font-size: 1rem;
         line-height: 1.5;
         margin-bottom: 20px;
     }
-    
+
     .btn-primary-cta {
         padding: 14px 28px !important;
         font-size: 1.1rem !important;
@@ -33,7 +33,7 @@
         min-width: 160px;
         font-weight: 600 !important;
     }
-    
+
     .hero-cta .btn-primary-cta {
         padding: 14px 28px !important;
         font-size: 1.1rem !important;
@@ -45,22 +45,22 @@
     .hero-section {
         min-height: 60vh;
     }
-    
+
     #hero-main-title {
         font-size: 1.5rem;
         line-height: 1.2;
     }
-    
+
     .hero-subtitle {
         font-size: 0.9rem;
     }
-    
+
     .btn-primary-cta {
         padding: 12px 24px !important;
         font-size: 1rem !important;
         font-weight: 600 !important;
     }
-    
+
     .hero-cta .btn-primary-cta {
         padding: 12px 24px !important;
         font-size: 1rem !important;
@@ -73,41 +73,41 @@
     .block#about {
         padding: 40px 0;
     }
-    
+
     .block#about .container {
         padding: 0 20px;
     }
-    
+
     .block#about h2 {
         font-size: 1.8rem;
         margin-bottom: 25px;
         text-align: center;
     }
-    
+
     .block#about h3 {
         font-size: 1.3rem;
         margin-bottom: 15px;
         margin-top: 20px;
     }
-    
+
     .block#about p {
         font-size: 1rem;
         line-height: 1.6;
         margin-bottom: 15px;
     }
-    
+
     .image-showcase {
         margin-top: 25px;
         margin-bottom: 15px;
         text-align: center;
     }
-    
+
     .image-showcase img {
         max-width: 100%;
         height: auto;
         border-radius: 8px;
     }
-    
+
     .note {
         font-size: 0.9rem;
         margin-top: 10px;
@@ -121,41 +121,41 @@
     .block#details {
         padding: 40px 0;
     }
-    
+
     .block#details .container {
         padding: 0 20px;
     }
-    
+
     .block#details h2 {
         font-size: 1.8rem;
         margin-bottom: 30px;
         text-align: center;
     }
-    
+
     .detail {
         margin-bottom: 35px;
     }
-    
+
     .detail .title h3 {
         font-size: 1.3rem;
         text-align: center;
     }
-    
+
     .detail .gallery {
         margin-bottom: 25px;
     }
-    
+
     .detail .description h4 {
         font-size: 1.1rem;
         margin-bottom: 10px;
         margin-top: 15px;
     }
-    
+
     .detail .description p {
         font-size: 0.95rem;
         line-height: 1.6;
     }
-    
+
     /* Make right-aligned details stack properly on mobile */
     .detail.right-align .title {
         text-align: center;
@@ -164,6 +164,7 @@
 
 /* Mobile Navigation Fixes */
 @media (max-width: 768px) {
+
     /* FORCE hamburger menu to display on all mobile devices - ULTIMATE OVERRIDE */
     html body .page-wrapper .navigation.nav-btn-only .nav-btn,
     html body .navigation.nav-btn-only .nav-btn,
@@ -179,7 +180,7 @@
         cursor: pointer !important;
         z-index: 999 !important;
     }
-    
+
     /* Ensure hamburger lines are properly visible - ULTIMATE OVERRIDE */
     html body .page-wrapper .navigation.nav-btn-only .nav-btn figure,
     html body .navigation.nav-btn-only .nav-btn figure,
@@ -196,7 +197,7 @@
         transition: 0.3s !important;
         border-radius: 2px !important;
     }
-    
+
     /* Left align PPS Asset logo on mobile (default positioning) */
     .navigation.nav-btn-only .wrapper {
         display: flex;
@@ -205,42 +206,42 @@
         position: relative;
         padding: 15px 20px;
     }
-    
+
     .navigation.nav-btn-only .left {
         position: static;
         transform: none;
         z-index: 10;
     }
-    
+
     .navigation.nav-btn-only .left .brand {
         display: block;
         text-align: left;
     }
-    
+
     .navigation.nav-btn-only .right {
         position: static;
         transform: none;
         z-index: 11;
     }
-    
+
     /* Make sure hamburger lines are visible on dark background */
     .navigation.background-is-dark .nav-btn figure {
         background-color: #69656a !important;
     }
-    
+
     /* Improve hamburger menu functionality */
     .page-wrapper.show-navigation .nav-btn figure:nth-child(1) {
         transform: rotate(-45deg) translate(-6px, 6px) !important;
     }
-    
+
     .page-wrapper.show-navigation .nav-btn figure:nth-child(2) {
         opacity: 0 !important;
     }
-    
+
     .page-wrapper.show-navigation .nav-btn figure:nth-child(3) {
         transform: rotate(45deg) translate(-6px, -6px) !important;
     }
-    
+
     /* Ensure navigation is recognized as mobile nav */
     .navigation {
         position: fixed !important;
@@ -249,18 +250,18 @@
         right: 0 !important;
         z-index: 999 !important;
     }
-    
+
     /* Force navigation to have nav-btn-only class behavior on mobile */
     .navigation:not(.nav-btn-only) {
         /* Apply nav-btn-only styles to all navigation on mobile */
     }
-    
+
     /* Additional override for navigation without nav-btn-only class */
     html body .navigation .nav-btn,
     .navigation .nav-btn {
         display: block !important;
     }
-    
+
     html body .navigation .nav-btn figure,
     .navigation .nav-btn figure {
         display: block !important;
@@ -269,74 +270,29 @@
         width: 100% !important;
         margin: 4px 0 !important;
     }
-    
+
     /* Project Navigation Fixes - Left align project logo */
     .project-nav__inner {
         justify-content: flex-start !important;
         gap: 20px !important;
     }
-    
+
     .project-nav__logo {
         flex: none !important;
         justify-content: flex-start !important;
         align-items: center !important;
     }
-    
+
     .project-hamburger {
         margin-left: auto !important;
-    }
-    
-    /* ULTIMATE OVERRIDE: Update project hamburger to match homepage 3-line style */
-    html body .project-hamburger span,
-    body .project-hamburger span,
-    .project-hamburger span {
-        display: block !important;
-        width: 100% !important;
-        height: 3px !important;
-        background: #69656a !important;
-        background-color: #69656a !important;
-        margin: 0 !important;
-        transition: transform 0.3s ease, opacity 0.3s ease !important;
-        border-radius: 2px !important;
-        transform: none !important;
-        opacity: 1 !important;
-    }
-    
-    /* ULTIMATE OVERRIDE: Ensure project hamburger container has proper dimensions */
-    html body .project-hamburger,
-    body .project-hamburger,
-    .project-hamburger {
-        width: 30px !important;
-        height: 25px !important;
         display: flex !important;
-        flex-direction: column !important;
-        justify-content: space-between !important;
-        align-items: stretch !important;
-        cursor: pointer !important;
-        background: transparent !important;
-        border: none !important;
-        padding: 4px 0 !important;
     }
-    
-    /* Override any nav-open states */
-    html body.nav-open .project-hamburger span,
-    body.nav-open .project-hamburger span {
-        background: #69656a !important;
-        background-color: #69656a !important;
-    }
-    
-    /* Project hamburger animation when active */
-    .project-hamburger.is-active span:nth-child(1) {
-        transform: rotate(45deg) translate(6px, 6px) !important;
-    }
-    
-    .project-hamburger.is-active span:nth-child(2) {
-        opacity: 0 !important;
-    }
-    
-    .project-hamburger.is-active span:nth-child(3) {
-        transform: rotate(-45deg) translate(6px, -6px) !important;
-    }
+
+    /* DISABLED: Figure elements are now handled by pseudo-elements in style-custom.css */
+
+    /* DISABLED: Hamburger container now handled by style-custom.css */
+
+    /* DISABLED: All hamburger styling now handled by pseudo-elements in style-custom.css */
 }
 
 /* Projects Section Mobile Optimizations */
@@ -344,23 +300,23 @@
     .projects-showcase {
         padding: 60px 0;
     }
-    
+
     .projects-showcase .container {
         padding: 0 20px;
     }
-    
+
     .projects-heading {
         font-size: 1.8rem;
         line-height: 1.3;
         margin-bottom: 15px;
     }
-    
+
     .projects-subheading {
         font-size: 1rem;
         line-height: 1.5;
         margin-bottom: 30px;
     }
-    
+
     .projects-filter__inner {
         display: grid !important;
         grid-template-columns: 1fr 1fr !important;
@@ -372,7 +328,7 @@
         margin: 0 auto;
         flex-wrap: nowrap !important;
     }
-    
+
     /* Ensure all filter buttons display properly in 2x2 grid on mobile */
     .projects-filter__btn {
         display: flex !important;
@@ -380,13 +336,28 @@
         min-width: 0 !important;
         max-width: none !important;
     }
-    
+
     /* Force specific grid positioning to ensure 2x2 layout */
-    .projects-filter__btn:nth-child(1) { grid-column: 1; grid-row: 1; }
-    .projects-filter__btn:nth-child(2) { grid-column: 2; grid-row: 1; }
-    .projects-filter__btn:nth-child(3) { grid-column: 1; grid-row: 2; }
-    .projects-filter__btn:nth-child(4) { grid-column: 2; grid-row: 2; }
-    
+    .projects-filter__btn:nth-child(1) {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .projects-filter__btn:nth-child(2) {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .projects-filter__btn:nth-child(3) {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .projects-filter__btn:nth-child(4) {
+        grid-column: 2;
+        grid-row: 2;
+    }
+
     .projects-filter__btn {
         font-size: 0.85rem;
         padding: 10px 8px;
@@ -396,17 +367,17 @@
         white-space: nowrap;
         border-radius: 20px;
     }
-    
+
     .projects-filter__btn span {
         margin-left: 4px;
     }
-    
+
     .projects-filter__btn .filter-icon {
         width: 16px;
         height: 16px;
         margin-right: 4px;
     }
-    
+
     /* Ensure equal height for all filter buttons */
     .projects-filter__btn {
         display: flex;
@@ -414,53 +385,53 @@
         justify-content: center;
         min-height: 44px;
     }
-    
+
     .projects-grid {
         margin-top: 30px;
         gap: 20px;
     }
-    
+
     /* Project card mobile improvements */
     .project-card__media {
         padding-bottom: 55%;
     }
-    
+
     .project-card__body {
         padding: 20px 22px 0;
     }
-    
+
     .project-card__body h3 {
-        font-size: 1.2rem;
+        font-size: 1.6rem;
         line-height: 1.3;
         margin-bottom: 10px;
     }
-    
+
     .project-card__description {
-        font-size: 0.95rem;
+        font-size: 1rem;
         line-height: 1.5;
         margin-bottom: 15px;
     }
-    
+
     .project-card__amenities {
         gap: 12px;
         flex-wrap: wrap;
         margin-bottom: 20px;
     }
-    
+
     .project-card__amenities li {
         font-size: 0.85rem;
     }
-    
+
     .project-card__footer {
         padding: 18px 22px 24px;
     }
-    
+
     .project-card__price {
         font-size: 1rem;
     }
-    
+
     .project-card__cta {
-        font-size: 0.9rem;
+        font-size: 1.1rem;
         padding: 8px 16px;
     }
 }
@@ -469,42 +440,42 @@
     .projects-showcase {
         padding: 50px 0;
     }
-    
+
     .projects-heading {
         font-size: 1.6rem;
     }
-    
+
     .projects-subheading {
-        font-size: 0.9rem;
+        font-size: 1.15rem;
     }
-    
+
     .projects-filter__inner {
         gap: 10px 6px;
         padding: 0 10px;
         max-width: 350px;
     }
-    
+
     .projects-filter__btn {
         font-size: 0.8rem;
         padding: 8px 6px;
     }
-    
+
     .project-card__body {
         padding: 18px 20px 0;
     }
-    
+
     .project-card__body h3 {
-        font-size: 1.1rem;
+        font-size: 1.6rem;
     }
-    
+
     .project-card__description {
-        font-size: 0.9rem;
+        font-size: 1.25rem;
     }
-    
+
     .project-card__amenities li {
-        font-size: 0.8rem;
+        font-size: 1rem;
     }
-    
+
     .project-card__footer {
         padding: 15px 20px 20px;
     }
@@ -512,6 +483,7 @@
 
 /* Features Section Mobile Optimizations */
 @media (max-width: 768px) {
+
     /* ULTIMATE OVERRIDE - Counter style-custom.css horizontal mobile layout */
     html body .features-section .features-horizontal-grid,
     body .features-section .features-horizontal-grid,
@@ -529,7 +501,7 @@
         border-radius: 0 !important;
         padding: 0 !important;
     }
-    
+
     html body .features-section .feature-box,
     body .features-section .feature-box,
     .features-section .feature-box,
@@ -547,11 +519,11 @@
         background-position: center !important;
         margin: 0 !important;
     }
-    
+
     .feature-content {
         padding: 30px 25px !important;
     }
-    
+
     /* Nearby Places - Display category text below icon */
     .location-category {
         display: flex !important;
@@ -561,28 +533,28 @@
         gap: 8px !important;
         margin-bottom: 20px !important;
     }
-    
+
     .location-category .category-icon {
         margin-bottom: 0 !important;
     }
-    
+
     .location-category h4 {
         margin: 0 !important;
         text-align: center !important;
         font-size: 0.9rem !important;
         line-height: 1.2 !important;
     }
-    
+
     .feature-content h3 {
         font-size: 1.3rem !important;
         margin-bottom: 12px !important;
     }
-    
+
     .feature-content p {
         font-size: 1rem !important;
         line-height: 1.5 !important;
     }
-    
+
     .features-section {
         padding: 50px 0 !important;
     }
@@ -592,25 +564,25 @@
     .features-horizontal-grid {
         gap: 15px !important;
     }
-    
+
     .feature-box {
         height: 280px !important;
         border-radius: 8px !important;
     }
-    
+
     .feature-content {
         padding: 25px 20px !important;
     }
-    
+
     .feature-content h3 {
         font-size: 1.2rem !important;
     }
-    
+
     .feature-content p {
         font-size: 0.95rem !important;
         line-height: 1.4 !important;
     }
-    
+
     .features-section {
         padding: 40px 0 !important;
     }
@@ -622,15 +594,16 @@
         padding-left: 20px;
         padding-right: 20px;
     }
-    
+
     /* Ensure text is readable */
     body {
         font-size: 14px;
         line-height: 1.5;
     }
-    
+
     /* Improve touch targets */
-    a, button {
+    a,
+    button {
         min-height: 44px;
         display: inline-flex;
         align-items: center;
@@ -645,7 +618,7 @@
         bottom: 10px;
         gap: 0 !important;
     }
-    
+
     .sticky-social-button {
         width: 45px;
         height: 45px;
@@ -655,13 +628,13 @@
         border: none !important;
         border-radius: 0 !important;
     }
-    
+
     /* Ensure first and last buttons have proper rounding */
     .sticky-social-button:first-child {
         border-top-left-radius: 12px !important;
         border-top-right-radius: 12px !important;
     }
-    
+
     .sticky-social-button:last-child {
         border-bottom-left-radius: 12px !important;
         border-bottom-right-radius: 12px !important;
@@ -670,17 +643,36 @@
 
 /* Carousel Mobile Optimization */
 @media (max-width: 768px) {
+
     .owl-nav .owl-prev,
     .owl-nav .owl-next {
         display: none !important;
     }
-    
+
     .owl-dots {
         text-align: center;
         margin-top: 15px;
     }
-    
+
     .owl-dots .owl-dot {
         margin: 0 3px;
+    }
+}
+/* Utility class to match gallery alignment */
+@media (min-width: 992px) {
+    .text-align-match-gallery {
+        padding-left: 70px !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .text-align-match-gallery {
+        padding-left: 50px !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .text-align-match-gallery {
+        padding-left: 0 !important;
     }
 }

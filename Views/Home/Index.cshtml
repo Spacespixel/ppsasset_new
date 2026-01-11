@@ -22,7 +22,7 @@
                                 </p>
 
                                 <div class="hero-cta hero-text-item">
-                                    <a href="#projects" class="btn-primary-cta">ดูเพิ่มเติม</a>
+                                    <a href="#projects" class="btn-primary-cta">See More</a>
                                 </div>
                             </div>
                         </div>
@@ -30,7 +30,7 @@
                 </div>
             </div>
         </div>
-        <div class="owl-carousel" data-owl-dots="1" data-owl-nav="1" data-owl-autoplay="1" data-owl-loop="1" data-owl-fadeout="1">
+        <div class="owl-carousel" data-owl-dots="0" data-owl-nav="1" data-owl-autoplay="1" data-owl-loop="1" data-owl-fadeout="1">
             @if (Model != null && Model.Any())
             {
                 @foreach (var project in Model.Take(5))
@@ -54,97 +54,84 @@
 
 <div id="page-content">
 
-    <div class="block" id="about">
-        <div class="container">
+  <div class="block" id="about">
+        <div class="container-fluid" style="text-align: center;">
             <h2 class="animated-text scroll-animate">เกี่ยวกับเรา</h2>
-            <div class="row">
-                <div class="col-md-6 col-sm-6" data-scroll-reveal="enter bottom and move 20px">
+            <div class="row justify-content-center">
+                <div class="container" data-scroll-reveal="enter bottom and move 20px">
                     <h3>บริษัท พูลผลทรัพย์ จำกัด</h3>
                     <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ac ornare felis. 
-                        Nam velit neque, blandit id placerat eu, venenatis at purus. Nunc maximus ultrices 
-                        lacus eu fringilla. Suspendisse potenti. Ut posuere viverra lectus non scelerisque.
+                        ด้วยประสบการณ์อันยาวนานกว่า 13 ปี ในวงการอสังหาริมทรัพย์แนวราบ บริษัท พูลผลทรัพย์ จำกัด 
                     </p>
-                  <!--  <ul class="check-marks">
-                        <li>Quiet and peaceful location near the nature</li>
-                        <li>Shopping and fitness center right inside the complex</li>
-                        <li>Lot of parking places, even for your visitors</li>
-                        <li>Many play areas for your kids</li>
-                    </ul> -->
+                           <p> 
+                        มุ่งเน้นการสร้างสรรค์ที่อยู่อาศัยเปี่ยมคุณภาพภายใต้แบรนด์ THE RICCO ซึ่งการันตีความสำเร็จมาแล้วกว่า 13 โครงการ  
+                    </p>
+                     <p> 
+                        
+                        เราให้ความสำคัญกับการออกแบบที่เข้าใจลึกถึงไลฟ์สไตล์ เพื่อส่งมอบประสบการณ์การอยู่อาศัยที่สมบูรณ์แบบที่สุด
+                     </p>
+                     <p> 
+                        
+                         พร้อมตั้งเป้าหมายในการเติบโตอย่างยั่งยืน และยกระดับมาตรฐานการบริการให้ก้าวไปอีกขั้น
+                    </p>
                 </div>
-                <div class="col-md-6 col-sm-6" data-scroll-reveal="enter top and move 20px">
-
-                    <div class="image-showcase">
-                        <img src="~/images/gallery/Rico-Residence-Hathairath-Facility-1.png" alt="The Ricco Residence Quality Homes" class="img-responsive">
-                    </div>
-                    <figure class="note">Lorem ipsum dolor sit amet consectetur adipiscing elit</figure>
-                </div>
+               
             </div>
         </div>
         <div class="background-wrapper">
             <div class="background-color background-color-black opacity-5"></div>
         </div>
-    </div>
+    </div>  
 
     <div class="block" id="details">
-      <div class="container">
-                <h2>เชื่อมั่นในคุณภาพและประสบการณ์</h2>
-            </div>
+     
         <div class="container">
-            <div class="detail left-align" data-scroll-reveal="enter left and move 20px">
-                <div class="title">
-                    <h3 class="framed">Architecture & Design</h3>
-                </div>
+            <div class="detail left-align lazy-slide-left" data-scroll-reveal="enter left and move 20px">
+                
                 <div class="row">
                     <div class="col-md-7 col-sm-7">
-                        <div class="gallery">
-                            <div class="owl-carousel one-item-carousel" data-owl-items="1" data-owl-margin="0" data-owl-nav="0" data-owl-dots="1">
-                                <img src="~/images/gallery/Rico-Residence-Hathairath-Facility-1.png" alt="Modern Architecture Design">
-                                <img src="~/images/projects/ricco-residence-hathairat/QUARTZ_Perspective_Final_1.jpg" alt="QUARTZ Design">
-                                <img src="~/images/bannerprime01_02s.jpg" alt="Prime Collection">
-                            </div>
+                        <div class="gallery lazy-scale">
+                              <img src="~/images/gallery/Rico-Residence-Hathairath-Facility-1.png" alt="Modern Architecture Design">
+                           
                         </div>
                     </div>
                     <div class="col-md-5 col-sm-5">
-                        <div class="description">
-                            <h4>High quality materials</h4>
-                            <p>Proin orci nisl, posuere viverra erat ut, pellentesque interdum urna. Curabitur
-                                eu risus convallis, auctor augue id, pharetra neque. Morbi pretium neque ac varius
-                                imperdiet. Aliquam sed sapien eget massa hendrerit aliquet. Integer auctor vel
-                                ligula eget faucibus
-                            </p>
-                            <h4>Modern Design</h4>
-                            <p>Donec tincidunt fermentum purus, eu pharetra arcu scelerisque a. Maecenas felis eros,
-                                volutpat ac justo non, imperdiet porttitor lorem. Nulla suscipit mi a arcu sollicitudin,
-                                sit amet
-                            </p>
+                        <div class="description lazy-stagger-group">
+                       <p class="text-right lazy-stagger" style="font-size: 1.1em; line-height: 1.8; margin-top: 20px; margin-bottom: 15px;">
+                            <strong>PPS ASSET</strong> เราพิถีพิถันตั้งแต่การเลือกวัสดุไปจนถึงการออกแบบฟังก์ชันที่ซ่อนอยู่ในทุกตารางนิ้ว
+                        </p>
+                        <p class="text-right lazy-stagger" style="font-size: 1.1em; line-height: 1.8; margin-bottom: 15px;">
+                            เพื่อให้มั่นใจว่าเราใส่ใจในทุกจุดสัมผัส [Touchpoints]  
+                        </p>
+                         <p class="text-right lazy-stagger" style="font-size: 1.1em; line-height: 1.8; margin-bottom: 15px;">
+                              และคิดเผื่อผู้อยู่อาศัยในทุกมิติ
+                        </p>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="detail right-align" data-scroll-reveal="enter right and move 20px">
-                <div class="title">
-                    <h3 class="framed">Perfect for Living</h3>
-                </div>
+            <div class="detail left-align lazy-slide-left" data-scroll-reveal="enter left and move 20px">
                 <div class="row">
-                    <div class="col-md-5 col-sm-5">
-                        <div class="description">
-                            <h4>Feel your new home</h4>
-                            <p>Proin orci nisl, posuere viverra erat ut, pellentesque interdum urna. Curabitur
-                                eu risus convallis, auctor augue id, pharetra neque. Morbi pretium neque ac varius
-                                imperdiet. Aliquam sed sapien eget massa hendrerit aliquet. Integer auctor vel
-                                ligula eget faucibus. Donec tincidunt fermentum purus, eu pharetra arcu scelerisque a.
-                                Maecenas felis eros, volutpat ac justo non, imperdiet porttitor
-                            </p>
+                    <div class="col-md-7 col-sm-7">
+                        <div class="description lazy-stagger-group text-align-match-gallery">
+                           <p class="text-left lazy-stagger" style="font-size: 1.1em; line-height: 1.8; margin-bottom: 15px;">
+                            เพื่อสร้างประสบการณ์การใช้ชีวิตที่ลงตัวและมีเอกลักษณ์  
+                        </p>
+                          <p class="text-left lazy-stagger" style="font-size: 1.1em; line-height: 1.8; margin-bottom: 15px;">
+                             สามารถตอบโจทย์การใช้ชีวิตจริงได้
+                        </p>
+                        <p class="text-left lazy-stagger" style="font-size: 1.1em; line-height: 1.8; margin-bottom: 40px;">
+                            เรามุ่งมั่นที่จะส่งมอบผลงานคุณภาพที่สะท้อนถึงความตั้งใจ  
+                        </p>
+                         <p class="text-left lazy-stagger" style="font-size: 1.1em; line-height: 1.8; margin-bottom: 40px;">
+                    และยกระดับมาตรฐานการอยู่อาศัยที่เหนือระดับอย่างยั่งยืน
+                        </p>
                         </div>
                     </div>
-                    <div class="col-md-7 col-sm-7">
-                        <div class="gallery">
-                            <div class="owl-carousel one-item-carousel" data-owl-items="1" data-owl-margin="0" data-owl-nav="0" data-owl-dots="1">
-                                <img src="~/images/projects/ricco-residence-hathairat/QUARTZ_Perspective_Final_1.jpg" alt="Interior Design">
-                                <img src="~/images/Rico-Residence-Hathairath-Facility-1.png" alt="Modern Living">
-                                <img src="~/images/bannerprime01_02s.jpg" alt="Premium Interior">
-                            </div>
+                    <div class="col-md-5 col-sm-5">
+                        <div class="gallery lazy-scale">
+                                 <img src="~/images/ramindrachatuchot-LUCK_Perspective_Final_1.jpg" alt="Interior Design">
+                           
                         </div>
                     </div>
                 </div>
@@ -153,15 +140,16 @@
     </div>
 
     <!-- Projects Section -->
-                    <section class="projects-showcase" id="projects">
+                    <section class="projects-showcase section-animate" id="projects">
                     <div class="container">
-                        <div class="section-header-center">
-                            <h2 class="projects-heading">"เดอะริคโค้" บ้าน <b>คุณภาพดี</b></h2>
-                            <p class="projects-subheading">เลือกชมโครงการตามความต้องการ ทั้งโครงการใหม่ บ้านเดี่ยว บ้านแฝด และทาวน์โฮม</p>
+                        <div class="section-header-center lazy-stagger-group">
+                            <h2 class="projects-heading lazy-stagger">"เดอะริคโค้" บ้าน <b>คุณภาพดี</b></h2>
+                            <p class="projects-subheading lazy-stagger">เลือกชมโครงการตามความต้องการ ทั้งโครงการใหม่ บ้านเดี่ยว บ้านแฝด และทาวน์โฮม</p>
                         </div>
 
-                        <div class="projects-filter">
-                            <div class="projects-filter__inner">
+                        <div class="projects-filter-wrapper">
+                            <div class="projects-filter">
+                                <div class="projects-filter__inner">
                                <!-- <button class="projects-filter__btn active" data-category="new">
                                     <svg class="filter-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-6v-6h-4v6H4a1 1 0 0 1-1-1V9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -172,28 +160,31 @@
                                     <svg class="filter-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-6v-6h-4v6H4a1 1 0 0 1-1-1V9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
-                                    <span>โครงการทั้งหมด</span>
+                                    <span>Project Types</span>
                                 </button>
                                 <button class="projects-filter__btn" data-category="single">
                                     <svg class="filter-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M4 10l8-6 8 6v9a1 1 0 0 1-1 1h-6v-5h-2v5H5a1 1 0 0 1-1-1v-9z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
-                                    <span>บ้านเดี่ยว</span>
+                                    <span>Single Detached House</span>
                                 </button>
                                 <button class="projects-filter__btn" data-category="semi">
                                     <svg class="filter-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 9l6-5 6 5v10H3V9z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M15 9l6-5v15H15V9z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <rect x="5" y="14" width="2" height="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                                        <rect x="17" y="14" width="2" height="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    </svg>
+                                    <span>Semi Detached House</span>
+                                </button>
+                                <button class="projects-filter__btn" data-category="townhome">
+                                                <svg class="filter-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <rect x="3" y="8" width="8" height="12" rx="1" stroke="currentColor" stroke-width="2"/>
                                         <rect x="13" y="4" width="8" height="16" rx="1" stroke="currentColor" stroke-width="2"/>
                                     </svg>
-                                    <span>บ้านแฝด</span>
+                                    <span>Townhome</span>
                                 </button>
-                                <button class="projects-filter__btn" data-category="townhome">
-                                    <svg class="filter-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M4 10l8-7 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M5 10h14v9a1 1 0 0 1-1 1h-4v-5h-4v5H6a1 1 0 0 1-1-1v-9z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                    <span>ทาวน์โฮม</span>
-                                </button>
+                                </div>
                             </div>
                         </div>
 
@@ -283,7 +274,7 @@
                                                 "ricco-town-wongwaen-lamlukka" => "townhome/thericcotown/wongwaen_lumlukka" 
                                             };
                                         }
-                                        <a class="project-card__cta" href="/@projectUrl#register" target="_blank">ดูรายละเอียด</a>
+                                        <a class="project-card__cta" href="/@projectUrl#register" target="_blank">More Detail</a>
                                     </footer>
                                 </article>
                                 }
@@ -304,47 +295,39 @@
            
 
             <div class="features-horizontal-grid">
-                <div class="feature-box" style="background-image: url('https://images.unsplash.com/photo-1518780664697-55e3ad937233?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1965&q=80');">
+                <div class="feature-box" style="background-image: url('@Url.Content("~/images/feature-location-aerial.jpg")');">
                     <div class="feature-overlay"></div>
                     <div class="feature-content">
-                        <div class="feature-icon">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <h3>Prime Location</h3>
+                        
+                        <h2>Prime Location</h2>
                         <p  >ทำเลศักยภาพติดถนนใหญ่ ใกล้ทางด่วน รวมถึงทางพิเศษส่วนต่อขยาย (คาดว่าแล้วเสร็จในปี 2570)
 เชื่อมต่อกับถ.รามอินทรา-พหลโยธิน-วัชรพล เดินทางได้อย่างคล่องตัว</p>
                     </div>
                 </div>
 
-                <div class="feature-box" style="background-image: url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1973&q=80');">
+                <div class="feature-box" style="background-image: url('@Url.Content("~/images/feature-good-neighborhood.jpg")');">
                     <div class="feature-overlay"></div>
                     <div class="feature-content">
-                        <div class="feature-icon">
-                            <i class="fas fa-user-tie"></i>
-                        </div>
-                        <h3>Good Neighborhoods</h3>
+                       
+                        <h2>Good Neighborhoods</h2>
                         <p  >ใกล้แหล่งช้อปปิ้งและสิ่งอำนวยความสะดวก แฟชั่นไอส์แลนด์ และ เดอะ พรอมานาด ตอบโจทย์ไลฟ์สไตล์คนรุ่นใหม่ ขึ้นทางด่วนไม่กี่นาทีก็เข้าสู่พระราม 9 เอกมัยได้ง่ายๆ</p>
                     </div>
                 </div>
 
-                <div class="feature-box" style="background-image: url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+                <div class="feature-box" style="background-image: url('@Url.Content("~/images/feature-advance.jpg")');">
                     <div class="feature-overlay"></div>
                     <div class="feature-content">
-                        <div class="feature-icon">
-                            <i class="fas fa-cogs"></i>
-                        </div>
-                        <h3>Unceasing Advancement</h3>
+                       
+                        <h2>Unceasing Advancement</h2>
                         <p  >เราพัฒนาและออกแบบอย่างต่อเนื่อง เพื่อให้บ้านของเราตอบโจทย์การใช้ชีวิตของลูกค้าให้มากที่สุด บนพื้นฐานการใช้ชีวิตที่ยั่งยืน</p>
                     </div>
                 </div>
 
-                <div class="feature-box" style="background-image: url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2075&q=80');">
+                <div class="feature-box" style="background-image: url('@Url.Content("~/images/feature-legacy.png")');">
                     <div class="feature-overlay"></div>
                     <div class="feature-content">
-                        <div class="feature-icon">
-                            <i class="fas fa-home"></i>
-                        </div>
-                        <h3 >Legacy</h3>
+                       
+                        <h2>Legacy</h2>
                         <p  >"Your home, a lasting asset for the future."</p>
                     </div>
                 </div>
@@ -559,6 +542,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const scrollElements = document.querySelectorAll('.scroll-animate');
     scrollElements.forEach(el => observer.observe(el));
 
+    // Features section animation observer
+    const featuresSection = document.querySelector('.features-section');
+    if (featuresSection) {
+        const featuresObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                    featuresObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.2,
+            rootMargin: '0px 0px -100px 0px'
+        });
+        
+        featuresObserver.observe(featuresSection);
+    }
+
     const heroCTAElement = document.querySelector('.hero-cta');
     const heroCarouselElement = document.querySelector('.hero-section .owl-carousel');
     const heroCarousel = heroCarouselElement ? $(heroCarouselElement) : null;
@@ -754,7 +755,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize project card animations
     setTimeout(initProjectCardAnimations, 100);
 
-    // Smooth scroll for "ดูเพิ่มเติม" button
+    // Smooth scroll for "See More" button
     const viewMoreButton = document.querySelector('.btn-primary-cta[href="#projects"]');
     if (viewMoreButton) {
         viewMoreButton.addEventListener('click', function(e) {

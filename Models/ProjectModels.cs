@@ -140,6 +140,46 @@ namespace PPSAsset.Models
         public string Holidays { get; set; } = string.Empty;
     }
 
+    public class TermsAndConditions
+    {
+        public string ProjectTitle { get; set; } = string.Empty;
+        public CompanyInfo Company { get; set; } = new();
+        public ProjectLocationDetails ProjectLocation { get; set; } = new();
+        public string ProjectArea { get; set; } = string.Empty;
+        public string CommonAreaDetails { get; set; } = string.Empty;
+        public string ProjectDetails { get; set; } = string.Empty;
+        public DateTime? ConstructionStart { get; set; }
+        public DateTime? ExpectedCompletion { get; set; }
+        public BankObligationInfo BankObligation { get; set; } = new();
+        public string PromotionalPrice { get; set; } = string.Empty;
+        public string PromotionalDetails { get; set; } = string.Empty;
+        public string DisclaimerText { get; set; } = string.Empty;
+        public string ReservationTerms { get; set; } = string.Empty;
+    }
+
+    public class CompanyInfo
+    {
+        public string Name { get; set; } = "บริษัท พูลผลทรัพย์ จำกัด";
+        public string RegistrationNumber { get; set; } = "0105525014083";
+        public string Address { get; set; } = "113 ซอยเจริญสุข ถนนสุขุมวิท 63 (เอกมัย) แขวงคลองตันเหนือ เขตวัฒนา กรุงเทพมหานคร";
+        public string RegisteredCapital { get; set; } = "1,070,000,000 บาท";
+        public string CEO { get; set; } = "นางบุศทรี หวั่งหลี";
+    }
+
+    public class ProjectLocationDetails
+    {
+        public List<string> LandTitleNumbers { get; set; } = new();
+        public string Address { get; set; } = string.Empty;
+        public string District { get; set; } = string.Empty;
+        public string Province { get; set; } = string.Empty;
+    }
+
+    public class BankObligationInfo
+    {
+        public string BankName { get; set; } = string.Empty;
+        public string BankType { get; set; } = "(มหาชน)";
+    }
+
     public enum ProjectType
     {
         SingleHouse,

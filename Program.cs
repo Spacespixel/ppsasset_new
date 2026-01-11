@@ -205,6 +205,28 @@ app.MapControllerRoute(
     defaults: new { controller = "Home", action = "Contact" });
 
 app.MapControllerRoute(
+    name: "cookie-policy",
+    pattern: "cookie-policy",
+    defaults: new { controller = "Home", action = "CookiePolicy" });
+
+// Terms and Conditions routes
+app.MapControllerRoute(
+    name: "terms-project-type",
+    pattern: "{projectType}/{projectName}/{location}/terms-and-conditions",
+    defaults: new { controller = "Home", action = "Terms" },
+    constraints: new { projectType = @"singlehouse|townhome|twinhouse" });
+
+app.MapControllerRoute(
+    name: "terms-project",
+    pattern: "Project/{id}/terms-and-conditions",
+    defaults: new { controller = "Home", action = "Terms" });
+
+app.MapControllerRoute(
+    name: "terms-general",
+    pattern: "terms-and-conditions",
+    defaults: new { controller = "Home", action = "Terms" });
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 

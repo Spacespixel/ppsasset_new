@@ -261,17 +261,17 @@
     /* NUCLEAR SOLD OUT STYLING OVERRIDE */
     html body .page-wrapper .navigation .dropdown.active .dropdown-menu .status-section.sold-out .main-status-title,
     html body .page-wrapper #project-dropdown.active .dropdown-menu .status-section.sold-out .main-status-title {
-        color: #dc3545 !important;
+        color: #999999 !important;
     }
     
     html body .page-wrapper .navigation .dropdown.active .dropdown-menu .status-section.sold-out .house-type-title,
     html body .page-wrapper #project-dropdown.active .dropdown-menu .status-section.sold-out .house-type-title {
-        color: #dc3545 !important;
+        color: #999999 !important;
     }
     
     html body .page-wrapper .navigation .dropdown.active .dropdown-menu .status-section.sold-out .house-type-subsection::before,
     html body .page-wrapper #project-dropdown.active .dropdown-menu .status-section.sold-out .house-type-subsection::before {
-        background-color: #dc3545 !important;
+        background-color: #999999 !important;
     }
     
     html body .page-wrapper .navigation .dropdown.active .dropdown-menu .status-section.sold-out .projects-list li a,
@@ -281,9 +281,9 @@
     
     html body .page-wrapper .navigation .dropdown.active .dropdown-menu .status-section.sold-out .projects-list li a:hover,
     html body .page-wrapper #project-dropdown.active .dropdown-menu .status-section.sold-out .projects-list li a:hover {
-        color: #dc3545 !important;
-        background-color: rgba(220, 53, 69, 0.1) !important;
-        border-color: rgba(220, 53, 69, 0.3) !important;
+        color: #999999 !important;
+        background-color: rgba(153, 153, 153, 0.1) !important;
+        border-color: rgba(153, 153, 153, 0.3) !important;
     }
     
     /* NUCLEAR STATUS SECTION CONTENT GRID OVERRIDE */
@@ -471,7 +471,7 @@
                             Copyright ©2025 PPS Asset Development. All rights reserved.
                         </div>
                         <div class="footer-legal-links">
-                            <a href="@Url.Action("Privacy", "Home")" style="color: #ccc; text-decoration: none; margin-right: 15px;">นโยบายความเป็นส่วนตัว</a>
+                            <a href="@Url.Action("PrivacyPolicy", "Home")" style="color: #ccc; text-decoration: none; margin-right: 15px;">นโยบายความเป็นส่วนตัว</a>
                             <a href="@Url.Action("Terms", "Home")" style="color: #ccc; text-decoration: none;">ข้อกำหนดและเงื่อนไข</a>
                         </div>
                     </div>
@@ -533,6 +533,10 @@
     });
     </script>
     
+    <!-- Cookie Consent by https://www.cookiewow.com -->
+    <script type="text/javascript" src="https://cookiecdn.com/cwc.js"></script>
+    <script id="cookieWow" type="text/javascript" src="https://cookiecdn.com/configs/oEAsPFwqtgGsTTjJhVPkKBYK" data-cwcid="oEAsPFwqtgGsTTjJhVPkKBYK"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
