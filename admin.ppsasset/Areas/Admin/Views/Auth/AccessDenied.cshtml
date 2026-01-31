@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "Access Denied";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Access Denied - PPS Asset Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body { padding-top: 40px; padding-bottom: 40px; background-color: #eee; }
+        .container { max-width: 600px; padding: 15px; margin: 0 auto; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-danger">Access Denied</h1>
+        <p class="lead">You do not have permission to access this resource.</p>
+        <p>If you have just created a user, ensure you selected the <strong>Admin</strong> role. Users with the 'User' role do not have access to the Admin area.</p>
+        <hr />
+        <form asp-action="Logout" asp-controller="Auth" method="post">
+            <button type="submit" class="btn btn-primary">Logout and Try Different Account</button>
+        </form>
+    </div>
+</body>
+</html>
