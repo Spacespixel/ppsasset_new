@@ -1,0 +1,165 @@
+@model PPSAssetAdmin.Areas.Admin.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h1 class="mt-4">Dashboard</h1>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <form method="get" class="form-inline">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-end">
+                        <div class="col-auto">
+                            <label for="startDate">Start Date</label>
+                            <input type="date" class="form-control" id="startDate" name="startDate" value="@(Model.StartDate?.ToString("yyyy-MM-dd"))">
+                        </div>
+                        <div class="col-auto">
+                            <label for="endDate">End Date</label>
+                            <input type="date" class="form-control" id="endDate" name="endDate" value="@(Model.EndDate?.ToString("yyyy-MM-dd"))">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="@Url.Action("Index", "Dashboard", new { Area = "Admin" })" class="btn btn-secondary">Clear</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">
+                Total Leads 
+                @if (Model.StartDate.HasValue || Model.EndDate.HasValue)
+                {
+                    <small>(Filtered)</small>
+                }
+            </div>
+            <div class="card-body">
+                <h2 class="card-title">@Model.TotalLeads</h2>
+                <p class="card-text">All time registrations.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Leads Today</div>
+            <div class="card-body">
+                <h2 class="card-title">@Model.LeadsToday</h2>
+                <p class="card-text">Registrations received today.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-header">This Week</div>
+            <div class="card-body">
+                <h2 class="card-title">@Model.LeadsThisWeek</h2>
+                <p class="card-text">Registrations past 7 days.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-1"></i>
+                Weekly New Leads
+            </div>
+            <div class="card-body"><canvas id="leadsWeekChart" width="100%" height="40"></canvas></div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-pie me-1"></i>
+                Leads by Project
+            </div>
+            <div class="card-body"><canvas id="leadsProjectChart" width="100%" height="40"></canvas></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    <script>
+        // Set new default font family and font color to mimic Bootstrap's default styling
+        Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+        Chart.defaults.global.defaultFontColor = '#292b2c';
+
+        // Leads Per Week Chart
+        var ctxWeek = document.getElementById("leadsWeekChart");
+        var myWeekChart = new Chart(ctxWeek, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.LeadsByWeek.Select(x => x.Label))),
+                datasets: [{
+                    label: "Leads",
+                    backgroundColor: "rgba(2,117,216,1)",
+                    borderColor: "rgba(2,117,216,1)",
+                    data: @Html.Raw(Json.Serialize(Model.LeadsByWeek.Select(x => x.Value))),
+                }],
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        time: {
+                            unit: 'week'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        ticks: {
+                            maxTicksLimit: 6
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            min: 0,
+                            maxTicksLimit: 5
+                        },
+                        gridLines: {
+                            display: true
+                        }
+                    }],
+                },
+                legend: {
+                    display: false
+                }
+            }
+        });
+
+        // Leads By Project Chart - Pie Chart
+        var ctxProject = document.getElementById("leadsProjectChart");
+        
+        // Dynamic colors for pie chart
+        var dynamicColors = function() {
+            var r = Math.floor(Math.random() * 255);
+            var g = Math.floor(Math.random() * 255);
+            var b = Math.floor(Math.random() * 255);
+            return "rgba(" + r + "," + g + "," + b + ", 0.7)";
+        };
+        
+        // Define a nice palette just in case
+        var palette = ['#007bff', '#28a745', '#dc3545', '#ffc107', '#17a2b8', '#6610f2', '#e83e8c', '#fd7e14', '#20c997', '#6c757d'];
+        
+        var myProjectChart = new Chart(ctxProject, {
+            type: 'pie',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.LeadsByProject.Select(x => x.Label))),
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(Model.LeadsByProject.Select(x => x.Value))),
+                    backgroundColor: palette,
+                }],
+            },
+        });
+    </script>
+}
