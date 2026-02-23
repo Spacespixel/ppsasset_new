@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "http": {
+    "PPSAsset": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

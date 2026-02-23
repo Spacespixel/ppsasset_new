@@ -1,0 +1,156 @@
+================================================================================
+PROJECT CONCEPT DATA STRUCTURE - VISUAL DIAGRAM
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         DATABASE STRUCTURE                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                               │
+│  sy_project TABLE                                                           │
+│  ═════════════════════════════════════════════════════════════════          │
+│  │ ProjectID          │ ProjectName      │ ProjectConcept        │          │
+│  ├──────────────────────────────────────────────────────────────┤          │
+│  │ ricco-residence-   │ เดอะริคโค้เ...  │ ค้นพบ Perfect        │ ✅ HAS  │
+│  │ hathairat          │                  │ Balance ได้ที่...     │ DATA   │
+│  │                    │                  │ (Long text)           │        │
+│  └──────────────────────────────────────────────────────────────┘          │
+│         ▲                                                                     │
+│         │                                                                     │
+│         │ Stored in Model.Concept                                            │
+│         │ (NOT being displayed properly)                                     │
+│         │                                                                     │
+│                                                                               │
+│  sy_project_features TABLE                                                  │
+│  ═════════════════════════════════════════════════════════════════          │
+│  │ ProjectID          │ FeatureTitle     │ FeatureDescription    │          │
+│  ├──────────────────────────────────────────────────────────────┤          │
+│  │ (EMPTY) ❌         │ (EMPTY) ❌       │ (EMPTY) ❌             │          │
+│  │                    │                  │                        │          │
+│  └──────────────────────────────────────────────────────────────┘          │
+│         ▲                                                                     │
+│         │                                                                     │
+│         │ Stored in Model.ConceptFeatures                                    │
+│         │ (View is looking here but finding nothing)                        │
+│         │                                                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         APPLICATION FLOW                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                               │
+│  HomeController.Project(id)                                                 │
+│  │                                                                            │
+│  └─→ HybridProjectService.GetProject(id)                                    │
+│      │                                                                        │
+│      └─→ DatabaseProjectService.GetProject(id)                              │
+│          │                                                                    │
+│          ├─→ SELECT ProjectConcept FROM sy_project  ✅ GETS DATA            │
+│          │   └─→ Stored in ProjectViewModel.Concept                         │
+│          │                                                                    │
+│          └─→ LoadConceptFeatures(connection, id)                            │
+│              │                                                                │
+│              └─→ SELECT * FROM sy_project_features  ❌ EMPTY               │
+│                  └─→ Stored in ProjectViewModel.ConceptFeatures             │
+│                                                                               │
+│  View renders Project.cshtml                                                │
+│  │                                                                            │
+│  ├─→ @if (Model.ConceptFeatures.Any())  ❌ FALSE (empty list)              │
+│  │   │                                                                        │
+│  │   └─→ [Render individual feature blocks]                                 │
+│  │                                                                            │
+│  └─→ @else (Fallback)                   ✅ EXECUTES HERE                   │
+│      │                                                                        │
+│      └─→ Display Model.Concept (single long text block)                    │
+│          └─→ Shows generic placeholder from static service                 │
+│                                                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         SOLUTION FLOW                                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                               │
+│  Step 1: Extract ProjectConcept text                                        │
+│  ┌──────────────────────────────────────────────────────────┐               │
+│  │ "ค้นพบ Perfect Balance ได้ที่ เดอะริคโค้ เรสซิเดนซ์    │ FROM DB      │
+│  │ รามอินทรา-หทัยราษฎร์ บ้านเดี่ยว 2 ชั้น Modern Natural  │               │
+│  │ Style มาพร้อมส่วนกลางครบครัน..."                        │               │
+│  └──────────────────────────────────────────────────────────┘               │
+│         ▼                                                                     │
+│  Step 2: Break into features                                                │
+│  ┌──────────────────────────────────────────────────────────┐               │
+│  │ Feature 1: Title = "Perfect Balance"                     │               │
+│  │            Desc = "ค้นพบ Perfect Balance ได้ที่..."     │               │
+│  │            SortOrder = 0                                 │               │
+│  │                                                          │               │
+│  │ Feature 2: Title = "Modern Natural Style"                │               │
+│  │            Desc = "บ้านเดี่ยว 2 ชั้น Modern..."        │               │
+│  │            SortOrder = 1                                 │               │
+│  │                                                          │               │
+│  │ Feature 3: Title = "ทำเลยุทธศาสตร์"                      │               │
+│  │            Desc = "บนทำเลที่ล้อมรอบไปด้วย..."           │               │
+│  │            SortOrder = 2                                 │               │
+│  └──────────────────────────────────────────────────────────┘               │
+│         ▼                                                                     │
+│  Step 3: Insert into sy_project_features                                    │
+│  ┌──────────────────────────────────────────────────────────┐               │
+│  │ sy_project_features                                      │ INSERT       │
+│  │ ├─ ProjectID: ricco-residence-hathairat                 │               │
+│  │ ├─ FeatureTitle: Perfect Balance                        │               │
+│  │ ├─ FeatureDescription: ค้นพบ Perfect Balance...        │               │
+│  │ ├─ SortOrder: 0                                         │               │
+│  │ │                                                        │               │
+│  │ ├─ ProjectID: ricco-residence-hathairat                 │               │
+│  │ ├─ FeatureTitle: Modern Natural Style                   │               │
+│  │ ├─ FeatureDescription: บ้านเดี่ยว 2 ชั้น...           │               │
+│  │ ├─ SortOrder: 1                                         │               │
+│  │ │                                                        │               │
+│  │ └─ ... more features ...                                │               │
+│  └──────────────────────────────────────────────────────────┘               │
+│         ▼                                                                     │
+│  Step 4: Application reads and displays                                     │
+│  ┌──────────────────────────────────────────────────────────┐               │
+│  │ Model.ConceptFeatures has 3 items ✅                    │               │
+│  │   ▼                                                      │               │
+│  │ @if (Model.ConceptFeatures.Any()) ✅ TRUE               │               │
+│  │   ▼                                                      │               │
+│  │ Render feature blocks:                                  │               │
+│  │ ┌────────────────────────────────────────┐              │               │
+│  │ │ Perfect Balance                        │  Image ▲    │               │
+│  │ │ ค้นพบ Perfect Balance ได้ที่...       │          │    │               │
+│  │ └────────────────────────────────────────┘              │               │
+│  │                                                         │               │
+│  │ ┌────────────────────────────────────────┐              │               │
+│  │ │ ▲ Image    Modern Natural Style        │              │               │
+│  │ │             บ้านเดี่ยว 2 ชั้น...      │              │               │
+│  │ └────────────────────────────────────────┘              │               │
+│  │                                                         │               │
+│  │ ┌────────────────────────────────────────┐              │               │
+│  │ │ ทำเลยุทธศาสตร์                           │  Image ▲    │               │
+│  │ │ บนทำเลที่ล้อมรอบไปด้วย...               │          │    │               │
+│  │ └────────────────────────────────────────┘              │               │
+│  └──────────────────────────────────────────────────────────┘               │
+│                                                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+IMPLEMENTATION STATUS
+================================================================================
+
+✅ Code Changes Complete:
+   ├─ DatabaseProjectService.LoadConceptFeatures() - Enhanced
+   ├─ DatabaseMigration.MigrateConceptFeaturesAsync() - Updated
+   ├─ Database schema - Added FeatureImage and FeatureIcon columns
+   └─ Error handling - Added logging and fallback
+
+⏳ Pending Actions:
+   ├─ Run: /Data/SQL/05_add_feature_image_icon_columns.sql (ALTER TABLE)
+   ├─ Run: /Data/SQL/06_populate_concept_features.sql (INSERT DATA)
+   └─ Rebuild and restart application
+
+✅ After Actions Complete:
+   └─ Concept features will display properly with titles, descriptions, and images
+
+================================================================================

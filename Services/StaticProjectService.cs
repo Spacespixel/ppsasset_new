@@ -92,6 +92,7 @@ namespace PPSAsset.Services
                 Concept = "\"Perfect Balance\" ความสมดุลที่ลงตัวในการดำเนินชีวิตและความสะดวกสบาย",
                 Type = ProjectType.SingleHouse,
                 Status = ProjectStatus.Available,
+                SortOrder = 3,
 
                 Details = new ProjectDetails
                 {
@@ -184,8 +185,10 @@ namespace PPSAsset.Services
                 Name = "เดอะ ริกโค้ เรสซิเดนซ์ รามอินทรา-จตุโชติ",
                 NameTh = "เดอะ ริกโค้ เรสซิเดนซ์ รามอินทรา-จตุโชติ",
                 NameEn = "The Ricco Residence Ramintra-Chatuchot",
+                Subtitle = "Modern Living ชีวิตสมัยใหม่ในทำเลยุทธศาสตร์",
                 Type = ProjectType.SingleHouse,
                 Status = ProjectStatus.Available,
+                SortOrder = 4,
                 Concept = "Modern Living in Strategic Location",
                 Description = "บ้านเดี่ยว 2 ชั้น ในทำเลยุทธศาสตร์ใกล้จตุจักร",
                 
@@ -206,8 +209,10 @@ namespace PPSAsset.Services
                 Name = "เดอะ ริกโค้ ทาวน์ พหลโยธิน-สายไหม 53",
                 NameTh = "เดอะ ริกโค้ ทาวน์ พหลโยธิน-สายไหม 53",
                 NameEn = "The Ricco Town Phahonyothin-Saimai 53",
+                Subtitle = "Premium Townhome ทาวน์โฮมไพร์มที่บ้านคุณสาเหตุ",
                 Type = ProjectType.Townhouse,
                 Status = ProjectStatus.Available,
+                SortOrder = 5,
                 Concept = "Premium Townhome Living",
                 Description = "ทาวน์โฮม 3 ชั้น ในทำเลพหลโยธิน",
                 Details = new ProjectDetails
@@ -236,6 +241,7 @@ namespace PPSAsset.Services
                 NameEn = "The Ricco Residence Prime Wong Waen-Hathairat",
                 Type = ProjectType.SingleHouse,
                 Status = ProjectStatus.NewProject,
+                SortOrder = 1,
                 Concept = "Modern Classic Living",
                 Description = "บ้านเดี่ยว 2 ชั้น สไตล์ Modern Classic บนทำเลวงแหวน",
                 Details = new ProjectDetails
@@ -295,6 +301,7 @@ namespace PPSAsset.Services
                 NameEn = "The Ricco Residence Prime Wong Waen-Chatuchot",
                 Type = ProjectType.SingleHouse,
                 Status = ProjectStatus.NewProject,
+                SortOrder = 2,
                 Concept = "Modern Classic Elegance",
                 Description = "บ้านเดี่ยว 2 ชั้น สไตล์ Modern Classic ใกล้จตุจักร",
                 Details = new ProjectDetails
@@ -352,8 +359,10 @@ namespace PPSAsset.Services
                 Name = "เดอะ ริกโค้ ทาวน์ วงแหวนฯ-ลำลูกกา",
                 NameTh = "เดอะ ริกโค้ ทาวน์ วงแหวนฯ-ลำลูกกา",
                 NameEn = "The Ricco Town Wong Waen-Lamlukka",
+                Subtitle = "Modern Contemporary ทาวน์โฮมและบ้านแฝดสมัยใหม่",
                 Type = ProjectType.Townhouse,
                 Status = ProjectStatus.NewProject,
+                SortOrder = 6,
                 Concept = "Modern Contemporary Living",
                 Description = "ทาวน์โฮมและบ้านแฝด 2 ชั้น ดีไซน์โมเดิร์น คอนเทมโพรารี่",
                 Details = new ProjectDetails

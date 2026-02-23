@@ -2,6 +2,7 @@ using PPSAsset.Models;
 using Dapper;
 using MySql.Data.MySqlClient;
 using System.Data;
+using System.Text.RegularExpressions;
 
 namespace PPSAsset.Services
 {
@@ -34,6 +35,7 @@ namespace PPSAsset.Services
                         p.ProjectConcept as Concept,
                         p.ProjectType as Type,
                         p.ProjectStatus as Status,
+                        p.SortOrder,
                         p.ProjectAddress as Location,
                         p.ProjectSize,
                         p.TotalUnits,
@@ -73,9 +75,14 @@ namespace PPSAsset.Services
 
         public List<ProjectViewModel> GetAllProjects()
         {
-            try
-            {
-                using var connection = new MySqlConnection(_connectionString);
+            _logger.LogInformation("DatabaseProjectService: Attempting connection to MySQL server with connection string: {ConnectionString}", 
+                _connectionString);
+            
+            using var connection = new MySqlConnection(_connectionString);
+            
+            _logger.LogInformation("DatabaseProjectService: Opening MySQL connection...");
+            connection.Open();
+            _logger.LogInformation("DatabaseProjectService: MySQL connection opened successfully");
 
                 const string sql = @"
                     SELECT
@@ -87,6 +94,7 @@ namespace PPSAsset.Services
                         p.ProjectConcept as Concept,
                         p.ProjectType as Type,
                         p.ProjectStatus as Status,
+                        p.SortOrder,
                         p.ProjectAddress as Location,
                         p.ProjectSize,
                         p.TotalUnits,
@@ -95,7 +103,7 @@ namespace PPSAsset.Services
                         p.Developer,
                         p.PriceRange
                     FROM sy_project p
-                    ORDER BY p.ModifiedDate DESC";
+                    ORDER BY p.SortOrder ASC, p.ModifiedDate DESC";
 
                 var projects = connection.Query<dynamic>(sql).ToList();
                 var projectViewModels = new List<ProjectViewModel>();
@@ -111,12 +119,6 @@ namespace PPSAsset.Services
                 }
 
                 return projectViewModels;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving all projects from database");
-                return new List<ProjectViewModel>();
-            }
         }
 
         public List<ProjectViewModel> GetProjectsByType(ProjectType type)
@@ -135,6 +137,7 @@ namespace PPSAsset.Services
                         p.ProjectConcept as Concept,
                         p.ProjectType as Type,
                         p.ProjectStatus as Status,
+                        p.SortOrder,
                         p.ProjectAddress as Location,
                         p.ProjectSize,
                         p.TotalUnits,
@@ -144,7 +147,7 @@ namespace PPSAsset.Services
                         p.PriceRange
                     FROM sy_project p
                     WHERE p.ProjectType = @ProjectType
-                    ORDER BY p.ModifiedDate DESC";
+                    ORDER BY p.SortOrder ASC, p.ModifiedDate DESC";
 
                 var projects = connection.Query<dynamic>(sql, new { ProjectType = type.ToString() }).ToList();
                 var projectViewModels = new List<ProjectViewModel>();
@@ -181,6 +184,7 @@ namespace PPSAsset.Services
                         p.ProjectConcept as Concept,
                         p.ProjectType as Type,
                         p.ProjectStatus as Status,
+                        p.SortOrder,
                         p.ProjectAddress as Location,
                         p.ProjectSize,
                         p.TotalUnits,
@@ -190,7 +194,7 @@ namespace PPSAsset.Services
                         p.PriceRange
                     FROM sy_project p
                     WHERE p.ProjectStatus IN ('NewProject', 'Available')
-                    ORDER BY p.ModifiedDate DESC";
+                    ORDER BY p.SortOrder ASC, p.ModifiedDate DESC";
 
                 var projects = connection.Query<dynamic>(sql).ToList();
                 var projectViewModels = new List<ProjectViewModel>();
@@ -298,6 +302,7 @@ namespace PPSAsset.Services
                 Concept = project.Concept ?? string.Empty,
                 Type = Enum.TryParse<ProjectType>(project.Type?.ToString(), out ProjectType type) ? type : ProjectType.SingleHouse,
                 Status = Enum.TryParse<ProjectStatus>(project.Status?.ToString(), out ProjectStatus status) ? status : ProjectStatus.Available,
+                SortOrder = project.SortOrder ?? 0,
                 Details = new ProjectDetails
                 {
                     Location = project.Location ?? string.Empty,
@@ -456,13 +461,13 @@ namespace PPSAsset.Services
             // Load floor plans for each house type
             foreach (var houseType in houseTypes)
             {
-                houseType.FloorPlans = LoadFloorPlans(connection, houseType.Id);
+                houseType.FloorPlans = LoadFloorPlans(connection, houseType.HouseTypeID);
             }
 
             return houseTypes;
         }
 
-        private List<FloorPlan> LoadFloorPlans(IDbConnection connection, string houseTypeCode)
+        private List<FloorPlan> LoadFloorPlans(IDbConnection connection, int houseTypeId)
         {
             const string sql = @"
                 SELECT
@@ -471,11 +476,10 @@ namespace PPSAsset.Services
                     fp.ImagePath,
                     fp.FloorType as Type
                 FROM sy_project_floor_plans fp
-                INNER JOIN sy_project_house_types ht ON fp.HouseTypeID = ht.HouseTypeID
-                WHERE ht.HouseTypeCode = @HouseTypeCode
+                WHERE fp.HouseTypeID = @HouseTypeID
                 ORDER BY fp.SortOrder";
 
-            var floorPlans = connection.Query<dynamic>(sql, new { HouseTypeCode = houseTypeCode }).ToList();
+            var floorPlans = connection.Query<dynamic>(sql, new { HouseTypeID = houseTypeId }).ToList();
 
             return floorPlans.Select(fp => new FloorPlan
             {
@@ -513,16 +517,174 @@ namespace PPSAsset.Services
 
         private List<ConceptFeature> LoadConceptFeatures(IDbConnection connection, string projectId)
         {
-            const string sql = @"
-                SELECT
-                    FeatureTitle as Title,
-                    FeatureDescription as Description
-                FROM sy_project_features
-                WHERE ProjectID = @ProjectId
-                ORDER BY SortOrder";
+            try
+            {
+                // Get the project concept text
+                const string conceptSql = @"
+                    SELECT ProjectConcept
+                    FROM sy_project
+                    WHERE ProjectID = @ProjectId";
 
-            var features = connection.Query<ConceptFeature>(sql, new { ProjectId = projectId }).ToList();
-            return features;
+                var projectConcept = connection.QueryFirstOrDefault<string>(conceptSql, new { ProjectId = projectId });
+
+                if (string.IsNullOrWhiteSpace(projectConcept))
+                {
+                    _logger.LogDebug("No concept found for project {ProjectId}", projectId);
+                    return new List<ConceptFeature>();
+                }
+
+                // Get gallery images for this project (take first 2)
+                const string imagesSql = @"
+                    SELECT ImagePath
+                    FROM sy_project_images
+                    WHERE ProjectID = @ProjectId
+                    AND ImageType = 'Gallery'
+                    ORDER BY SortOrder
+                    LIMIT 2";
+
+                var galleryImages = connection.Query<string>(imagesSql, new { ProjectId = projectId }).ToList();
+
+                var features = new List<ConceptFeature>();
+                string cleanConcept = projectConcept.Trim();
+
+                // Check if concept contains HTML tags (h3, p)
+                if (cleanConcept.Contains("<h3>") || cleanConcept.Contains("<p>"))
+                {
+                    // Parse HTML-formatted concept data
+                    string title = string.Empty;
+                    string summary = string.Empty;
+                    string details = string.Empty;
+
+                    // Extract h3 title
+                    var h3Match = Regex.Match(cleanConcept, @"<h3>(.*?)</h3>", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+                    if (h3Match.Success)
+                    {
+                        title = h3Match.Groups[1].Value;
+                        cleanConcept = Regex.Replace(cleanConcept, @"<h3>.*?</h3>", "", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+                    }
+
+                    // Extract all paragraphs
+                    var paragraphs = Regex.Matches(cleanConcept, @"<p[^>]*>(.*?)</p>", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+                    if (paragraphs.Count >= 2)
+                    {
+                        summary = paragraphs[0].Groups[1].Value.Trim();
+                        details = paragraphs[1].Groups[1].Value.Trim();
+                    }
+                    else if (paragraphs.Count == 1)
+                    {
+                        summary = paragraphs[0].Groups[1].Value.Trim();
+                    }
+                    else
+                    {
+                        summary = cleanConcept;
+                    }
+
+                    // Add first feature with title and summary
+                    if (!string.IsNullOrEmpty(title) || !string.IsNullOrEmpty(summary))
+                    {
+                        features.Add(new ConceptFeature
+                        {
+                            Title = title,
+                            Description = summary,
+                            Image = galleryImages.Count > 0 ? galleryImages[0] : string.Empty,
+                            Icon = string.Empty
+                        });
+                    }
+
+                    // Add second feature with details if available
+                    if (!string.IsNullOrEmpty(details))
+                    {
+                        features.Add(new ConceptFeature
+                        {
+                            Title = details,
+                            Description = string.Empty,
+                            Image = galleryImages.Count > 1 ? galleryImages[1] : (galleryImages.Count > 0 ? galleryImages[0] : string.Empty),
+                            Icon = string.Empty
+                        });
+                    }
+                }
+                else
+                {
+                    // Original logic for non-HTML formatted text
+                    // Find logical split points - look for sentence endings followed by space and capital letter or project name
+                    int conceptLength = cleanConcept.Length;
+                    int midpoint = conceptLength / 2;
+
+                    // Find nearest sentence break around the midpoint
+                    int splitPoint = midpoint;
+                    for (int i = midpoint; i < conceptLength - 1; i++)
+                    {
+                        if (cleanConcept[i] == '.' && i < conceptLength - 1 && cleanConcept[i + 1] == ' ')
+                        {
+                            splitPoint = i + 2;
+                            break;
+                        }
+                    }
+
+                    string section1Text = cleanConcept.Substring(0, splitPoint).Trim();
+                    string section2Text = splitPoint < conceptLength ? cleanConcept.Substring(splitPoint).Trim() : "";
+
+                    // Extract title from section 1 (full first sentence without truncation)
+                    int firstSentenceEnd = section1Text.IndexOf('.');
+                    string section1Title = firstSentenceEnd > 0
+                        ? section1Text.Substring(0, firstSentenceEnd).Trim()
+                        : section1Text.Trim();
+
+                    string section1Description = firstSentenceEnd > 0 && firstSentenceEnd < section1Text.Length - 1
+                        ? section1Text.Substring(firstSentenceEnd + 1).Trim()
+                        : "";
+
+                    // Extract title and description from section 2
+                    string section2Title = "";
+                    string section2Description = "";
+
+                    if (!string.IsNullOrEmpty(section2Text))
+                    {
+                        int section2SentenceEnd = section2Text.IndexOf('.');
+                        section2Title = section2SentenceEnd > 0
+                            ? section2Text.Substring(0, section2SentenceEnd).Trim()
+                            : section2Text.Trim();
+
+                        section2Description = section2SentenceEnd > 0 && section2SentenceEnd < section2Text.Length - 1
+                            ? section2Text.Substring(section2SentenceEnd + 1).Trim()
+                            : "";
+                    }
+
+                    // Add first feature section with first gallery image
+                    features.Add(new ConceptFeature
+                    {
+                        Title = section1Title,
+                        Description = section1Description,
+                        Image = galleryImages.Count > 0 ? galleryImages[0] : string.Empty,
+                        Icon = string.Empty
+                    });
+
+                    // Add second feature section with second gallery image (if we have content)
+                    if (!string.IsNullOrEmpty(section2Title))
+                    {
+                        features.Add(new ConceptFeature
+                        {
+                            Title = section2Title,
+                            Description = section2Description,
+                            Image = galleryImages.Count > 1 ? galleryImages[1] : (galleryImages.Count > 0 ? galleryImages[0] : string.Empty),
+                            Icon = string.Empty
+                        });
+                    }
+                }
+
+                if (features.Any())
+                {
+                    _logger.LogDebug("Loaded {FeatureCount} concept features for project {ProjectId}", features.Count, projectId);
+                }
+
+                return features;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error loading concept features for project {ProjectId}", projectId);
+                return new List<ConceptFeature>();
+            }
         }
 
         private LocationInfo LoadLocationInfo(IDbConnection connection, string projectId)

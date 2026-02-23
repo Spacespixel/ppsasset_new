@@ -44,9 +44,9 @@ namespace PPSAsset.Services
                 ["ricco-residence-hathairat"] = new ProjectTheme
                 {
                     ThemeName = "magenta",
-                    PrimaryColor = "#C2185B",
-                    SecondaryColor = "#E91E63",
-                    LightBackground = "#FCE4EC",
+                    PrimaryColor = "#AF017F",
+                    SecondaryColor = "#D91E6F",
+                    LightBackground = "#f8f9fa",
                     CssClass = "theme-magenta"
                 },
                 ["ricco-residence-chatuchot"] = new ProjectTheme
@@ -54,7 +54,7 @@ namespace PPSAsset.Services
                     ThemeName = "red",
                     PrimaryColor = "#B71C1C",
                     SecondaryColor = "#D32F2F",
-                    LightBackground = "#FFEBEE",
+                    LightBackground = "#f8f9fa",
                     CssClass = "theme-red"
                 },
                 ["ricco-residence-prime-hathairat"] = new ProjectTheme
@@ -62,7 +62,7 @@ namespace PPSAsset.Services
                     ThemeName = "dark-red",
                     PrimaryColor = "#580709",
                     SecondaryColor = "#b9834c",
-                    LightBackground = "#E3F2FD",
+                    LightBackground = "#f8f9fa",
                     CssClass = "theme-dark-red"
                 },
                 ["ricco-residence-prime-chatuchot"] = new ProjectTheme
@@ -70,24 +70,24 @@ namespace PPSAsset.Services
                     ThemeName = "blue",
                     PrimaryColor = "#1976D2",
                     SecondaryColor = "#2196F3",
-                    LightBackground = "#E3F2FD",
+                    LightBackground = "#f8f9fa",
                     CssClass = "theme-blue"
                 },
                 ["ricco-town-phahonyothin-saimai53"] = new ProjectTheme
                 {
                     ThemeName = "maroon",
-                    PrimaryColor = "#8D1537",
-                    SecondaryColor = "#AD1457",
-                    LightBackground = "#F8BBD9",
+                    PrimaryColor = "#e5218a",
+                    SecondaryColor = "#f857b8",
+                    LightBackground = "#f8f9fa",
                     CssClass = "theme-maroon"
                 },
                 ["ricco-town-wongwaen-lamlukka"] = new ProjectTheme
                 {
-                    ThemeName = "maroon",
-                    PrimaryColor = "#8D1537",
-                    SecondaryColor = "#AD1457",
-                    LightBackground = "#F8BBD9",
-                    CssClass = "theme-maroon"
+                    ThemeName = "pink",
+                    PrimaryColor = "#e5218a",
+                    SecondaryColor = "#f857b8",
+                    LightBackground = "#f8f9fa",
+                    CssClass = "theme-pink"
                 }
             };
         }

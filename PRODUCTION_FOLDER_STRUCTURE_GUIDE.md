@@ -1,0 +1,222 @@
+# Production Folder Structure Guide for PPS Asset
+
+## Overview
+This guide explains the folder structure for deploying PPS Asset to the existing Windows VPS directory at `C:\Production\web\ppsasset.com`.
+
+## Target Directory Structure
+
+```
+C:\Production\web\ppsasset.com\
+├── wwwroot\                    # Web application root (IIS physical path)
+│   ├── PPSAsset.dll           # Main application binary
+│   ├── appsettings.json       # Production configuration
+│   ├── web.config             # IIS configuration
+│   ├── wwwroot\               # Static web assets
+│   │   ├── css\               # Stylesheets
+│   │   ├── js\                # JavaScript files
+│   │   ├── images\            # Images and media
+│   │   └── fonts\             # Web fonts
+│   ├── runtimes\              # .NET runtime dependencies
+│   └── [other DLL files]     # Application dependencies
+├── logs\                      # Application-specific logs
+├── temp\                      # Temporary files
+└── backups\                   # Local backups
+```
+
+## Separate Log Directory
+
+```
+C:\Production\logs\ppsasset\
+├── ppsasset-[date].log        # Application logs
+├── stdout\                    # ASP.NET Core stdout logs
+└── archived\                  # Archived log files
+```
+
+## Pre-Deployment Verification
+
+### 1. Check Existing Directory
+```powershell
+# Verify the base directory exists
+Test-Path "C:\Production\web\ppsasset.com"
+
+# Check if directory is empty or ready for deployment
+Get-ChildItem "C:\Production\web\ppsasset.com" | Measure-Object
+
+# Verify permissions
+icacls "C:\Production\web\ppsasset.com"
+```
+
+### 2. Directory Preparation
+If the directory needs to be created or prepared:
+
+```powershell
+# Create main directory if it doesn't exist
+New-Item -ItemType Directory -Path "C:\Production\web\ppsasset.com" -Force
+
+# Create subdirectories
+$subDirs = @("wwwroot", "logs", "temp", "backups")
+foreach ($dir in $subDirs) {
+    $fullPath = "C:\Production\web\ppsasset.com\$dir"
+    New-Item -ItemType Directory -Path $fullPath -Force
+}
+
+# Create separate logs directory
+New-Item -ItemType Directory -Path "C:\Production\logs\ppsasset" -Force
+```
+
+## Deployment File Copy Process
+
+### 1. Prepare Published Files
+On your development machine, publish the application:
+```bash
+dotnet publish -c Release -o ./publish
+```
+
+### 2. Copy Files to Production
+Copy all published files to the production server:
+
+```powershell
+# Example using PowerShell on the server
+$SourcePath = "C:\LocalBuild\publish\*"
+$TargetPath = "C:\Production\web\ppsasset.com\wwwroot"
+
+# Copy all published files
+Copy-Item -Path $SourcePath -Destination $TargetPath -Recurse -Force
+
+# Verify critical files are present
+$criticalFiles = @(
+    "PPSAsset.dll",
+    "appsettings.json", 
+    "web.config"
+)
+
+foreach ($file in $criticalFiles) {
+    $filePath = Join-Path $TargetPath $file
+    if (Test-Path $filePath) {
+        Write-Host "✓ $file present" -ForegroundColor Green
+    } else {
+        Write-Warning "✗ $file missing"
+    }
+}
+```
+
+## IIS Configuration
+
+### Application Pool Settings
+- **Name**: `ppsasset.com_AppPool`
+- **Path**: `C:\Production\web\ppsasset.com\wwwroot`
+- **.NET Framework**: No Managed Code
+- **Identity**: ApplicationPoolIdentity
+
+### Website Settings
+- **Name**: `ppsasset.com`
+- **Physical Path**: `C:\Production\web\ppsasset.com\wwwroot`
+- **Bindings**: 
+  - HTTP: Port 80, Host Name: ppsasset.com
+  - HTTPS: Port 443, Host Name: ppsasset.com (after SSL setup)
+
+## Permissions Setup
+
+### Required Permissions
+```powershell
+# Grant IIS permissions to application directory
+icacls "C:\Production\web\ppsasset.com" /grant "IIS_IUSRS:(OI)(CI)F" /T
+icacls "C:\Production\web\ppsasset.com" /grant "IUSR:(OI)(CI)RX" /T
+
+# Grant permissions to log directory
+icacls "C:\Production\logs\ppsasset" /grant "IIS_IUSRS:(OI)(CI)F" /T
+```
+
+### Verification
+```powershell
+# Verify permissions are correctly set
+icacls "C:\Production\web\ppsasset.com" | findstr "IIS_IUSRS"
+icacls "C:\Production\logs\ppsasset" | findstr "IIS_IUSRS"
+```
+
+## Configuration Files
+
+### appsettings.json Location
+- Path: `C:\Production\web\ppsasset.com\wwwroot\appsettings.json`
+- Contains: Database connection, logging paths, domain settings
+
+### web.config Location  
+- Path: `C:\Production\web\ppsasset.com\wwwroot\web.config`
+- Contains: IIS hosting configuration, security headers
+
+### Log Configuration
+- Application logs: `C:\Production\logs\ppsasset\ppsasset-{Date}.log`
+- Stdout logs: `C:\Production\logs\ppsasset\stdout`
+
+## Database Connection
+
+### Connection String Format
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=ppsasset_production_db;Uid=ppsasset_user;Pwd=YOUR_PASSWORD;CharSet=utf8mb4;SslMode=Preferred;"
+  }
+}
+```
+
+### Database Setup Script Location
+- Path: `C:\Production\web\ppsasset.com\setup_database.sql`
+- Generated by deployment script
+- Run with: `mysql -u root -p < "C:\Production\web\ppsasset.com\setup_database.sql"`
+
+## Monitoring and Maintenance
+
+### Log File Locations
+```powershell
+# View recent application logs
+Get-ChildItem "C:\Production\logs\ppsasset" | Sort-Object LastWriteTime -Descending
+
+# View IIS stdout logs
+Get-Content "C:\Production\logs\ppsasset\stdout*" -Tail 50
+```
+
+### Performance Monitoring
+```powershell
+# Check application pool status
+Get-IISAppPool -Name "ppsasset.com_AppPool"
+
+# Monitor memory usage
+Get-Counter "\Process(w3wp*)\Private Bytes" | Where-Object {$_.InstanceName -like "*ppsasset*"}
+```
+
+## Backup Strategy
+
+### Application Backup
+```powershell
+# Create dated backup
+$BackupPath = "C:\Production\web\ppsasset.com\backups\backup_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+Copy-Item "C:\Production\web\ppsasset.com\wwwroot" -Destination $BackupPath -Recurse
+```
+
+### Configuration Backup
+```powershell
+# Backup IIS configuration
+Backup-WebConfiguration -Name "ppsasset_backup_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+```
+
+## Troubleshooting
+
+### Common Path Issues
+1. **Permissions denied**: Run permission commands above
+2. **File not found**: Verify files copied to correct wwwroot directory
+3. **Database connection**: Check connection string in appsettings.json
+4. **IIS errors**: Check Windows Event Log and stdout logs
+
+### Quick Verification Commands
+```powershell
+# Verify directory structure
+Get-ChildItem "C:\Production\web\ppsasset.com" -Recurse -Directory | Select-Object FullName
+
+# Check file count in wwwroot
+(Get-ChildItem "C:\Production\web\ppsasset.com\wwwroot" -File).Count
+
+# Test website response
+Invoke-WebRequest -Uri "http://localhost" -UseBasicParsing -TimeoutSec 10
+```
+
+This folder structure provides a clean, organized deployment that integrates with the existing Windows VPS directory structure while maintaining proper separation of application files, logs, and configuration.

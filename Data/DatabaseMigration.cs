@@ -159,7 +159,7 @@ namespace PPSAsset.Data
             var parameters = new
             {
                 ProjectID = project.Id,
-                ProjectName = project.Name, // Use Name as Thai name
+                ProjectName = project.NameTh, // Use NameTh as Thai name
                 ProjectNameEN = project.NameEn,
                 ProjectAddress = project.Details.Location, // Use location as address
                 ProjectType = project.Type.ToString(),
@@ -346,9 +346,9 @@ namespace PPSAsset.Data
 
             const string sql = @"
                 INSERT INTO sy_project_features (
-                    ProjectID, FeatureTitle, FeatureDescription, SortOrder
+                    ProjectID, FeatureTitle, FeatureDescription, FeatureImage, FeatureIcon, SortOrder
                 ) VALUES (
-                    @ProjectID, @FeatureTitle, @FeatureDescription, @SortOrder
+                    @ProjectID, @FeatureTitle, @FeatureDescription, @FeatureImage, @FeatureIcon, @SortOrder
                 )";
 
             var featureInserts = project.ConceptFeatures.Select((f, index) => new
@@ -356,6 +356,8 @@ namespace PPSAsset.Data
                 ProjectID = project.Id,
                 FeatureTitle = f.Title,
                 FeatureDescription = f.Description,
+                FeatureImage = f.Image ?? string.Empty,
+                FeatureIcon = f.Icon ?? string.Empty,
                 SortOrder = index
             });
 

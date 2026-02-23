@@ -5,57 +5,10 @@
 
 <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link href="~/css/style-custom.css" rel="stylesheet">
+<link href="~/css/style-custom.css?v=@DateTime.Now.Ticks" rel="stylesheet">
 <header id="page-header">
   
-  <nav class="navigation nav-btn-only background-is-dark">
-        <div class="container">
-            <div class="wrapper">
-                <div class="left">
-                    <a href="@Url.Action("Index", "Home")" class="brand"><img src="~/images/pps-logo.png" alt="PPS Asset" style="height: 40px;"></a>
-                </div>
-                <div class="right">
-                    <ul class="nav navigation-links animate">
-                        <li><a href="#page-top" class="scroll">Home</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle">โครงการ <span class="caret">▼</span></a>
-                            <ul class="dropdown-menu">
-                                <li class="dropdown-header">บ้านเดี่ยว</li>
-                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-prime-hathairat" })">เดอะริคโค้ เรสซิเดนซ์ ไพร์ม วงแหวนฯ-หทัยราษฎร์</a></li>
-                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-prime-chatuchot" })">เดอะริคโค้ เรสซิเดนซ์ ไพร์ม วงแหวนฯ-จตุโชติ</a></li>
-                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-chatuchot" })">เดอะริคโค้ เรสซิเดนซ์ รามอินทรา-จตุโชติ</a></li>
-                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-hathairat" })">เดอะริคโค้ เรสซิเดนซ์ รามอินทรา-หทัยราษฎร์</a></li>
-                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-wongwaen-hathairat" })">เดอะริคโค้ เรสซิเดนซ์ วงแหวนฯ-หทัยราษฎร์ (SOLD OUT)</a></li>
-                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-residence-wongwaen-chatuchot" })">เดอะริคโค้ เรสซิเดนซ์ วงแหวนฯ-จตุโชติ (SOLD OUT)</a></li>
-                                
-                                <li class="divider"></li>
-                                <li class="dropdown-header">ทาวน์โฮม</li>
-                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-town-phahonyothin-saimai53" })">เดอะริคโค้ ทาวน์ พหลโยธิน-สายไหม 53</a></li>
-                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-town-wongwaen-lamlukka" })">เดอะริคโค้ ทาวน์ วงแหวนฯ-ลำลูกกา</a></li>
-                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-town-phahonyothin-watcharaphol" })">เดอะริคโค้ ทาวน์ พหลโยธิน-วัชรพล (SOLD OUT)</a></li>
-                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-town-wongwaen-hathairat" })">เดอะริคโค้ ทาวน์ วงแหวนฯ-หทัยราษฎร์ (SOLD OUT)</a></li>
-                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-town-ramintra-watcharaphon" })">เดอะริคโค้ ทาวน์ รามอินทรา-วัชรพล (SOLD OUT)</a></li>
-                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-town-watcharaphon" })">เดอะริคโค้ ทาวน์ วัชรพล (SOLD OUT)</a></li>
-                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-town-phahonyothin-saimai" })">เดอะริคโค้ ทาวน์ พหลโยธิน-สายไหม (SOLD OUT)</a></li>
-                                
-                                <li class="divider"></li>
-                                <li class="dropdown-header">บ้านแฝด</li>
-                                <li><a href="@Url.Action("Project", "Home", new { id = "ricco-twin-wongwaen-lamlukka" })">เดอะริคโค้ ทาวน์ วงแหวนฯ-ลำลูกกา</a></li>
-                            </ul> 
-                        </li>
-                        <li><a href="@Url.Action("About","Home") class="scroll">เกี่ยวกับเรา</a></li> 
-                        <li><a href="@Url.Action("Contact") class="scroll">ติดต่อเรา</a></li>
-                      </ul>
-                    <div class="nav-btn">
-                        <figure></figure>
-                        <figure></figure>
-                        <figure></figure>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>  
-    
+  
     <div class="hero-section background-is-dark">
         <div class="wrapper">
             <div class="hero-title">
@@ -82,18 +35,19 @@
             {
                 @foreach (var project in Model.Take(5))
                 {
-                     <div class="hero-slide"
+                    <div class="hero-slide"
                          data-title="@project.NameTh"
                          data-subtitle="@project.Subtitle"
-                         data-description="@project.Description">
-                        <div class="bg-transfer">
+                         data-description="@project.Description"
+                         data-project-url="@Url.Action("Project", "Home", new { id = project.Id })">
+                        <div class="bg-transfer hero-slide-clickable">
                             <img src="@Url.Content($"~/images/projects/{project.Id}/{project.Images.Hero}")"
                                  alt="@project.NameTh">
                         </div>
                     </div>
                 }
             }
-            
+
         </div>
     </div>
 </header>
@@ -119,9 +73,9 @@
                     </ul> -->
                 </div>
                 <div class="col-md-6 col-sm-6" data-scroll-reveal="enter top and move 20px">
-                   
+
                     <div class="image-showcase">
-                        <img src="~/images/Rico-Residence-Hathairath-Facility-1.png" alt="The Ricco Residence Quality Homes" class="img-responsive">
+                        <img src="~/images/gallery/Rico-Residence-Hathairath-Facility-1.png" alt="The Ricco Residence Quality Homes" class="img-responsive">
                     </div>
                     <figure class="note">Lorem ipsum dolor sit amet consectetur adipiscing elit</figure>
                 </div>
@@ -145,7 +99,7 @@
                     <div class="col-md-7 col-sm-7">
                         <div class="gallery">
                             <div class="owl-carousel one-item-carousel" data-owl-items="1" data-owl-margin="0" data-owl-nav="0" data-owl-dots="1">
-                                <img src="~/images/Rico-Residence-Hathairath-Facility-1.png" alt="Modern Architecture Design">
+                                <img src="~/images/gallery/Rico-Residence-Hathairath-Facility-1.png" alt="Modern Architecture Design">
                                 <img src="~/images/projects/ricco-residence-hathairat/QUARTZ_Perspective_Final_1.jpg" alt="QUARTZ Design">
                                 <img src="~/images/bannerprime01_02s.jpg" alt="Prime Collection">
                             </div>
@@ -307,8 +261,29 @@
                                         }
                                     </div>
                                     <footer class="project-card__footer">
-                                        <div class="project-card__price">@(!string.IsNullOrEmpty(project.Details.PriceRange) ? project.Details.PriceRange : "สอบถามราคา")</div>
-                                        <a class="project-card__cta" href="@Url.Action("Project", "Home", new { id = project.Id })" target="_blank">ดูรายละเอียด</a>
+                                        <div class="project-card__price">@Html.Raw(!string.IsNullOrEmpty(project.Details.PriceRange) ? project.Details.PriceRange : "สอบถามราคา")</div>
+                                        @{
+                                            // Build PPS Asset format URL: /{projectType}/{projectName}/{location}
+                                            var projectType = project.Type switch
+                                            {
+                                                PPSAsset.Models.ProjectType.SingleHouse => "singlehouse",
+                                                PPSAsset.Models.ProjectType.Townhouse => "townhome",
+                                                PPSAsset.Models.ProjectType.TwinHouse => "twinhouse",
+                                                _ => "singlehouse"
+                                            };
+
+                                            // Map project IDs to PPS URL format
+                                            var projectUrl = project.Id switch
+                                            {
+                                                "ricco-residence-hathairat" => "singlehouse/thericcoresidence/ramindrahathairat",
+                                                "ricco-residence-chatuchot" => "singlehouse/thericcoresidence/ramindrachatuchot",
+                                                "ricco-residence-prime-hathairat" => "singlehouse/thericcoresidenceprime/wongwaenhathairat",
+                                                "ricco-residence-prime-chatuchot" => "singlehouse/thericcoresidenceprime/wongwaenchatuchot",
+                                                "ricco-town-phahonyothin-saimai53" => "townhome/thericcotown/phahonyothin_saimai53",
+                                                "ricco-town-wongwaen-lamlukka" => "townhome/thericcotown/wongwaen_lumlukka" 
+                                            };
+                                        }
+                                        <a class="project-card__cta" href="/@projectUrl#register" target="_blank">ดูรายละเอียด</a>
                                     </footer>
                                 </article>
                                 }
@@ -336,7 +311,8 @@
                             <i class="fas fa-map-marker-alt"></i>
                         </div>
                         <h3>Prime Location</h3>
-                        <p  >ทำเลศักยภาพสูง ใกล้แหล่งความสะดวก เข้าถึงได้ง่าย ติดถนนใหญ่</p>
+                        <p  >ทำเลศักยภาพติดถนนใหญ่ ใกล้ทางด่วน รวมถึงทางพิเศษส่วนต่อขยาย (คาดว่าแล้วเสร็จในปี 2570)
+เชื่อมต่อกับถ.รามอินทรา-พหลโยธิน-วัชรพล เดินทางได้อย่างคล่องตัว</p>
                     </div>
                 </div>
 
@@ -347,7 +323,7 @@
                             <i class="fas fa-user-tie"></i>
                         </div>
                         <h3>Good Neighborhoods</h3>
-                        <p  >ชุมชนดี สิ่งแวดล้อมปลอดภัย เหมาะสำหรับการอยู่อาศัย มีความเป็นส่วนตัว</p>
+                        <p  >ใกล้แหล่งช้อปปิ้งและสิ่งอำนวยความสะดวก แฟชั่นไอส์แลนด์ และ เดอะ พรอมานาด ตอบโจทย์ไลฟ์สไตล์คนรุ่นใหม่ ขึ้นทางด่วนไม่กี่นาทีก็เข้าสู่พระราม 9 เอกมัยได้ง่ายๆ</p>
                     </div>
                 </div>
 
@@ -358,7 +334,7 @@
                             <i class="fas fa-cogs"></i>
                         </div>
                         <h3>Unceasing Advancement</h3>
-                        <p  >การพัฒนาอย่างต่อเนื่อง เพื่อมูลค่าที่เพิ่มขึ้น โครงสร้างพื้นฐานสมบูรณ์</p>
+                        <p  >เราพัฒนาและออกแบบอย่างต่อเนื่อง เพื่อให้บ้านของเราตอบโจทย์การใช้ชีวิตของลูกค้าให้มากที่สุด บนพื้นฐานการใช้ชีวิตที่ยั่งยืน</p>
                     </div>
                 </div>
 
@@ -369,7 +345,7 @@
                             <i class="fas fa-home"></i>
                         </div>
                         <h3 >Legacy</h3>
-                        <p  >มรดกตกทอด คุณภาพที่คงอยู่ตลอดกาล การลงทุนที่คุ้มค่า</p>
+                        <p  >"Your home, a lasting asset for the future."</p>
                     </div>
                 </div>
             </div>
@@ -607,30 +583,85 @@ document.addEventListener('DOMContentLoaded', function() {
     ));
     console.log('Hero server data:', heroServerData);
 
-    // Ensure subtitle container exists so banner text updater can run
-    (function ensureHeroSubtitle() {
-        let subtitle = document.getElementById('hero-sub-title');
-        if (subtitle) {
+    // Initialize banner text on page load
+    function initBannerText() {
+        const titleElement = document.getElementById('hero-main-title');
+        const descriptionElement = document.getElementById('hero-description');
+
+        if (!titleElement || !descriptionElement || heroSlideData.length === 0) {
+            console.log('Banner init: Missing elements or data');
             return;
         }
 
-        subtitle = document.createElement('p');
-        subtitle.id = 'hero-sub-title';
-        subtitle.className = 'hero-subtitle hero-text-item';
-        subtitle.style.display = 'none';
+        // Get the first slide's data
+        const firstSlide = heroSlideData[0];
+        if (firstSlide) {
+            console.log('Setting initial banner:', firstSlide.title);
+            titleElement.textContent = firstSlide.title;
+            descriptionElement.textContent = firstSlide.subtitle;
 
-        const heroTextWrapper = document.querySelector('.hero-section .hero-title .animate');
-        const description = document.getElementById('hero-description');
-
-        if (heroTextWrapper) {
-            heroTextWrapper.insertBefore(subtitle, heroTextWrapper.firstChild);
-        } else if (description && description.parentNode) {
-            description.parentNode.insertBefore(subtitle, description);
+            // Trigger animation
+            titleElement.classList.add('hero-text-enter');
+            descriptionElement.classList.add('hero-text-enter');
+            const ctaBtn = document.querySelector('.hero-cta');
+            if (ctaBtn) {
+                ctaBtn.classList.add('hero-text-enter');
+            }
         }
-    })();
+    }
 
-    let bannerTextInitialized = false;
-    let heroAnimationTimeouts = [];
+    // Call on DOM content loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initBannerText);
+    } else {
+        initBannerText();
+    }
+
+    // Monitor carousel changes and update banner
+    function monitorCarouselChanges() {
+        const carousel = document.querySelector('.hero-section .owl-carousel');
+        if (!carousel) {
+            console.log('Carousel not found');
+            return;
+        }
+
+        const $carousel = $(carousel);
+        let lastTitle = '';
+
+        // Function to update banner from active slide
+        function updateBanner() {
+            const activeItem = carousel.querySelector('.owl-item.active');
+            if (!activeItem) return;
+
+            const slide = activeItem.querySelector('.hero-slide');
+            if (!slide) return;
+
+            const title = slide.getAttribute('data-title');
+            const subtitle = slide.getAttribute('data-subtitle');
+
+            if (title && title !== lastTitle) {
+                console.log('=== BANNER UPDATE: ' + title);
+                document.getElementById('hero-main-title').textContent = title;
+                document.getElementById('hero-description').textContent = subtitle || '';
+                lastTitle = title;
+            }
+        }
+
+        // Initial update
+        setTimeout(updateBanner, 300);
+
+        // Listen to carousel events
+        $carousel.on('changed.owl.carousel translated.owl.carousel', function() {
+            setTimeout(updateBanner, 50);
+        });
+    }
+
+    // Start monitoring after page loads
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => setTimeout(monitorCarouselChanges, 1000));
+    } else {
+        setTimeout(monitorCarouselChanges, 1000);
+    }
 
     // Back to top functionality
     const backToTopButton = document.querySelector('.sticky-top');
@@ -653,173 +684,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
-    // Banner text change functionality
-    function resolveHeroSlideIndex(slideIndex) {
-        if (heroSlideData.length === 0) {
-            return 0;
-        }
-
-        if (typeof slideIndex === 'number' && !Number.isNaN(slideIndex)) {
-            return ((slideIndex % heroSlideData.length) + heroSlideData.length) % heroSlideData.length;
-        }
-
-        if (heroCarouselElement && heroCarousel && heroCarousel.length) {
-            const carouselInstance = heroCarousel.data('owl.carousel');
-            if (carouselInstance) {
-                return carouselInstance.relative(carouselInstance.current());
-            }
-        }
-
-        return 0;
-    }
-
-    function updateBannerText(slideIndex) {
-        const titleElement = document.getElementById('hero-main-title');
-        const subtitleElement = document.getElementById('hero-sub-title');
-        const descriptionElement = document.getElementById('hero-description');
-        const heroElements = [titleElement, subtitleElement, descriptionElement, heroCTAElement];
-
-        if (!titleElement || !subtitleElement || !descriptionElement || heroSlideData.length === 0) {
-            return;
-        }
-
-        const normalizedIndex = resolveHeroSlideIndex(slideIndex);
-
-        let slideData = heroSlideData.length > normalizedIndex
-            ? heroSlideData[normalizedIndex]
-            : { title: '', subtitle: '', description: '' };
-
-        if (heroCarouselElement) {
-            const activeSlideElement = heroCarouselElement.querySelector('.owl-item.active .hero-slide');
-            if (activeSlideElement) {
-                slideData = {
-                    title: activeSlideElement.getAttribute('data-title') || slideData.title || '',
-                    subtitle: activeSlideElement.getAttribute('data-subtitle') || slideData.subtitle || '',
-                    description: activeSlideElement.getAttribute('data-description') || slideData.description || ''
-                };
-            }
-        }
-
-        console.log('Updating banner text for index:', normalizedIndex, 'with data:', slideData);
-
-        const title = slideData.title;
-        const subtitle = slideData.subtitle;
-        const description = slideData.description;
-
-        heroAnimationTimeouts.forEach(clearTimeout);
-        heroAnimationTimeouts = [];
-
-        heroElements.forEach(element => {
-            if (!element) return;
-            element.classList.remove('hero-text-enter');
-            void element.offsetWidth;
-        });
-
-        if (titleElement) {
-            titleElement.textContent = title;
-        }
-
-        if (subtitleElement) {
-            const hasSubtitle = subtitle && subtitle.trim().length > 0;
-            subtitleElement.textContent = '';
-            subtitleElement.innerHTML = '';
-            if (hasSubtitle) {
-                subtitleElement.innerHTML = subtitle;
-                subtitleElement.style.display = 'block';
-                subtitleElement.style.visibility = 'visible';
-                subtitleElement.style.opacity = '1';
-            } else {
-                subtitleElement.style.display = 'none';
-                subtitleElement.style.visibility = 'hidden';
-                subtitleElement.style.opacity = '0';
-            }
-        }
-
-        if (descriptionElement) {
-            descriptionElement.textContent = description;
-         //   descriptionElement.textContent = subtitle;
-          //  console.log('Set description:', description);
-        }
-
-        const sequence = [
-            { element: titleElement, delay: 100 },
-            { element: subtitleElement, delay: 300 },
-            { element: descriptionElement, delay: 500 },
-            { element: heroCTAElement, delay: 700 }
-        ];
-
-        sequence.forEach(({ element, delay }) => {
-            if (!element) return;
-            heroAnimationTimeouts.push(setTimeout(() => {
-                element.classList.add('hero-text-enter');
-            }, delay));
-        });
-    }
-
-    // Initialize carousel with text change events - Multiple approaches
-    function initBannerTextChange() {
-        const localCarousel = heroCarousel;
-      //  console.log('Hero carousel found:', heroCarousel.length); // Debug log
-
-        if (localCarousel && localCarousel.length > 0) {
-            if (bannerTextInitialized) {
-                updateBannerText();
-                return;
-            }
-
-            bannerTextInitialized = true;
-            updateBannerText();
-            // Method 1: Using jQuery events
-            const syncBanner = function(event) {
-                if (event && event.relatedTarget && typeof event.item?.index === 'number') {
-                    const relativeIndex = event.relatedTarget.relative(event.item.index);
-                    updateBannerText(relativeIndex);
-                } else {
-                    updateBannerText();
-                }
-            };
-
-            localCarousel.on('changed.owl.carousel', syncBanner);
-            localCarousel.on('translated.owl.carousel', syncBanner);
-        }
-    }
-
-    // Try multiple initialization approaches
-    setTimeout(initBannerTextChange, 1000);
-    setTimeout(initBannerTextChange, 2000);
-    setTimeout(initBannerTextChange, 3000);
-
-    // Force initial text update
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(() => {
-            console.log('Forcing initial banner text update');
-            updateBannerText(0);
-        }, 500);
-    });
-
-    // Alternative approach: Manual monitoring
-    let currentSlideSignature = '';
-    setInterval(() => {
-        const activeSlideElement = heroCarouselElement
-            ? heroCarouselElement.querySelector('.owl-item.active .hero-slide')
-            : document.querySelector('.hero-slide');
-
-        if (!activeSlideElement) {
-            return;
-        }
-
-        const signature = [
-            activeSlideElement.getAttribute('data-title') || '',
-            activeSlideElement.getAttribute('data-subtitle') || '',
-            activeSlideElement.getAttribute('data-description') || ''
-        ].join('|');
-
-        if (signature !== currentSlideSignature) {
-            currentSlideSignature = signature;
-            updateBannerText();
-        }
-    }, 600); // Monitor carousel in case events fail
 
     // Project card smooth hover animations
     function initProjectHoverEffects() {
@@ -904,6 +768,65 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Make hero slides clickable with proper link handling
+    function attachHeroSlideLinks() {
+        const carousel = document.querySelector('.hero-section .owl-carousel');
+        if (!carousel) return;
+
+        carousel.addEventListener('click', function(e) {
+            const heroSlide = e.target.closest('.hero-slide');
+            if (!heroSlide) return;
+
+            const projectUrl = heroSlide.getAttribute('data-project-url');
+            if (projectUrl) {
+                window.open(projectUrl, '_blank');
+            }
+        });
+
+        // Add hover effects and cursor
+        const heroSlides = carousel.querySelectorAll('.hero-slide');
+        heroSlides.forEach(slide => {
+            slide.style.cursor = 'pointer';
+
+            slide.addEventListener('mouseenter', function() {
+                const bgTransfer = this.querySelector('.bg-transfer');
+                if (bgTransfer) {
+                    bgTransfer.style.opacity = '0.85';
+                }
+            });
+
+            slide.addEventListener('mouseleave', function() {
+                const bgTransfer = this.querySelector('.bg-transfer');
+                if (bgTransfer) {
+                    bgTransfer.style.opacity = '1';
+                }
+            });
+        });
+    }
+
+    // Initialize carousel background images
+    function initCarouselBackgrounds() {
+        const bgTransferElements = document.querySelectorAll('.bg-transfer');
+        bgTransferElements.forEach(function(bgElement) {
+            const img = bgElement.querySelector('img');
+            if (img && img.src) {
+                bgElement.style.backgroundImage = `url('${img.src}')`;
+                console.log('Set background image:', img.src);
+            }
+        });
+    }
+
+    // Initialize carousel backgrounds immediately
+    initCarouselBackgrounds();
+
+    // Wait for carousel to be ready and re-initialize backgrounds
+    setTimeout(function() {
+        attachHeroSlideLinks();
+        initCarouselBackgrounds(); // Re-run after carousel init
+    }, 500);
+
+    // Dropdown functionality handled by _Layout.cshtml - removed to prevent conflicts
 });
 </script>
 

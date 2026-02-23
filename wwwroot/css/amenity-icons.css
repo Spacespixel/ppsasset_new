@@ -1,0 +1,389 @@
+/**
+ * PPS Asset Amenity Icon System
+ * Modern Minimal Icon Design for Real Estate Location Features
+ *
+ * Design Specifications:
+ * - Base Size: 64x64px (scalable)
+ * - Stroke Width: 2px
+ * - Style: Flat, minimal, line-based
+ * - Color System: Brand magenta with neutral states
+ */
+
+/* ============================================
+   ICON CONTAINER BASE STYLES
+   ============================================ */
+
+.amenity-icon-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Icon sizing system */
+.amenity-icon-wrapper--small {
+  width: 32px;
+  height: 32px;
+}
+
+.amenity-icon-wrapper--medium {
+  width: 48px;
+  height: 48px;
+}
+
+.amenity-icon-wrapper--large {
+  width: 64px;
+  height: 64px;
+}
+
+.amenity-icon-wrapper--xl {
+  width: 80px;
+  height: 80px;
+}
+
+/* ============================================
+   ICON SVG STYLES
+   ============================================ */
+
+.amenity-icon {
+  width: 100%;
+  height: 100%;
+  display: block;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ensure crisp rendering */
+.amenity-icon svg {
+  shape-rendering: geometricPrecision;
+}
+
+/* ============================================
+   COLOR SYSTEM
+   ============================================ */
+
+/* Brand Colors */
+:root {
+  --color-brand-magenta: #C2185B;
+  --color-brand-magenta-light: #E91E63;
+  --color-brand-magenta-dark: #880E4F;
+  --color-brand-green: #365523;
+
+  /* Neutral Colors */
+  --color-neutral-900: #1a1a1a;
+  --color-neutral-700: #404040;
+  --color-neutral-500: #737373;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-100: #f5f5f5;
+
+  /* State Colors */
+  --color-success: #10b981;
+  --color-info: #3b82f6;
+  --color-warning: #f59e0b;
+}
+
+/* Default/Inactive State - Neutral Gray */
+.amenity-icon--default {
+  color: var(--color-neutral-500);
+}
+
+/* Active State - Brand Magenta */
+.amenity-icon--active {
+  color: var(--color-brand-magenta);
+}
+
+/* Hover State - Lighter Magenta */
+.amenity-icon--hover,
+.amenity-icon-wrapper:hover .amenity-icon {
+  color: var(--color-brand-magenta-light);
+  transform: translateY(-2px);
+}
+
+/* Disabled State - Light Gray */
+.amenity-icon--disabled {
+  color: var(--color-neutral-300);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Focus State - Accessibility */
+.amenity-icon-wrapper:focus-within .amenity-icon {
+  color: var(--color-brand-magenta);
+  outline: 2px solid var(--color-brand-magenta);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+/* ============================================
+   ICON BACKGROUND VARIANTS
+   ============================================ */
+
+/* Circular background container */
+.amenity-icon-wrapper--circle {
+  border-radius: 50%;
+  padding: 12px;
+  background: var(--color-neutral-100);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.amenity-icon-wrapper--circle:hover {
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(194, 24, 91, 0.15);
+}
+
+/* Rounded square background */
+.amenity-icon-wrapper--rounded {
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--color-neutral-100);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.amenity-icon-wrapper--rounded:hover {
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(194, 24, 91, 0.15);
+}
+
+/* Filled background variant */
+.amenity-icon-wrapper--filled {
+  background: var(--color-brand-magenta);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(194, 24, 91, 0.25);
+}
+
+.amenity-icon-wrapper--filled .amenity-icon {
+  color: #fff;
+}
+
+.amenity-icon-wrapper--filled:hover {
+  background: var(--color-brand-magenta-light);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(194, 24, 91, 0.35);
+}
+
+/* ============================================
+   CATEGORY-SPECIFIC COLORS (Optional)
+   ============================================ */
+
+/* Transportation - Blue accent */
+.amenity-icon--transportation {
+  color: #3b82f6;
+}
+
+/* Education - Purple accent */
+.amenity-icon--education {
+  color: #8b5cf6;
+}
+
+/* Hospital - Red/Pink accent */
+.amenity-icon--hospital {
+  color: #ef4444;
+}
+
+/* Shopping - Amber accent */
+.amenity-icon--shopping {
+  color: #f59e0b;
+}
+
+/* Dining - Orange accent */
+.amenity-icon--dining {
+  color: #f97316;
+}
+
+/* Parks - Green accent */
+.amenity-icon--parks {
+  color: #10b981;
+}
+
+/* ============================================
+   AMENITY GRID LAYOUT
+   ============================================ */
+
+.amenity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 20px;
+  margin: 24px 0;
+}
+
+.amenity-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--color-neutral-200);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.amenity-item:hover {
+  border-color: var(--color-brand-magenta);
+  box-shadow: 0 4px 16px rgba(194, 24, 91, 0.12);
+  transform: translateY(-4px);
+}
+
+.amenity-item__icon {
+  margin-bottom: 12px;
+}
+
+.amenity-item__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.amenity-item__distance {
+  font-size: 13px;
+  color: var(--color-neutral-500);
+  font-weight: 400;
+}
+
+.amenity-item__badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 12px;
+  background: rgba(194, 24, 91, 0.1);
+  color: var(--color-brand-magenta);
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  .amenity-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .amenity-item {
+    padding: 12px;
+  }
+
+  .amenity-icon-wrapper--large {
+    width: 48px;
+    height: 48px;
+  }
+
+  .amenity-item__title {
+    font-size: 13px;
+  }
+
+  .amenity-item__distance {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .amenity-grid {
+    gap: 8px;
+  }
+
+  .amenity-item {
+    padding: 10px;
+  }
+
+  .amenity-icon-wrapper--large {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/* Keyboard navigation support */
+.amenity-item:focus-within {
+  outline: 2px solid var(--color-brand-magenta);
+  outline-offset: 2px;
+}
+
+/* Screen reader only text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .amenity-icon,
+  .amenity-icon-wrapper,
+  .amenity-item {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .amenity-item {
+    border-width: 2px;
+  }
+
+  .amenity-icon {
+    stroke-width: 3px;
+  }
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+
+.amenity-item--loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.amenity-item--loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .amenity-icon-wrapper--filled {
+    background: #fff;
+    border: 2px solid var(--color-brand-magenta);
+  }
+
+  .amenity-icon-wrapper--filled .amenity-icon {
+    color: var(--color-brand-magenta);
+  }
+
+  .amenity-item {
+    break-inside: avoid;
+  }
+}
