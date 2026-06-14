@@ -6,6 +6,126 @@
 <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="~/css/style-custom.css?v=@DateTime.Now.Ticks" rel="stylesheet">
+
+<style>
+/* Mourning Modal Styling */
+.mourning-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); /* Deep dark respectful overlay */
+    z-index: 99999; /* Ensure it is on top of everything */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    backdrop-filter: blur(8px); /* Modern frosted glass look for the background */
+}
+
+.mourning-modal-overlay.active {
+    opacity: 1;
+}
+
+.mourning-modal-content {
+    background-color: #111; /* Sleek dark card background matching the theme */
+    border: 1px solid #333;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    width: 90%;
+    max-width: 680px; /* Wider card */
+    max-height: 90vh; /* Fits comfortably within viewport */
+    padding: 16px;
+    text-align: center;
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.mourning-modal-overlay.active .mourning-modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.mourning-modal-body {
+    width: 100%;
+    max-height: 480px; /* Limit height so it doesn't get too big vertically */
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    background-color: #0b0b0b; /* Respectful dark background for letterboxing */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mourning-banner-img {
+    max-width: 100%;
+    max-height: 480px;
+    width: auto;
+    height: auto;
+    object-fit: contain; /* Contain the square image without cropping or distorting */
+    display: block;
+}
+
+.mourning-modal-footer {
+    width: 100%;
+}
+
+.mourning-enter-btn {
+    background: linear-gradient(135deg, #333333 0%, #111111 100%);
+    color: #e0e0e0;
+    border: 1px solid #555555;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-family: 'Prompt', 'Sarabun', sans-serif;
+    font-weight: 500;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    letter-spacing: 0.5px;
+}
+
+.mourning-enter-btn:hover {
+    background: linear-gradient(135deg, #444444 0%, #222222 100%);
+    color: #ffffff;
+    border-color: #777777;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+}
+
+.mourning-enter-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Prevent body scrolling when modal is active */
+body.modal-open {
+    overflow: hidden;
+    height: 100vh;
+}
+</style>
+
+<!-- Mourning Tribute Popup Modal -->
+<div id="mourning-modal" class="mourning-modal-overlay" style="display: none;">
+    <div class="mourning-modal-content">
+        <div class="mourning-modal-body">
+            <img src="@Url.Content("~/images/mourning-banner.jpg")" alt="น้อมรำลึกในพระมหากรุณาธิคุณ" class="mourning-banner-img" />
+        </div>
+        <div class="mourning-modal-footer">
+            <button id="close-mourning-btn" class="mourning-enter-btn">เข้าสู่เว็บไซต์ (Enter Website)</button>
+        </div>
+    </div>
+</div>
+
 <header id="page-header">
   
   
@@ -43,7 +163,9 @@
                         <div class="bg-transfer hero-slide-clickable">
                             <img src="@Url.Content($"~/images/projects/{project.Id}/{project.Images.Hero}")"
                                  alt="@project.NameTh"
-                                 asp-append-version="true">
+                                 asp-append-version="true"
+                                 width="1920" height="800"
+                                 style="object-fit: cover; width: 100%; height: 100%;">
                         </div>
                     </div>
                 }
@@ -61,17 +183,17 @@
             <div class="row justify-content-center">
                 <div class="container" data-scroll-reveal="enter bottom and move 20px">
                     <h3>บริษัท พูลผลทรัพย์ จำกัด</h3>
-                    <p>
+                    <p class="large-text">
                         ด้วยประสบการณ์อันยาวนานกว่า 13 ปี ในวงการอสังหาริมทรัพย์แนวราบ บริษัท พูลผลทรัพย์ จำกัด 
                     </p>
-                           <p> 
+                           <p class="large-text"> 
                         มุ่งเน้นการสร้างสรรค์ที่อยู่อาศัยเปี่ยมคุณภาพภายใต้แบรนด์ THE RICCO ซึ่งการันตีความสำเร็จมาแล้วกว่า 13 โครงการ  
                     </p>
-                     <p> 
+                     <p class="large-text"> 
                         
                         เราให้ความสำคัญกับการออกแบบที่เข้าใจลึกถึงไลฟ์สไตล์ เพื่อส่งมอบประสบการณ์การอยู่อาศัยที่สมบูรณ์แบบที่สุด
                      </p>
-                     <p> 
+                     <p class="large-text"> 
                         
                          พร้อมตั้งเป้าหมายในการเติบโตอย่างยั่งยืน และยกระดับมาตรฐานการบริการให้ก้าวไปอีกขั้น
                     </p>
@@ -92,7 +214,11 @@
                 <div class="row" style="display: flex; align-items: center; flex-wrap: wrap;">
                     <div class="col-md-7 col-sm-7">
                         <div class="gallery lazy-scale">
-                              <img src="~/images/gallery/Rico-Residence-Hathairath-Facility-1.png" alt="Modern Architecture Design">
+                              <img src="~/images/gallery/Rico-Residence-Hathairath-Facility-1.png" 
+                                   alt="Modern Architecture Design"
+                                   loading="lazy"
+                                   width="1140" height="640"
+                                   style="height: auto;">
                            
                         </div>
                     </div>
@@ -134,7 +260,11 @@
                     </div>
                     <div class="col-md-5 col-sm-5">
                         <div class="gallery lazy-scale">
-                                 <img src="~/images/ramindrachatuchot-LUCK_Perspective_Final_1.jpg" alt="Interior Design">
+                                 <img src="~/images/ramindrachatuchot-LUCK_Perspective_Final_1.jpg" 
+                                      alt="Interior Design"
+                                      loading="lazy"
+                                      width="1140" height="640"
+                                      style="height: auto;">
                            
                         </div>
                     </div>
@@ -242,15 +372,36 @@
                                             <ul class="project-card__amenities">
                                                 <li>
                                                     <i class="fas fa-bed"></i>
-                                                    <strong>@primaryHouseType.Bedrooms</strong> ห้องนอน
+                                                    @if (primaryHouseType.Bedrooms > 0)
+                                                    {
+                                                        <strong>@primaryHouseType.Bedrooms</strong> @:ห้องนอน
+                                                    }
+                                                    else
+                                                    {
+                                                        <strong>-</strong>
+                                                    }
                                                 </li>
                                                 <li>
                                                     <i class="fas fa-bath"></i>
-                                                    <strong>@primaryHouseType.Bathrooms</strong> ห้องน้ำ
+                                                    @if (primaryHouseType.Bathrooms > 0)
+                                                    {
+                                                        <strong>@primaryHouseType.Bathrooms</strong> @:ห้องน้ำ
+                                                    }
+                                                    else
+                                                    {
+                                                        <strong>-</strong>
+                                                    }
                                                 </li>
                                                 <li>
                                                     <i class="fas fa-car"></i>
-                                                    <strong>@primaryHouseType.Parking</strong> ที่จอดรถ
+                                                    @if (primaryHouseType.Parking > 0)
+                                                    {
+                                                        <strong>@primaryHouseType.Parking</strong> @:ที่จอดรถ
+                                                    }
+                                                    else
+                                                    {
+                                                        <strong>-</strong>
+                                                    }
                                                 </li>
                                             </ul>
                                         }
@@ -346,95 +497,71 @@
 
    
 
- <!--   <div class="block" id="contact">
-        <div class="container">
-            <div class="contact framed">
-                <div class="row">
-                    <div class="col-md-5 col-sm-5">
-                        <div class="person">
-                            <div class="row">
-                                <div class="col-md-5 col-sm-5">
-                                    <div class="image bg-transfer">
-                                        <img src="~/images/Rico-Residence-Hathairath-Facility-1.png" alt="Sales Representative">
-                                    </div>
-                                </div>
-                                <div class="col-md-7 col-sm-7">
-                                    <h3>ทีมขาย พูลผลทรัพย์</h3>
-                                    <div class="contact-data">
-                                        <figure>081-847-8461</figure>
-                                        <figure>02-381-3500</figure>
-                                        <a href="mailto:info@ppsasset.com" class="underline">info@ppsasset.com</a>
-                                    </div>
-                                    <hr>
-                                    <div class="social">
-                                        <a href="#"><i class="social_facebook_circle"></i>Facebook</a>
-                                        <a href="#"><i class="social_instagram_circle"></i>Instagram</a>
-                                        <a href="#"><i class="social_youtube_circle"></i>YouTube</a>
-                                        <a href="#"><i class="social_skype_circle"></i>Line</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-7 col-sm-7">
-                        <form id="form-contact-agent" method="post" class="clearfix">
-                            <div class="row">
-                                <div class="col-md-6 col-sm-6">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" id="form-contact-agent-name" name="name" placeholder="ชื่อ-นามสกุล / Full Name" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-sm-6">
-                                    <div class="form-group">
-                                        <input type="email" class="form-control" id="form-contact-agent-email" name="email" placeholder="อีเมล / Email" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <textarea class="form-control" id="form-contact-agent-message" rows="6" name="message" placeholder="ข้อความ / Message" required></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group clearfix">
-                                <button type="submit" class="btn pull-right btn-primary btn-rounded" id="form-contact-agent-submit">ส่งข้อความ</button>
-                            </div>
-                            <div id="form-contact-agent-status"></div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
+  
 
 </div>
 
-<!-- Bottom Center Contact Bar -->
- <!--<div class="bottom-contact-bar">
-    <a href="https://m.me/ppsasset" class="contact-button facebook-btn">
-        <svg class="contact-icon" viewBox="0 0 24 24">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-        </svg>
-    </a>
-    
-    <a href="https://line.me/R/ti/p/@@ppsasset" class="contact-button line-btn">
-        <svg class="contact-icon" viewBox="0 0 24 24">
-            <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12.017.572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
-        </svg>
-    </a>
-    
-    <a href="tel:02-381-3500" class="contact-button phone-btn">
-        <svg class="contact-icon" viewBox="0 0 24 24">
-            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-        </svg>
-    </a>
-    
-   
-</div> -->
+ 
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Mourning Popup Logic
+    const initMourningPopup = () => {
+        const mourningModal = document.getElementById('mourning-modal');
+        const closeBtn = document.getElementById('close-mourning-btn');
+
+        if (mourningModal && closeBtn) {
+            // Check if already shown in this session
+            if (sessionStorage.getItem('mourning_popup_shown')) {
+                return;
+            }
+
+            console.log('Mourning popup logic initialized');
+            // Disable scroll
+            document.body.classList.add('modal-open');
+            
+            // Show modal structure
+            mourningModal.style.display = 'flex';
+            
+            // Trigger transition
+            setTimeout(() => {
+                mourningModal.classList.add('active');
+            }, 100);
+
+            // Close logic
+            const closeMourningModal = () => {
+                mourningModal.classList.remove('active');
+                document.body.classList.remove('modal-open');
+                
+                // Hide modal structure after fade out transition ends
+                setTimeout(() => {
+                    mourningModal.style.display = 'none';
+                }, 500);
+
+                // Set session flag so it won't show again in this session
+                sessionStorage.setItem('mourning_popup_shown', 'true');
+            };
+
+            closeBtn.addEventListener('click', closeMourningModal);
+            
+            // Dismiss by clicking outside the modal content card
+            mourningModal.addEventListener('click', function(e) {
+                if (e.target === mourningModal) {
+                    closeMourningModal();
+                }
+            });
+        } else {
+            console.error('Mourning modal elements not found in DOM');
+        }
+    };
+
+    // Run immediately if DOM is already loaded, otherwise let it execute naturally
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        initMourningPopup();
+    } else {
+        initMourningPopup(); // Run inline since DOMContentLoaded will fire or has fired
+    }
+
     // Responsive carousel configuration for projects and promotions
     $('.big-gallery').each(function() {
         var $this = $(this);
@@ -668,27 +795,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(monitorCarouselChanges, 1000);
     }
 
-    // Back to top functionality
-    const backToTopButton = document.querySelector('.sticky-top');
-    if (backToTopButton) {
-        backToTopButton.addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
 
-        // Show/hide back to top button based on scroll position
-        window.addEventListener('scroll', function() {
-            if (window.pageYOffset > 300) {
-                backToTopButton.style.opacity = '1';
-                backToTopButton.style.visibility = 'visible';
-            } else {
-                backToTopButton.style.opacity = '0';
-                backToTopButton.style.visibility = 'hidden';
-            }
-        });
-    }
 
     // Project card smooth hover animations
     function initProjectHoverEffects() {
@@ -810,16 +917,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Initialize carousel background images
+    // Initialize carousel background images - Removed to prevent redundant loading
+    // Images are now styled directly via CSS object-fit on <img> tags
     function initCarouselBackgrounds() {
-        const bgTransferElements = document.querySelectorAll('.bg-transfer');
-        bgTransferElements.forEach(function(bgElement) {
-            const img = bgElement.querySelector('img');
-            if (img && img.src) {
-                bgElement.style.backgroundImage = `url('${img.src}')`;
-                console.log('Set background image:', img.src);
-            }
-        });
+        console.log('Carousel background initialization skipped (using direct <img> tags for better performance)');
     }
 
     // Initialize carousel backgrounds immediately
@@ -828,7 +929,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Wait for carousel to be ready and re-initialize backgrounds
     setTimeout(function() {
         attachHeroSlideLinks();
-        initCarouselBackgrounds(); // Re-run after carousel init
     }, 500);
 
     // Dropdown functionality handled by _Layout.cshtml - removed to prevent conflicts

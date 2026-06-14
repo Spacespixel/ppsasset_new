@@ -1,4 +1,5 @@
 using MailKit.Net.Smtp;
+using MailKit;
 using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
@@ -30,27 +31,45 @@ namespace PPSAsset.Services
             try
             {
                 var emailSettings = _configuration.GetSection("EmailSettings");
-                var host = emailSettings["MailServer"];
-                var port = int.Parse(emailSettings["MailPort"] ?? "587");
+                var host = emailSettings["SmtpServer"] ?? emailSettings["MailServer"];
+                var portString = emailSettings["SmtpPort"] ?? emailSettings["MailPort"] ?? "25";
+                var port = int.Parse(portString);
                 var senderName = emailSettings["SenderName"];
                 var senderEmail = emailSettings["SenderEmail"];
-                var senderPassword = emailSettings["SenderPassword"];
+                var smtpUsername = emailSettings["SmtpUsername"];
+                var senderPassword = emailSettings["SmtpPassword"] ?? emailSettings["SenderPassword"];
+                var enableSslStr = emailSettings["EnableSsl"];
+                var enableSsl = !string.IsNullOrEmpty(enableSslStr) ? bool.Parse(enableSslStr) : (port == 587 || port == 465);
 
-                if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(senderEmail) || string.IsNullOrEmpty(senderPassword))
+
+                if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(senderEmail))
                 {
-                    _logger.LogWarning("Email settings are incomplete. Skipping email sending.");
+                    _logger.LogWarning("Email settings are incomplete. Host: {Host}, Email: {Email}", host, senderEmail);
                     return;
                 }
 
+                _logger.LogInformation("Sending email via {Host}:{Port} as {SenderEmail}", host, port, senderEmail);
+
                 var email = new MimeMessage();
                 email.From.Add(new MailboxAddress(senderName, senderEmail));
-                email.To.Add(MailboxAddress.Parse(to));
+                email.To.AddRange(InternetAddressList.Parse(to));
                 email.Subject = subject;
                 email.Body = new TextPart(isHtml ? TextFormat.Html : TextFormat.Plain) { Text = body };
 
-                using var smtp = new SmtpClient();
-                await smtp.ConnectAsync(host, port, SecureSocketOptions.StartTls);
-                await smtp.AuthenticateAsync(senderEmail, senderPassword);
+                using var smtp = new SmtpClient(new ProtocolLogger(Console.OpenStandardOutput()));
+                
+                // If checking certificate revocation fails (common in dev), user might want to ignore verify.
+                smtp.CheckCertificateRevocation = false;
+
+                var socketOptions = enableSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.None;
+                await smtp.ConnectAsync(host, port, socketOptions);
+                
+                if (!string.IsNullOrEmpty(senderPassword))
+                {
+                    var username = !string.IsNullOrEmpty(smtpUsername) ? smtpUsername : senderEmail;
+                    await smtp.AuthenticateAsync(username, senderPassword);
+                }
+
                 await smtp.SendAsync(email);
                 await smtp.DisconnectAsync(true);
 
@@ -58,7 +77,7 @@ namespace PPSAsset.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to send email to {Recipient}", to);
+                _logger.LogError(ex, "Failed to send email to {Recipient}. Error: {Message}", to, ex.Message);
                 // We don't throw here to avoid breaking the registration flow if email fails
             }
         }

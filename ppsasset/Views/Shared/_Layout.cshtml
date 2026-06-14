@@ -57,6 +57,8 @@
         <!-- End Google Tag Manager -->
     }
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="~/fonts/font-awesome.css" rel="stylesheet" type="text/css">
     <link href="~/fonts/elegant-fonts.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
@@ -298,9 +300,8 @@
     }
     
     /* NUCLEAR CLOSE BUTTON OVERRIDE */
-    html body .page-wrapper .navigation .dropdown.active .dropdown-menu::before,
-    html body .page-wrapper #project-dropdown.active .dropdown-menu::before {
-        content: '×' !important;
+    html body .page-wrapper .navigation .dropdown.active .dropdown-menu .desktop-menu-close,
+    html body .page-wrapper #project-dropdown.active .dropdown-menu .desktop-menu-close {
         position: fixed !important;
         top: 25px !important;
         right: 50px !important;
@@ -314,8 +315,8 @@
         line-height: 1 !important;
     }
     
-    html body .page-wrapper .navigation .dropdown.active .dropdown-menu::before:hover,
-    html body .page-wrapper #project-dropdown.active .dropdown-menu::before:hover {
+    html body .page-wrapper .navigation .dropdown.active .dropdown-menu .desktop-menu-close:hover,
+    html body .page-wrapper #project-dropdown.active .dropdown-menu .desktop-menu-close:hover {
         color: #90EE90 !important;
     }
     
@@ -349,7 +350,25 @@
     }
     </style>
     
-    
+   <!--smartlook app monitor  -->
+    <script type='text/javascript'>
+        window.smartlook || (function (d) {
+            var o = smartlook = function () { o.api.push(arguments) }, h = d.getElementsByTagName('head')[0];
+            var c = d.createElement('script'); o.api = new Array(); c.defer = true; c.type = 'text/javascript';
+            c.charset = 'utf-8'; c.src = 'https://web-sdk.smartlook.com/recorder.js'; h.appendChild(c);
+        })(document);
+        smartlook('init', 'ab1f5d0015e52fce6bc6580fea356db1c89685ab', { region: 'eu' });
+    </script>
+   <!-- End smartlook app monitor -->
+    <!-- MS Clarity app monitor-->
+     <script type="text/javascript">
+         (function (c, l, a, r, i, t, y) {
+             c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+             t = l.createElement(r); t.defer = 1; t.src = "https://www.clarity.ms/tag/" + i;
+             y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+         })(window, document, "clarity", "script", "meaea8pp2u");
+     </script>
+     <!--End of MS Clarity app monitor-->
 </head>
 <body class="@(ViewBag.ProjectTheme ?? "theme-default") has-loading-screen links-hover-effect" data-spy="scroll" data-target=".navigation">
 
@@ -393,7 +412,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-3 col-sm-6">
-                    <a href="#" class="brand"><img src="~/images/pps-logo.png" alt="PPS Asset"></a>
+                    <a href="#" class="brand"><img src="~/images/pps-logo.png" alt="PPS Asset" loading="lazy" width="150" height="60"></a>
                     <p><strong>บริษัท พูลผลทรัพย์ จำกัด</strong></p>
                     <p>113 ซอยเจริญสุข ถนนสุขุมวิท 63 แขวงคลองตันเหนือ</p>
                     <p>เขตวัฒนา กรุงเทพฯ 10110 โทร. 02-381-3500</p>
@@ -552,6 +571,16 @@
         console.log('Dropdown toggled, active:', dropdown.classList.contains('active'));
     }
     
+    function closeProjectDropdown(event) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        var dropdown = document.getElementById('project-dropdown');
+        if (dropdown) dropdown.classList.remove('active');
+        console.log('Dropdown closed via close button');
+    }
+    
     // Mobile navigation toggle
     document.addEventListener('DOMContentLoaded', function() {
         const navBtn = document.querySelector('.nav-btn');
@@ -580,7 +609,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Back to top functionality
-            const backToTopButton = document.querySelector('.sticky-top');
+            const backToTopButton = document.querySelector('.btn-back-to-top');
             if (backToTopButton) {
                 backToTopButton.addEventListener('click', function() {
                     window.scrollTo({
@@ -605,8 +634,8 @@
 
     
     <!-- Cookie Consent by https://www.cookiewow.com -->
-    <script type="text/javascript" src="https://cookiecdn.com/cwc.js"></script>
-    <script id="cookieWow" type="text/javascript" src="https://cookiecdn.com/configs/oEAsPFwqtgGsTTjJhVPkKBYK" data-cwcid="oEAsPFwqtgGsTTjJhVPkKBYK"></script>
+    <script type="text/javascript" src="https://cookiecdn.com/cwc.js" defer></script>
+    <script id="cookieWow" type="text/javascript" src="https://cookiecdn.com/configs/oEAsPFwqtgGsTTjJhVPkKBYK" data-cwcid="oEAsPFwqtgGsTTjJhVPkKBYK" defer></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

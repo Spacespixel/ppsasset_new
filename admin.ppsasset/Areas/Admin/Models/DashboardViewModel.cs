@@ -4,8 +4,8 @@ namespace PPSAssetAdmin.Areas.Admin.Models
 {
     public class DashboardViewModel
     {
-        public int TotalLeads { get; set; }
-        public int LeadsToday { get; set; }
+        public int YtdLeads { get; set; }
+        public int LeadsThisMonth { get; set; }
         public int LeadsThisWeek { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }

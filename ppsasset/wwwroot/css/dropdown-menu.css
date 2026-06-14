@@ -88,24 +88,7 @@ li.dropdown.active .dropdown-menu,
   transform: translateY(0) !important;
 }
 
-/* Close button */
-.dropdown-menu::before {
-  content: '×';
-  position: fixed;
-  top: 20px;
-  right: 40px;
-  font-size: 48px;
-  font-weight: 300;
-  color: #999;
-  cursor: pointer;
-  z-index: 1001;
-  transition: color 0.3s ease;
-  font-family: Arial, sans-serif;
-}
-
-.dropdown-menu::before:hover {
-  color: #333;
-}
+/* Close button (Replaced by real DOM element .desktop-menu-close in _NavigationDropdown.cshtml) */
 
 /* ========================================
    STATUS SECTIONS (New Hierarchy)
@@ -428,12 +411,6 @@ html body .dropdown-menu .status-section.sold-out .house-type-subsection .projec
 }
 
 @media (max-width: 991px) {
-  .dropdown-menu::before {
-    top: 15px;
-    right: 20px;
-    font-size: 36px;
-  }
-
   .dropdown-menu {
     padding: 20px 3% 30px 3% !important;
   }

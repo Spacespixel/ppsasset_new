@@ -86,7 +86,27 @@ namespace PPSAsset.Services
             parameters.Add("@TelNo", input.TelNo);
             parameters.Add("@EMail", input.Email);
             parameters.Add("@ClientFrom", input.ClientFrom);
-            parameters.Add("@TransactionDate", DateTime.UtcNow);
+            // Convert to BKK time (UTC+7)
+            DateTime transactionDate = DateTime.UtcNow;
+            try
+            {
+                TimeZoneInfo bkkZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                transactionDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, bkkZone);
+            }
+            catch (TimeZoneNotFoundException)
+            {
+                try 
+                {
+                    TimeZoneInfo bkkZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Bangkok");
+                    transactionDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, bkkZone);
+                }
+                catch
+                {
+                    transactionDate = DateTime.UtcNow.AddHours(7);
+                }
+            }
+
+            parameters.Add("@TransactionDate", transactionDate);
             parameters.Add("@Remark", input.Remark);
             parameters.Add("@AppointmentDate", input.AppointmentDate);
             parameters.Add("@AppointmentTime", input.AppointmentTime);

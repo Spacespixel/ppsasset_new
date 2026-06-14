@@ -63,25 +63,50 @@ namespace PPSAssetAdmin.Services
                 query = query.Where(t => t.RegisterDate <= actualEndDate);
             }
 
-            var total = await query.CountAsync();
+            // YTD or Filtered
+            var ytdLeads = 0;
+            if (startDate.HasValue || endDate.HasValue)
+            {
+                ytdLeads = await query.CountAsync();
+            }
+            else
+            {
+                var startOfYear = new DateTime(DateTime.Today.Year, 1, 1);
+                ytdLeads = await query.CountAsync(t => t.RegisterDate >= startOfYear);
+            }
             
             // These stay explicitly relative to "Now" regardless of filter
             var today = DateTime.Today;
-            var leadsToday = await _context.Transactions.CountAsync(t => t.RegisterDate >= today);
+            var startOfMonth = new DateTime(today.Year, today.Month, 1);
+            var leadsThisMonth = await _context.Transactions.CountAsync(t => t.RegisterDate >= startOfMonth);
             
             var weekAgo = today.AddDays(-7);
             var leadsThisWeek = await _context.Transactions.CountAsync(t => t.RegisterDate >= weekAgo);
 
             // Leads by Project - Filtered
-            var leadsByProject = await query
+            var rawLeadsByProject = await query
                 .Where(t => t.Project != null)
                 .GroupBy(t => t.Project)
-                .Select(g => new PPSAssetAdmin.Areas.Admin.Models.ChartData 
+                .Select(g => new 
                 { 
                     Label = g.Key ?? "Unknown", 
                     Value = g.Count() 
                 })
                 .ToListAsync();
+
+            var leadsByProject = rawLeadsByProject
+                .Select(x => new PPSAssetAdmin.Areas.Admin.Models.ChartData
+                {
+                    Label = FixThaiEncoding(x.Label),
+                    Value = x.Value
+                })
+                .GroupBy(x => x.Label)
+                .Select(g => new PPSAssetAdmin.Areas.Admin.Models.ChartData
+                {
+                    Label = g.Key,
+                    Value = g.Sum(x => x.Value)
+                })
+                .ToList();
 
             // Leads Sort by week
             // If filtered, use the filtered query. If not, default to last 8 weeks.
@@ -118,14 +143,37 @@ namespace PPSAssetAdmin.Services
             
             return new PPSAssetAdmin.Areas.Admin.Models.DashboardViewModel
             {
-                TotalLeads = total,
-                LeadsToday = leadsToday,
+                YtdLeads = ytdLeads,
+                LeadsThisMonth = leadsThisMonth,
                 LeadsThisWeek = leadsThisWeek,
                 StartDate = startDate,
                 EndDate = endDate,
                 LeadsByProject = leadsByProject,
                 LeadsByWeek = leadsByWeek
             };
+        }
+
+        private string FixThaiEncoding(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            
+            // Text containing these markers is likely UTF-8 interpreted as Windows-1252
+            if (text.Contains("à¹") || text.Contains("à¸"))
+            {
+                try
+                {
+                    System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+                    var win1252 = System.Text.Encoding.GetEncoding(1252);
+                    byte[] bytes = win1252.GetBytes(text);
+                    return System.Text.Encoding.UTF8.GetString(bytes);
+                }
+                catch
+                {
+                    // Fallback to original text if decoding fails
+                    return text;
+                }
+            }
+            return text;
         }
     }
 }

@@ -3,6 +3,7 @@
 <li class="dropdown" id="project-dropdown">
     <a href="#" class="dropdown-toggle" onclick="toggleDropdown(event)">โครงการ <span class="caret">▼</span></a>
     <div class="dropdown-menu dropdown-menu-columns">
+        <div class="desktop-menu-close" onclick="closeProjectDropdown(event)">&times;</div>
         
         @{
             // Group projects by status: Active (Available, NewProject, ComingSoon, UnderConstruction, Completed) vs SoldOut

@@ -1,4 +1,4 @@
-@model IEnumerable<PPSAssetAdmin.Models.TrTransaction>
+@model PPSAssetAdmin.Helpers.PaginatedList<PPSAssetAdmin.Models.TrTransaction>
 
 @{
     ViewData["Title"] = "Leads";
@@ -81,3 +81,43 @@
         </tbody>
     </table>
 </div>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <p>Showing Page @Model.PageIndex of @Model.TotalPages (Total @Model.TotalItems Leads)</p>
+    </div>
+    <div class="col-md-6 d-flex justify-content-end">
+        <ul class="pagination">
+            <li class="page-item @prevDisabled">
+                <a asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   asp-route-searchString="@ViewData["CurrentFilter"]"
+                   asp-route-project="@ViewData["CurrentProject"]"
+                   asp-route-utmSource="@ViewData["CurrentUtmSource"]"
+                   asp-route-startDate="@ViewData["StartDate"]"
+                   asp-route-endDate="@ViewData["EndDate"]"
+                   class="page-link">
+                    Previous
+                </a>
+            </li>
+            <li class="page-item @nextDisabled">
+                <a asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   asp-route-searchString="@ViewData["CurrentFilter"]"
+                   asp-route-project="@ViewData["CurrentProject"]"
+                   asp-route-utmSource="@ViewData["CurrentUtmSource"]"
+                   asp-route-startDate="@ViewData["StartDate"]"
+                   asp-route-endDate="@ViewData["EndDate"]"
+                   class="page-link">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+

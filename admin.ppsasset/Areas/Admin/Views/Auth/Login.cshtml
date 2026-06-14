@@ -16,7 +16,10 @@
 <body>
     <div class="container">
         <form asp-action="Login" class="form-signin" method="post">
-            <h2 class="form-signin-heading text-center">Admin Login</h2>
+            <div class="text-center mb-4">
+                <img src="~/images/pps-logo.png" alt="PPS Asset Logo" class="img-fluid" style="max-height: 80px;" />
+            </div>
+            <h2 class="form-signin-heading text-center mb-4">Admin Login</h2>
             @if (!ViewData.ModelState.IsValid)
             {
                 <div class="alert alert-danger">
