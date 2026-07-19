@@ -4,6 +4,8 @@
 @using System.Collections.Generic
 @using System.Text.RegularExpressions
 @model PPSAsset.Models.ProjectViewModel
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
+
 
 @{
     // Helper function to split text into summary and details
@@ -65,11 +67,26 @@
     var secondaryColor = ViewBag.ThemeSecondaryColor as string ?? "#4A7030";
     var lightBackground = ViewBag.ThemeLightBackground as string ?? "#F5F7F3";
 
-    string heroImage = !string.IsNullOrEmpty(Model.Images.Promotion)
-        ? Url.Content($"~/images/projects/{Model.Id}/{Model.Images.Promotion}")
-        : (!string.IsNullOrEmpty(Model.Images.Hero) 
-            ? Url.Content($"~/images/projects/{Model.Id}/{Model.Images.Hero}") 
-            : string.Empty);
+    string heroImage = string.Empty;
+    if (!string.IsNullOrEmpty(Model.Images.Promotion))
+    {
+        string promotionPath = $"images/projects/{Model.Id}/{Model.Images.Promotion}";
+        string physicalPath = System.IO.Path.Combine(WebHostEnvironment.WebRootPath, promotionPath);
+        string version = System.IO.File.Exists(physicalPath) 
+            ? System.IO.File.GetLastWriteTime(physicalPath).Ticks.ToString() 
+            : DateTime.UtcNow.Ticks.ToString();
+        heroImage = Url.Content($"~/{promotionPath}?v={version}");
+    }
+    else if (!string.IsNullOrEmpty(Model.Images.Hero))
+    {
+        string heroPath = $"images/projects/{Model.Id}/{Model.Images.Hero}";
+        string physicalPath = System.IO.Path.Combine(WebHostEnvironment.WebRootPath, heroPath);
+        string version = System.IO.File.Exists(physicalPath) 
+            ? System.IO.File.GetLastWriteTime(physicalPath).Ticks.ToString() 
+            : DateTime.UtcNow.Ticks.ToString();
+        heroImage = Url.Content($"~/{heroPath}?v={version}");
+    }
+
     string logoImage = Url.Content($"~/images/projects/{Model.Id}/{Model.Images.Logo}");
     string facilityImage = string.IsNullOrWhiteSpace(Model.Images.FacilityMain)
         ? heroImage
@@ -115,12 +132,6 @@
 <script src="https://www.google.com/recaptcha/api.js?render=@ViewBag.RecaptchaSiteKey"></script>
 
 <div class="project-minisite @themeClass" style="--primary-color: @primaryColor; --secondary-color: @secondaryColor; --light-bg: @lightBackground;">
-    <div class="project-mobile-overlay" id="projectMobileOverlay">
-        <button class="project-mobile-close" id="projectMobileClose" aria-label="Close menu">
-            <span>&times;</span>
-        </button>
-    </div>
-
     <header class="project-top-bar">
         <div class="container project-top-bar__inner">
             
@@ -133,8 +144,15 @@
     </header>
 
     <nav class="project-nav" aria-label="Project navigation">
+        @* Overlay lives inside .project-nav so it shares the nav's stacking context:
+           it must paint below .project-nav__menu (z-index 10000) or it swallows menu taps *@
+        <div class="project-mobile-overlay" id="projectMobileOverlay">
+            <button class="project-mobile-close" id="projectMobileClose" aria-label="Close menu">
+                <span>&times;</span>
+            </button>
+        </div>
         <div class="container project-nav__inner">
-            <a class="project-nav__logo" href="#hero">
+            <a class="project-nav__logo no-hover-effect" href="#hero">
                 <img src="@logoImage" alt="@Model.Name" />
                 
             </a>
@@ -144,11 +162,11 @@
                 <figure></figure>
             </div>
             <ul class="project-nav__menu" id="projectNavMenu">
-                <li><a class="project-nav__link" href="#details">Project Information</a></li>
-                 <li><a class="project-nav__link" href="#masterplans">Plan & Layout</a></li>
-                <li><a class="project-nav__link" href="#gallery">Gallery</a></li>
-                <li><a class="project-nav__link" href="#location">Location</a></li>
-                <li><a class="project-nav__link project-nav__cta" href="#register">Register Now</a></li>
+                <li><a class="project-nav__link no-hover-effect" href="#details">Project Information</a></li>
+                 <li><a class="project-nav__link no-hover-effect" href="#masterplans">Plan & Layout</a></li>
+                <li><a class="project-nav__link no-hover-effect" href="#gallery">Gallery</a></li>
+                <li><a class="project-nav__link no-hover-effect" href="#location">Location</a></li>
+                <li><a class="project-nav__link project-nav__cta no-hover-effect" href="#register">Register Now</a></li>
             </ul>
         </div>
     </nav>
@@ -156,7 +174,9 @@
 
     @if (!string.IsNullOrEmpty(heroImage))
     {
-        <section class="project-hero" id="hero" style="background-image: url('@heroImage');">
+        var hasPromo = !string.IsNullOrEmpty(Model.Images.Promotion);
+        var aspect = hasPromo ? "16 / 9" : "3 / 2";
+        <section class="project-hero @(hasPromo ? "project-hero--promo" : "")" id="hero" style="background-image: url('@heroImage'); --aspect-ratio: @aspect;">
             <div class="project-hero__overlay"></div>
             <div class="container">
                 <div class="project-hero__content">
@@ -666,6 +686,25 @@
     </section>
 
     <style>
+        /* Project Hero 100% Not Crop Fix */
+        .project-hero {
+            width: 100% !important;
+            height: auto !important;
+            min-height: auto !important;
+            aspect-ratio: var(--aspect-ratio, 16 / 9) !important;
+            background-size: cover !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+        }
+
+        .project-hero--promo {
+            padding: 0 !important;
+        }
+
+        .project-hero--promo .container {
+            display: none !important;
+        }
+
         /* Override all concept styling with simple clean design */
         .concept-section {
             background: var(--light-bg) !important;
@@ -1574,6 +1613,7 @@
             }
 
             function handleMenuInteraction(e) {
+                e.stopPropagation(); // Prevent custom.js jQuery .nav-btn handler from also firing
                 toggleMenu();
             }
 
@@ -1591,8 +1631,8 @@
 
             navMenu?.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent custom.js jQuery scroll handler from interfering
                     const href = this.getAttribute('href');
-                    console.log('Mobile link clicked:', href); // DEBUG LOG
                     
                     if (href && href.startsWith('#')) {
                         e.preventDefault(); 
@@ -1602,7 +1642,6 @@
                         
                         if (targetElement) {
                             const isMobileMenuOpen = navMenu?.classList.contains('is-open');
-                            console.log('Is Mobile Menu Open?', isMobileMenuOpen); // DEBUG LOG
 
                             // 1. Close the menu immediately
                             if (isMobileMenuOpen) {
@@ -1620,7 +1659,7 @@
                                 const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
                                 const targetPosition = rect.top + scrollTop - navHeight - 20;
                                 
-                                console.log('Scrolling to:', targetPosition); // DEBUG LOG
+                                
                                 window.scrollTo({
                                     top: Math.max(0, targetPosition),
                                     behavior: 'smooth' // Always smooth, even on mobile, for better UX

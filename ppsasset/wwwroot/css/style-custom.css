@@ -5903,7 +5903,8 @@ form .status i {
   .hero-section {
     min-height: auto !important;
     height: auto !important;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 16 / 9 !important;
+    margin-top: 78px !important;
   }
   .project-hero {
     min-height: auto !important;
@@ -5969,7 +5970,9 @@ form .status i {
 /* Extra small phones (< 480px) */
 @media (max-width: 480px) {
   .hero-section {
-    min-height: 300px;
+    min-height: auto !important;
+    aspect-ratio: 16 / 9 !important;
+    margin-top: 78px !important;
   }
 
   .hero-section .wrapper {
@@ -7355,7 +7358,7 @@ form .status i {
 
 .project-card__media {
   position: relative;
-  padding-bottom: 62%;
+  padding-bottom: 56.25%;
   overflow: hidden;
 }
 

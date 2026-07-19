@@ -383,11 +383,10 @@ namespace PPSAsset.Services
         {
             try
             {
-                // Try to load from database first
                 const string sql = @"
                     SELECT ImageType, ImagePath, SortOrder
                     FROM sy_project_images
-                    WHERE ProjectID = @ProjectId AND ImageType IN ('Thumbnail', 'Hero', 'Logo')
+                    WHERE ProjectID = @ProjectId AND ImageType IN ('Thumbnail', 'Hero', 'Logo', 'Promotion')
                     ORDER BY SortOrder ASC";
 
                 var images = connection.Query<dynamic>(sql, new { ProjectId = projectId }).ToList();
@@ -405,6 +404,9 @@ namespace PPSAsset.Services
                             break;
                         case "Logo":
                             projectImages.Logo = image.ImagePath ?? string.Empty;
+                            break;
+                        case "Promotion":
+                            projectImages.Promotion = image.ImagePath ?? string.Empty;
                             break;
                     }
                 }
