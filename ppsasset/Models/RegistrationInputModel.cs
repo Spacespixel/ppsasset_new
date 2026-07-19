@@ -10,6 +10,12 @@ namespace PPSAsset.Models
         [Required]
         public string ProjectName { get; set; } = string.Empty;
 
+        [Display(Name = "เขตที่ทำงาน")]
+        public string? District { get; set; }
+
+        [Display(Name = "เขตที่อยู่ปัจจุบัน")]
+        public string? Province { get; set; }
+
         [Required]
         [Display(Name = "ชื่อ")]
         public string FirstName { get; set; } = string.Empty;
@@ -26,11 +32,7 @@ namespace PPSAsset.Models
         [Display(Name = "หมายเลขโทรศัพท์")]
         public string TelNo { get; set; } = string.Empty;
 
-        [Display(Name = "จังหวัด")]
-        public string? Province { get; set; }
 
-        [Display(Name = "เขต / อำเภอ")]
-        public string? District { get; set; }
 
         [Display(Name = "งบประมาณ")]
         public string? Budget { get; set; }

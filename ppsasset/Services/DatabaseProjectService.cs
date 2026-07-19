@@ -65,7 +65,12 @@ namespace PPSAsset.Services
                 projectViewModel.Facilities = LoadFacilities(connection, id);
                 projectViewModel.ConceptFeatures = LoadConceptFeatures(connection, id);
                 projectViewModel.Location = LoadLocationInfo(connection, id);
+                projectViewModel.Facilities = LoadFacilities(connection, id);
+                projectViewModel.ConceptFeatures = LoadConceptFeatures(connection, id);
+                projectViewModel.Location = LoadLocationInfo(connection, id);
                 projectViewModel.Contact = LoadContactInfo(connection, id);
+                projectViewModel.BudgetRanges = LoadBudgetRanges(connection, id);
+                projectViewModel.DistrictOptions = LoadDistricts(connection);
 
                 return projectViewModel;
             }
@@ -364,6 +369,9 @@ namespace PPSAsset.Services
                     case "LocationMap":
                         projectImages.LocationMap = image.ImagePath ?? string.Empty;
                         break;
+                    case "Promotion":
+                        projectImages.Promotion = image.ImagePath ?? string.Empty;
+                        break;
                 }
             }
 
@@ -375,11 +383,10 @@ namespace PPSAsset.Services
         {
             try
             {
-                // Try to load from database first
                 const string sql = @"
                     SELECT ImageType, ImagePath, SortOrder
                     FROM sy_project_images
-                    WHERE ProjectID = @ProjectId AND ImageType IN ('Thumbnail', 'Hero', 'Logo')
+                    WHERE ProjectID = @ProjectId AND ImageType IN ('Thumbnail', 'Hero', 'Logo', 'Promotion')
                     ORDER BY SortOrder ASC";
 
                 var images = connection.Query<dynamic>(sql, new { ProjectId = projectId }).ToList();
@@ -397,6 +404,9 @@ namespace PPSAsset.Services
                             break;
                         case "Logo":
                             projectImages.Logo = image.ImagePath ?? string.Empty;
+                            break;
+                        case "Promotion":
+                            projectImages.Promotion = image.ImagePath ?? string.Empty;
                             break;
                     }
                 }
@@ -451,6 +461,7 @@ namespace PPSAsset.Services
                     Bedrooms,
                     Bathrooms,
                     Parking,
+                    Kitchen,
                     LandSize,
                     UsableArea,
                     SortNo
@@ -759,6 +770,44 @@ namespace PPSAsset.Services
                     Holidays = contact.Holidays ?? string.Empty
                 }
             };
+        }
+
+        private List<BudgetOption> LoadBudgetRanges(IDbConnection connection, string projectId)
+        {
+            try
+            {
+                const string sql = @"
+                    SELECT
+                        BudgetID as Id,
+                        ProjectID as ProjectId,
+                        BudgetRange as `Range`,
+                        BudgetLabel as Label,
+                        SortOrder
+                    FROM sy_project_budget_ranges
+                    WHERE ProjectID = @ProjectId
+                    ORDER BY SortOrder";
+
+                return connection.Query<BudgetOption>(sql, new { ProjectId = projectId }).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading budget ranges for project {ProjectId}", projectId);
+                return new List<BudgetOption>();
+            }
+        }
+
+        private List<string> LoadDistricts(IDbConnection connection)
+        {
+            try
+            {
+                const string sql = "SELECT NameTh FROM sy_districts ORDER BY Id";
+                return connection.Query<string>(sql).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading districts");
+                return new List<string>();
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ using System.Linq;
 using MySql.Data.MySqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace PPSAsset.Controllers
 {
@@ -26,7 +27,9 @@ namespace PPSAsset.Controllers
         private readonly IRecaptchaService _recaptchaService;
         private readonly IEmailService _emailService;
 
-        public HomeController(ILogger<HomeController> logger, IProjectService projectService, IThemeService themeService, IConfiguration configuration, RegistrationService registrationService, IGtmService gtmService, ISeoService seoService, IRecaptchaService recaptchaService, IEmailService emailService)
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+
+        public HomeController(ILogger<HomeController> logger, IProjectService projectService, IThemeService themeService, IConfiguration configuration, RegistrationService registrationService, IGtmService gtmService, ISeoService seoService, IRecaptchaService recaptchaService, IEmailService emailService, IServiceScopeFactory serviceScopeFactory)
         {
             _logger = logger;
             _projectService = projectService;
@@ -38,6 +41,7 @@ namespace PPSAsset.Controllers
             _seoService = seoService;
             _recaptchaService = recaptchaService;
             _emailService = emailService;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         private void SetNavigationData()
@@ -283,13 +287,16 @@ namespace PPSAsset.Controllers
 
             // Verify reCAPTCHA token (bypass in development)
             _logger.LogInformation("Starting reCAPTCHA verification...");
-            bool recaptchaValid = true; // Temporarily bypass for testing
+            var recaptchaResult = new RecaptchaVerificationResult { Success = true, Score = 1.0f }; // Temporarily bypass for testing
             if (_configuration["Environment"] != "Development") 
             {
-                recaptchaValid = await _recaptchaService.VerifyTokenAsync(input.RecaptchaToken ?? string.Empty);
+                recaptchaResult = await _recaptchaService.VerifyTokenAsync(input.RecaptchaToken ?? string.Empty);
             }
-            _logger.LogInformation("reCAPTCHA verification result: {IsValid} (development bypass: {IsBypass})", 
-                recaptchaValid, _configuration["Environment"] == "Development");
+            _logger.LogInformation("reCAPTCHA verification result: {Success}, Score: {Score} (development bypass: {IsBypass})", 
+                recaptchaResult.Success, recaptchaResult.Score, _configuration["Environment"] == "Development");
+            
+            bool recaptchaValid = recaptchaResult.Success;
+
             if (!recaptchaValid)
             {
                 _logger.LogWarning("reCAPTCHA validation failed for project {ProjectId}", projectId);
@@ -299,7 +306,12 @@ namespace PPSAsset.Controllers
                 {
                     return Json(new {
                         success = false,
-                        message = "reCAPTCHA ยืนยันไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"
+                        message = "reCAPTCHA ยืนยันไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
+                        debug = new {
+                            score = recaptchaResult.Score,
+                            errors = recaptchaResult.ErrorCodes,
+                            hostname = recaptchaResult.Hostname
+                        }
                     });
                 }
 
@@ -375,14 +387,24 @@ namespace PPSAsset.Controllers
                 // Send email notification (fire and forget to not block response)
                 try 
                 {
+                    // Capture necessary data for the background task
+                    // projectId is already available from the outer scope (method parameter or local variable)
+                    var backgroundProjectId = input.ProjectID;
+                    
                     _ = Task.Run(async () => {
                         try 
                         {
-                             var emailSettings = _configuration.GetSection("EmailSettings");
-                             
-                             // Determine recipient email: strictly use project specific email
-                             var project = _projectService.GetProject(input.ProjectID);
-                             var toEmail = project?.ProjectEmail;
+                             using (var scope = _serviceScopeFactory.CreateScope())
+                             {
+                                 var scopedProjectService = scope.ServiceProvider.GetRequiredService<IProjectService>();
+                                 var scopedEmailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                                 // We can use _configuration and _logger from outer scope as they are Singletons (or safe)
+                                 
+                                 var emailSettings = _configuration.GetSection("EmailSettings");
+                                 
+                                 // Determine recipient email: strictly use project specific email
+                                 var project = scopedProjectService.GetProject(backgroundProjectId);
+                                 var toEmail = project?.ProjectEmail;
                              
                              _logger.LogInformation($"[Email Debug] ProjectID: {input.ProjectID}, ProjectName: {project?.NameTh}, Found Email: '{toEmail}'");
 
@@ -417,11 +439,11 @@ namespace PPSAsset.Controllers
                                             </tr>
                                             <tr>
                                                 <td style='padding: 8px; font-weight: bold; color: #555;'>เขตทำงาน:</td>
-                                                <td style='padding: 8px;'>-</td>
+                                                <td style='padding: 8px;'>{(!string.IsNullOrWhiteSpace(input.District) ? input.District : "-")}</td>
                                             </tr>
                                             <tr>
                                                 <td style='padding: 8px; font-weight: bold; color: #555; background-color: #f9f9f9;'>เขตที่อยู่:</td>
-                                                <td style='padding: 8px; background-color: #f9f9f9;'>{input.District} {input.Province}</td>
+                                                <td style='padding: 8px; background-color: #f9f9f9;'>{(!string.IsNullOrWhiteSpace(input.Province) ? input.Province : "-")}</td>
                                             </tr>
                                             <tr>
                                                 <td style='padding: 8px; font-weight: bold; color: #555;'>วันที่ต้องการให้ติดต่อ:</td>
@@ -444,7 +466,8 @@ namespace PPSAsset.Controllers
                                     </div>
                                  ";
                                  
-                                 await _emailService.SendEmailAsync(toEmail, subject, body, true);
+                                 await scopedEmailService.SendEmailAsync(toEmail, subject, body, true);
+                             }
                              }
                         }
                         catch (Exception ex)
@@ -734,6 +757,84 @@ namespace PPSAsset.Controllers
                 _logger.LogError(ex, "Error getting service status");
                 return StatusCode(500, new { error = ex.Message });
             }
+        }
+
+        [HttpGet("test-email")]
+        public async Task<IActionResult> TestEmail(string? projectId = null, string? toAddress = null)
+        {
+            var results = new Dictionary<string, object>();
+            
+            // 1. Check Configuration
+            var emailSettings = _configuration.GetSection("EmailSettings");
+            results.Add("Config_MailServer", emailSettings["MailServer"] ?? emailSettings["SmtpServer"]);
+            results.Add("Config_SenderEmail", emailSettings["SenderEmail"]);
+            results.Add("Config_Port", emailSettings["MailPort"] ?? emailSettings["SmtpPort"]);
+            results.Add("Config_Username", emailSettings["SmtpUsername"]);
+            
+            // 2. Check Project Email if ID provided
+            if (!string.IsNullOrEmpty(projectId))
+            {
+                if (projectId.ToUpper() == "ALL") 
+                {
+                     var projects = _projectService.GetAllProjects();
+                     var projectStatuses = new List<object>();
+                     foreach(var p in projects)
+                     {
+                         projectStatuses.Add(new {
+                             Id = p.Id,
+                             Name = p.NameTh,
+                             Email = p.ProjectEmail,
+                             Status = string.IsNullOrEmpty(p.ProjectEmail) ? "MISSING" : "Present"
+                         });
+                     }
+                     results.Add("All_Projects_Status", projectStatuses);
+                }
+                else 
+                {
+                    var project = _projectService.GetProject(projectId);
+                    if (project != null)
+                    {
+                        results.Add("Project_Found", true);
+                        results.Add("Project_Name", project.NameTh);
+                        results.Add("Project_Email", project.ProjectEmail);
+                        if (string.IsNullOrEmpty(project.ProjectEmail))
+                        {
+                            results.Add("Project_Email_Status", "MISSING - This is why emails won't send for this project");
+                        }
+                        else
+                        {
+                            results.Add("Project_Email_Status", "Present");
+                        }
+                    }
+                    else
+                    {
+                        results.Add("Project_Found", false);
+                        results.Add("Project_Error", $"Project ID '{projectId}' not found");
+                    }
+                }
+            }
+
+            // 3. Try Sending
+            if (!string.IsNullOrEmpty(toAddress))
+            {
+                try 
+                {
+                    await _emailService.SendEmailAsync(toAddress, "PPS Asset - Test Email", "This is a test email to verify SMTP configuration.");
+                    results.Add("Email_Send_Result", "Success");
+                }
+                catch (Exception ex)
+                {
+                    results.Add("Email_Send_Result", "Failed");
+                    results.Add("Email_Send_Error", ex.Message);
+                    results.Add("Email_Send_StackTrace", ex.StackTrace);
+                }
+            }
+            else
+            {
+                results.Add("Email_Send_Skipped", "No 'toAddress' provided. Add ?toAddress=your@email.com to test sending.");
+            }
+
+            return Ok(results);
         }
 
         

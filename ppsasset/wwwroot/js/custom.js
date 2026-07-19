@@ -279,6 +279,10 @@ function centerVerticalNavigation(){
 }
 
 function sliderHeight() {
+    if ($(window).width() <= 768) {
+        $(".hero-section, .hero-section .owl-stage-outer").css("height", "");
+        return;
+    }
 
     if( $(".hero-section").find(".container").height() > $(window).height() ){
         var paddingTop = $("nav.navigation").height();

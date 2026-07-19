@@ -21,6 +21,8 @@ namespace PPSAsset.Models
         public List<ConceptFeature> ConceptFeatures { get; set; } = new();
         public string? GtmId { get; set; }
         public string ProjectEmail { get; set; } = string.Empty;
+        public List<BudgetOption> BudgetRanges { get; set; } = new();
+        public List<string> DistrictOptions { get; set; } = new();
     }
 
     public class ProjectDetails
@@ -47,6 +49,7 @@ namespace PPSAsset.Models
         public List<string> Gallery { get; set; } = new();
         public List<string> Facilities { get; set; } = new();
         public string LocationMap { get; set; } = string.Empty;
+        public string Promotion { get; set; } = string.Empty;
     }
 
     public class HouseType
@@ -59,6 +62,7 @@ namespace PPSAsset.Models
         public int Bedrooms { get; set; }
         public int Bathrooms { get; set; }
         public int Parking { get; set; }
+        public int Kitchen { get; set; }
         public string LandSize { get; set; } = string.Empty;
         public string UsableArea { get; set; } = string.Empty;
         public string PriceRange { get; set; } = string.Empty;
@@ -256,5 +260,14 @@ namespace PPSAsset.Models
         public DateTime? UpdatedAt { get; set; }
         public string? CreatedBy { get; set; }
         public string? Description { get; set; }
+    }
+
+    public class BudgetOption
+    {
+        public int Id { get; set; }
+        public string ProjectId { get; set; } = string.Empty;
+        public string Range { get; set; } = string.Empty;
+        public string Label { get; set; } = string.Empty;
+        public int SortOrder { get; set; }
     }
 }

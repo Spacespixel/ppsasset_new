@@ -4,6 +4,8 @@
 @using System.Collections.Generic
 @using System.Text.RegularExpressions
 @model PPSAsset.Models.ProjectViewModel
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
+
 
 @{
     // Helper function to split text into summary and details
@@ -65,7 +67,26 @@
     var secondaryColor = ViewBag.ThemeSecondaryColor as string ?? "#4A7030";
     var lightBackground = ViewBag.ThemeLightBackground as string ?? "#F5F7F3";
 
-    string heroImage = Url.Content($"~/images/projects/{Model.Id}/{Model.Images.Hero}");
+    string heroImage = string.Empty;
+    if (!string.IsNullOrEmpty(Model.Images.Promotion))
+    {
+        string promotionPath = $"images/projects/{Model.Id}/{Model.Images.Promotion}";
+        string physicalPath = System.IO.Path.Combine(WebHostEnvironment.WebRootPath, promotionPath);
+        string version = System.IO.File.Exists(physicalPath) 
+            ? System.IO.File.GetLastWriteTime(physicalPath).Ticks.ToString() 
+            : DateTime.UtcNow.Ticks.ToString();
+        heroImage = Url.Content($"~/{promotionPath}?v={version}");
+    }
+    else if (!string.IsNullOrEmpty(Model.Images.Hero))
+    {
+        string heroPath = $"images/projects/{Model.Id}/{Model.Images.Hero}";
+        string physicalPath = System.IO.Path.Combine(WebHostEnvironment.WebRootPath, heroPath);
+        string version = System.IO.File.Exists(physicalPath) 
+            ? System.IO.File.GetLastWriteTime(physicalPath).Ticks.ToString() 
+            : DateTime.UtcNow.Ticks.ToString();
+        heroImage = Url.Content($"~/{heroPath}?v={version}");
+    }
+
     string logoImage = Url.Content($"~/images/projects/{Model.Id}/{Model.Images.Logo}");
     string facilityImage = string.IsNullOrWhiteSpace(Model.Images.FacilityMain)
         ? heroImage
@@ -76,13 +97,23 @@
         ProjectName = string.IsNullOrWhiteSpace(Model.NameTh) ? Model.Name : Model.NameTh
     };
     var provinceOptions = new[] { "กรุงเทพมหานคร", "นนทบุรี", "ปทุมธานี", "สมุทรปราการ" };
-    var budgetOptions = new Dictionary<string, string>
+    var budgetOptions = new Dictionary<string, string>();
+    
+    if (Model.BudgetRanges != null && Model.BudgetRanges.Any())
     {
-        { "8-10", "8-10 ล้านบาท" },
-        { "10-12", "10-12 ล้านบาท" },
-        { "12-15", "12-15 ล้านบาท" },
-        { "15+", "มากกว่า 15 ล้านบาท" }
-    };
+        foreach (var range in Model.BudgetRanges)
+        {
+            budgetOptions.Add(range.Range, range.Label);
+        }
+    }
+    else
+    {
+        // Default fallback ranges
+        budgetOptions.Add("8-10", "8-10 ล้านบาท");
+        budgetOptions.Add("10-12", "10-12 ล้านบาท");
+        budgetOptions.Add("12-15", "12-15 ล้านบาท");
+        budgetOptions.Add("15+", "มากกว่า 15 ล้านบาท");
+    }
     var loginReturnUrl = (Context?.Request?.Path + Context?.Request?.QueryString) ?? Url.Action("Project", "Home", new { id = Model.Id });
     var googlePopupUrl = Url.Action("Login", "Account", new { provider = "Google", returnUrl = loginReturnUrl, isPopup = true });
     var facebookPopupUrl = Url.Action("Login", "Account", new { provider = "Facebook", returnUrl = loginReturnUrl, isPopup = true });
@@ -101,12 +132,6 @@
 <script src="https://www.google.com/recaptcha/api.js?render=@ViewBag.RecaptchaSiteKey"></script>
 
 <div class="project-minisite @themeClass" style="--primary-color: @primaryColor; --secondary-color: @secondaryColor; --light-bg: @lightBackground;">
-    <div class="project-mobile-overlay" id="projectMobileOverlay">
-        <button class="project-mobile-close" id="projectMobileClose" aria-label="Close menu">
-            <span>&times;</span>
-        </button>
-    </div>
-
     <header class="project-top-bar">
         <div class="container project-top-bar__inner">
             
@@ -119,8 +144,15 @@
     </header>
 
     <nav class="project-nav" aria-label="Project navigation">
+        @* Overlay lives inside .project-nav so it shares the nav's stacking context:
+           it must paint below .project-nav__menu (z-index 10000) or it swallows menu taps *@
+        <div class="project-mobile-overlay" id="projectMobileOverlay">
+            <button class="project-mobile-close" id="projectMobileClose" aria-label="Close menu">
+                <span>&times;</span>
+            </button>
+        </div>
         <div class="container project-nav__inner">
-            <a class="project-nav__logo" href="#hero">
+            <a class="project-nav__logo no-hover-effect" href="#hero">
                 <img src="@logoImage" alt="@Model.Name" />
                 
             </a>
@@ -130,23 +162,31 @@
                 <figure></figure>
             </div>
             <ul class="project-nav__menu" id="projectNavMenu">
-                <li><a class="project-nav__link" href="#details">Project Information</a></li>
-                 <li><a class="project-nav__link" href="#masterplans">Plan & Layout</a></li>
-                <li><a class="project-nav__link" href="#gallery">Gallery</a></li>
-                <li><a class="project-nav__link" href="#location">Location</a></li>
-                <li><a class="project-nav__link project-nav__cta" href="#register">Register Now</a></li>
+                <li><a class="project-nav__link no-hover-effect" href="#details">Project Information</a></li>
+                 <li><a class="project-nav__link no-hover-effect" href="#masterplans">Plan & Layout</a></li>
+                <li><a class="project-nav__link no-hover-effect" href="#gallery">Gallery</a></li>
+                <li><a class="project-nav__link no-hover-effect" href="#location">Location</a></li>
+                <li><a class="project-nav__link project-nav__cta no-hover-effect" href="#register">Register Now</a></li>
             </ul>
         </div>
     </nav>
 
-    <section class="project-hero" id="hero" style="background-image: url('@heroImage');">
-        <div class="project-hero__overlay"></div>
-        <div class="container">
-            <div class="project-hero__content">
-                <!-- Title and subtitle removed -->
+
+    @if (!string.IsNullOrEmpty(heroImage))
+    {
+        var hasPromo = !string.IsNullOrEmpty(Model.Images.Promotion);
+        var aspect = hasPromo ? "16 / 9" : "3 / 2";
+        <section class="project-hero @(hasPromo ? "project-hero--promo" : "")" id="hero" style="background-image: url('@heroImage'); --aspect-ratio: @aspect;">
+            <div class="project-hero__overlay"></div>
+            <div class="container">
+                <div class="project-hero__content">
+                    <!-- Title and subtitle removed -->
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    }
+
+
 
     <section class="project-section project-register" id="register">
         <div class="container">
@@ -266,25 +306,44 @@
                         <legend>ที่อยู่ปัจจุบัน</legend>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="province">จังหวัด</label>
-                                <select id="province" name="Province" >
-                                    <option value="">จังหวัด</option>
-                                    @foreach (var province in provinceOptions)
+                                <label for="province">เขตที่อยู่ปัจจุบัน</label>
+                                <select id="province" name="Province">
+                                    <option value="">- เขตที่อยู่ปัจจุบัน -</option>
+                                    @if (Model.DistrictOptions != null)
                                     {
-                                        if (string.Equals(registrationModel.Province, province, StringComparison.OrdinalIgnoreCase))
+                                        foreach (var district in Model.DistrictOptions)
                                         {
-                                            <option value="@province" selected>@province</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@province">@province</option>
+                                            if (string.Equals(registrationModel.Province, district, StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                <option value="@district" selected>@district</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@district">@district</option>
+                                            }
                                         }
                                     }
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="district">เขต / อำเภอ</label>
-                                <input id="district" name="District" type="text" placeholder="เขต / อำเภอ" value="@registrationModel.District" />
+                                <label for="district">เขตที่ทำงาน</label>
+                                <select id="district" name="District">
+                                    <option value="">- เขตที่ทำงาน -</option>
+                                    @if (Model.DistrictOptions != null)
+                                    {
+                                        foreach (var district in Model.DistrictOptions)
+                                        {
+                                            if (string.Equals(registrationModel.District, district, StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                <option value="@district" selected>@district</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@district">@district</option>
+                                            }
+                                        }
+                                    }
+                                </select>
                             </div>
                         </div>
                     </fieldset>
@@ -309,6 +368,7 @@
                                     }
                                 </select>
                             </div>
+                            <div class="form-group desktop-only"></div>
                             <div class="form-group">
                                 <label for="visitDate">วันที่ติดต่อกลับ</label>
                                 <input id="visitDate" name="AppointmentDate" type="date" value="@(registrationModel.AppointmentDate?.ToString("yyyy-MM-dd"))" />
@@ -376,7 +436,7 @@
                     <div class="success-message">
                         <p>ขอบคุณที่ลงทะเบียนกับ<span id="modalProjectName">โครงการของเรา</span></p>
                         <p>ข้อมูลของคุณได้รับการบันทึกเรียบร้อยแล้ว</p>
-                        <p>ทีมงานของเราจะติดต่อกลับในเวลาทำการ 09:00-18:00</p>
+                        <p> เจ้าหน้าที่ฝ่ายขายประจำโครงการจะติดต่อกลับในเวลาทำการ 9:00 - 18:00 น.</p>
                     </div>
 
                     <div class="success-actions">
@@ -398,6 +458,22 @@
                             <i class="icon_phone"></i> โทร 081-933-2888
                         </a>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Graphic Map Modal -->
+    <div id="graphicMapModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content" style="background: transparent; border: none; box-shadow: none;">
+                <div class="modal-header" style="border: none; padding: 0; position: absolute; right: 0; top: -30px; z-index: 1050;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white; opacity: 1; text-shadow: none; font-size: 2rem; background: transparent; border: none;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="padding: 0;">
+                    <img src="@Url.Content($"~/images/projects/{Model.Id}/{Model.Images?.LocationMap ?? "map-placeholder.jpg"}")" alt="แผนที่โครงการ" style="width: 100%; height: auto; border-radius: 8px;" />
                 </div>
             </div>
         </div>
@@ -610,6 +686,25 @@
     </section>
 
     <style>
+        /* Project Hero 100% Not Crop Fix */
+        .project-hero {
+            width: 100% !important;
+            height: auto !important;
+            min-height: auto !important;
+            aspect-ratio: var(--aspect-ratio, 16 / 9) !important;
+            background-size: cover !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+        }
+
+        .project-hero--promo {
+            padding: 0 !important;
+        }
+
+        .project-hero--promo .container {
+            display: none !important;
+        }
+
         /* Override all concept styling with simple clean design */
         .concept-section {
             background: var(--light-bg) !important;
@@ -708,9 +803,9 @@
 
         .concept-text-section p {
             /* Font family inherited from typography.css */
-            font-size: 1.5rem;      /* 24px - matches project details card size */
+            font-size: 18px;      /* Standardized to 18px */
             color: #636e72;
-            line-height: 1.7;
+            line-height: 1.6;
             margin: 0;
             font-weight: 500;       /* Slightly bolder for better readability */
         }
@@ -742,7 +837,7 @@
             }
 
             .concept-text-section {
-                padding: 50px 40px;             /* Increased from 40px 30px */
+                padding: 40px 20px;             /* Reduced horizontal padding for better text flow */
             }
 
             .concept-image-section {
@@ -766,7 +861,7 @@
             }
 
             .concept-text-section p {
-                font-size: 1.25rem;     /* 20px - tablet body, scaled down from 24px */
+                font-size: 18px;     /* Increased to 18px per user feedback */
             }
         }
 
@@ -780,7 +875,7 @@
             }
 
             .concept-text-section {
-                padding: 40px 25px;             /* Reduced for mobile screen */
+                padding: 30px 15px;             /* Significantly reduced for mobile width */
             }
 
             .concept-text-section h3 {
@@ -801,7 +896,7 @@
             }
 
             .concept-text-section p {
-                font-size: 1rem;        /* 16px - mobile body, scaled down from 24px */
+                font-size: 18px;        /* 18px - increased for mobile readability */
             }
 
             .concept-image-section {
@@ -811,16 +906,17 @@
 
         /* House Description Styles */
         .house-description {
-            font-size: 1rem;
-            color: #666;
+            font-size: 16px;
+            color: rgba(0, 0, 0, 0.72);
             margin: 8px 0 0 0;
             line-height: 1.4;
-            font-weight: 400;
+            font-weight: 600;
+            opacity: 1 !important;
         }
 
         @@media (max-width: 768px) {
             .house-description {
-                font-size: 1rem;
+                font-size: 16px;
             }
         }
 
@@ -1131,8 +1227,15 @@
                                                     <i class="fa fa-bed"></i>
                                                 </div>
                                                 <div class="spec-details">
-                                                    <div class="spec-number">@house.Bedrooms</div>
-                                                    <div class="spec-unit">ห้อง</div>
+                                                    @if (house.Bedrooms > 0)
+                                                    {
+                                                        <div class="spec-number">@house.Bedrooms</div>
+                                                        <div class="spec-unit">ห้องนอน</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="spec-number">-</div>
+                                                    }
                                                 </div>
                                             </div>
 
@@ -1141,8 +1244,32 @@
                                                     <i class="fa fa-bath"></i>
                                                 </div>
                                                 <div class="spec-details">
-                                                    <div class="spec-number">@house.Bathrooms</div>
-                                                    <div class="spec-unit">ห้อง</div>
+                                                    @if (house.Bathrooms > 0)
+                                                    {
+                                                        <div class="spec-number">@house.Bathrooms</div>
+                                                        <div class="spec-unit">ห้องน้ำ</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="spec-number">-</div>
+                                                    }
+                                                </div>
+                                            </div>
+
+                                            <div class="spec-row">
+                                                <div class="spec-icon">
+                                                    <i class="fa fa-cutlery"></i>
+                                                </div>
+                                                <div class="spec-details">
+                                                    @if (house.Kitchen > 0)
+                                                    {
+                                                        <div class="spec-number">@house.Kitchen</div>
+                                                        <div class="spec-unit">ห้องครัว</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="spec-number">-</div>
+                                                    }
                                                 </div>
                                             </div>
 
@@ -1151,8 +1278,15 @@
                                                     <i class="fa fa-car"></i>
                                                 </div>
                                                 <div class="spec-details">
-                                                    <div class="spec-number">@house.Parking</div>
-                                                    <div class="spec-unit">คัน</div>
+                                                    @if (house.Parking > 0)
+                                                    {
+                                                        <div class="spec-number">@house.Parking</div>
+                                                        <div class="spec-unit">ที่จอดรถ</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="spec-number">-</div>
+                                                    }
                                                 </div>
                                             </div>
                                             
@@ -1311,10 +1445,18 @@
 
                 <!-- Graphic Map Container -->
                 <div class="map-container" id="graphic-map-container" style="display: none;">
-                    <div class="location-map">
-                        <img src="@Url.Content($"~/images/projects/{Model.Id}/{Model.Images?.LocationMap ?? "map-placeholder.jpg"}")" alt="แผนที่โครงการ" />
+                    <div class="location-map" style="cursor: pointer; position: relative;" onclick="$('#graphicMapModal').modal('show')">
+                        <img src="@Url.Content($"~/images/projects/{Model.Id}/{Model.Images?.LocationMap ?? "map-placeholder.jpg"}")" alt="แผนที่โครงการ" style="width: 100%; display: block;" />
+                        <div class="map-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; pointer-events: none;">
+                            <i class="fa fa-search-plus" style="color: white; font-size: 3rem;"></i>
+                        </div>
                     </div>
                 </div>
+                <style>
+                    #graphic-map-container .location-map:hover .map-overlay {
+                        opacity: 1 !important;
+                    }
+                </style>
 
                 <!-- Nearby Places Info (shown for both map types) -->
                 <div class="project-location__info">
@@ -1471,6 +1613,7 @@
             }
 
             function handleMenuInteraction(e) {
+                e.stopPropagation(); // Prevent custom.js jQuery .nav-btn handler from also firing
                 toggleMenu();
             }
 
@@ -1488,8 +1631,8 @@
 
             navMenu?.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent custom.js jQuery scroll handler from interfering
                     const href = this.getAttribute('href');
-                    console.log('Mobile link clicked:', href); // DEBUG LOG
                     
                     if (href && href.startsWith('#')) {
                         e.preventDefault(); 
@@ -1499,10 +1642,16 @@
                         
                         if (targetElement) {
                             const isMobileMenuOpen = navMenu?.classList.contains('is-open');
-                            console.log('Is Mobile Menu Open?', isMobileMenuOpen); // DEBUG LOG
 
-                            // Function to calculate and scroll
-                            const performScroll = () => {
+                            // 1. Close the menu immediately
+                            if (isMobileMenuOpen) {
+                                closeMenu();
+                            }
+
+                            // 2. Perform smooth scroll after a short delay
+                            // The delay ensures that the body's overlow:hidden from .nav-open is cleared
+                            // and the DOM layout has updated before calculating the target offset.
+                            setTimeout(() => {
                                 const nav = document.querySelector('.project-nav');
                                 const navHeight = nav ? nav.getBoundingClientRect().height : 80;
                                 
@@ -1510,31 +1659,12 @@
                                 const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
                                 const targetPosition = rect.top + scrollTop - navHeight - 20;
                                 
-                                console.log('Scrolling to:', targetPosition); // DEBUG LOG
+                                
                                 window.scrollTo({
                                     top: Math.max(0, targetPosition),
-                                    behavior: isMobileMenuOpen ? 'auto' : 'smooth' // Auto/Instant for mobile, Smooth for desktop
+                                    behavior: 'smooth' // Always smooth, even on mobile, for better UX
                                 });
-                            };
-                            
-                            if (isMobileMenuOpen) {
-                                // 1. Remove classes
-                                navMenu.classList.remove('is-open');
-                                hamburger?.classList.remove('is-active');
-                                overlay?.classList.remove('is-active');
-                                hamburger?.setAttribute('aria-expanded', 'false');
-                                
-                                // 2. Unlock body
-                                body.classList.remove('nav-open');
-                                body.style.overflow = ''; 
-                                body.style.height = ''; 
-                                
-                                // 3. Scroll after delay (Wait for menu close / lock removal)
-                                // CSS transition is 0.5s, so 400ms is safer than 100ms
-                                setTimeout(performScroll, 400);
-                            } else {
-                                performScroll();
-                            }
+                            }, isMobileMenuOpen ? 200 : 0);
                         }
                     } else {
                         closeMenu();
@@ -1807,27 +1937,7 @@
                 });
             });
 
-            // Back to top functionality
-            const backToTopButton = document.querySelector('.sticky-top');
-            if (backToTopButton) {
-                backToTopButton.addEventListener('click', function() {
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
-                });
 
-                // Show/hide back to top button based on scroll position
-                window.addEventListener('scroll', function() {
-                    if (window.pageYOffset > 300) {
-                        backToTopButton.style.opacity = '1';
-                        backToTopButton.style.visibility = 'visible';
-                    } else {
-                        backToTopButton.style.opacity = '0';
-                        backToTopButton.style.visibility = 'hidden';
-                    }
-                });
-            }
 
             // Location Map Filter functionality with smooth transitions
             const locationMapFilterButtons = document.querySelectorAll('.project-location .location-filters .filter-btn');

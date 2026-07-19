@@ -15,7 +15,7 @@ namespace PPSAssetAdmin.Areas.Admin.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string searchString, string project, string utmSource, DateTime? startDate, DateTime? endDate)
+        public async Task<IActionResult> Index(string searchString, string project, string utmSource, DateTime? startDate, DateTime? endDate, int? pageNumber)
         {
             // Populate Project Dropdown from sy_project table
             var projects = await _context.Projects
@@ -59,7 +59,8 @@ namespace PPSAssetAdmin.Areas.Admin.Controllers
             ViewData["StartDate"] = startDate?.ToString("yyyy-MM-dd");
             ViewData["EndDate"] = endDate?.ToString("yyyy-MM-dd");
 
-            return View(await leads.OrderByDescending(x => x.RegisterDate).ToListAsync());
+            int pageSize = 50;
+            return View(await PPSAssetAdmin.Helpers.PaginatedList<PPSAssetAdmin.Models.TrTransaction>.CreateAsync(leads.OrderByDescending(x => x.RegisterDate).AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         public async Task<IActionResult> Export()
